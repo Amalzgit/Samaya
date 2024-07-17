@@ -4,10 +4,10 @@ const {validationResult} = require('express-validator')
 
 const loginLoad = async (req, res) => {
     try {
-        res.render('userLogin', { message:'', message: ''});
+        res.render('userLogin', { successMessage:'',errorMessage:''});
     } catch (error) {
         console.error('Error loading login page:', error);
-        res.render('userLogin', { message: "An error occurred" });
+        res.render('userLogin', {successMessage:'', errorMessage: "An error occurred" });
     }
 };
 
@@ -17,7 +17,7 @@ const verifyLogin = async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            res.render('userLogin', { message: "An error occurred" });
+            res.render('userLogin', {  successMessage:'',errorMessage: 'Please enter valid inputs', errors: errors.array() });
     };
 
         const userData = await User.findOne({ email });
@@ -27,7 +27,7 @@ const verifyLogin = async (req, res) => {
 
             if (passwordMatch) {
                 if (userData.isVerified === 0) {
-                    return res.render('userLogin', { message: "Successfully logged in. Please verify your email." });
+                    return res.render('userLogin', { successMessage: "Successfully logged in. Please verify your email.",errorMessage:'' });
                 } else {
                     if (userData.isAdmin) {
                         req.session.user_id = userData._id;
@@ -36,18 +36,18 @@ const verifyLogin = async (req, res) => {
                     } else {
                         req.session.user_id = userData._id;
                         req.session.isAdmin = false;
-                        return res.redirect('/home');
+                        return res.redirect('/');
                     }
                 }
             } else {
-                return res.render('userLogin', { message: "Email and password are incorrect" });
+                return res.render('userLogin', { successMessage:'',errorMessage: "Email and password are incorrect" });
             }
         } else {
-            return res.render('userLogin', { message: "Email and password are incorrect" });
+            return res.render('userLogin', {successMessage:'', errorMessage: "Email and password are incorrect" });
         }
     } catch (error) {
         console.error('Error in login:', error);
-        res.render('userLogin', { message: "An error occurred" });
+        res.render('userLogin', { successMessage:'',errorMessage: "An error occurred" });
     }
 };
 

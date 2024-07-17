@@ -13,7 +13,7 @@ const isLogin = async (req, res, next) => {
 const isLogout = async (req, res, next) => {
     try {
         if (req.session.user_id) {
-            res.redirect('/home'); // Redirect to home if user is already logged in
+            res.redirect('/'); // Redirect to home if user is already logged in
         } else {
             next(); // User is not logged in, proceed to the next middleware/controller
         }
