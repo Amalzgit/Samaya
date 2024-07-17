@@ -3,10 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
-// const loggerMiddleware = require('./middleware/loggerMiddleware');
-// const nocacheMiddleware = require('./middleware/noCacheMiddleware');
-// const errorHandlerMiddleware = require('./middleware/errorHAndlingMiddleware');
-
+const nocacheMiddleware = require('./middleware/noCacheMiddleware');
 // Load environment variables from .env file
 
 
@@ -18,38 +15,26 @@ const app = express();
 
 // View engine setup
 app.set('view engine', 'ejs');
-app.set('views', './views/users');
 
-// Multer configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '/public'));
-    },
-    filename: function (req, file, cb) {
-        const name = Date.now() + '-' + file.originalname;
-        cb(null, name);
-    }
-});
-const upload = multer({ storage: storage });
 
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(loggerMiddleware);
-// app.use(['/login', '/admin', '/register', '/'], nocacheMiddleware);
+app.use( nocacheMiddleware);
 
 // Routes
-const loginRouter = require('./routes/loginRoute');
-const userRoute = require('./routes/userRoute');
-const adminRoute = require('./routes/adminRoute');
+const userRoute = require('./routes/userRoutes/userRoute');
+const auth_route = require('./routes/authRoutes/authRoutes');
+const adminRoute = require('./routes/adminRoutes/adminRoute');
 
-app.use('/', loginRouter);   // Common login route
-app.use('/', userRoute);     // User-specific routes
-app.use('/admin', adminRoute);  // Admin-specific routes
+app.use('/', userRoute);     
+app.use('/', auth_route)
+app.use('/admin', adminRoute);
+
 
 // Error handling middleware
-// app.use(errorHandlerMiddleware);
+
 
 // Server setup
 const host = 'localhost';
