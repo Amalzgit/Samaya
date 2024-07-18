@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
-const nocacheMiddleware = require('./middleware/noCacheMiddleware');
+// const nocacheMiddleware = require('./middleware/noCacheMiddleware');
 // Load environment variables from .env file
 
 
@@ -20,7 +20,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use( nocacheMiddleware);
+app.use(express.static(path.join(__dirname, 'uploads')));
+// app.use( nocacheMiddleware);
 
 // Routes
 const userRoute = require('./routes/userRoutes/userRoute');

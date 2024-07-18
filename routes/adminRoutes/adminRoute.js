@@ -6,6 +6,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const adminController = require('../../controllers/adminControllers/adminController');
 const adminProductRoute = require('./adminProductRouter');
+const admin_categoryRoute = require('./adminCategoryRouter');
 
 const admin_route = express();
 
@@ -18,7 +19,6 @@ admin_route.use(session({
 
 // Serve static files from the 'public' directory
 admin_route.use(express.static('public'));
-admin_route.use(express.static('uploads'));
 
 // Body parser middleware
 admin_route.use(bodyParser.json());
@@ -33,7 +33,7 @@ admin_route.set('view engine', 'ejs')
 // Routes
 admin_route.get('/adminhome', adminController.loadAdminHome);
 admin_route.use(adminProductRoute);
-
+admin_route.use(admin_categoryRoute)
 // Fallback route for unmatched routes
 
 module.exports = admin_route;
