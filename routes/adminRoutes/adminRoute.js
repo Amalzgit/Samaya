@@ -17,8 +17,8 @@ admin_route.use(session({
 }));
 
 // Serve static files from the 'public' directory
-admin_route.use(express.static(path.join(__dirname, 'public')));
 admin_route.use(express.static('public'));
+admin_route.use(express.static('uploads'));
 
 // Body parser middleware
 admin_route.use(bodyParser.json());

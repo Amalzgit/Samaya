@@ -4,10 +4,10 @@ const {validationResult} = require('express-validator');
 
 const loadRegister = async (req, res) => {
     try {
-        res.render('userRegister', {successMessage:'',errorMessage:''});
+       return res.render('userRegister', {successMessage:'',errorMessage:''});
     } catch (error) {
         console.error('Error loading user registration:', error);
-        res.render('userRegister', { errorMessage: "An error occurred" });
+       return res.render('userRegister', { errorMessage: "An error occurred" });
     }
 };
 
@@ -18,7 +18,7 @@ const insertUser = async (req, res) => {
       // Validate request
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.render('userRegister', { successMessage: null, errorMessage: 'Validation errors occurred', errors: errors.array() });
+        return res.render('userRegister', { successMessage: null, errorMessage: errors.array() });
       }
   
       // Check if email already exists

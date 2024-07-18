@@ -4,10 +4,10 @@ const {validationResult} = require('express-validator')
 
 const loginLoad = async (req, res) => {
     try {
-        res.render('userLogin', { successMessage:'',errorMessage:''});
+       return res.render('userLogin', { successMessage:'',errorMessage:''});
     } catch (error) {
         console.error('Error loading login page:', error);
-        res.render('userLogin', {successMessage:'', errorMessage: "An error occurred" });
+       return res.render('userLogin', {successMessage:'', errorMessage: "An error occurred" });
     }
 };
 
@@ -17,7 +17,7 @@ const verifyLogin = async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            res.render('userLogin', {  successMessage:'',errorMessage: 'Please enter valid inputs', errors: errors.array() });
+           return res.render('userLogin', {  successMessage:'',errorMessage:errors.array() });
     };
 
         const userData = await User.findOne({ email });
@@ -47,17 +47,17 @@ const verifyLogin = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in login:', error);
-        res.render('userLogin', { successMessage:'',errorMessage: "An error occurred" });
+        return res.render('userLogin', { successMessage:'',errorMessage: "An error occurred" });
     }
 };
 
 const Logout = async (req, res) => {
     try {
         req.session.destroy();
-        res.redirect('/');
+        return res.redirect('/login');
     } catch (error) {
         console.error('Error in logout:', error);
-        res.redirect('/');
+       return res.redirect('/');
     }
 };
 
