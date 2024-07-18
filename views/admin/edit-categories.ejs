@@ -1,0 +1,105 @@
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Edit Category</h2>
+            <p>Edit your category details</p>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header"></header>
+
+        <div class="card-body">
+            <% if (successMessage) { %>
+                <div class="alert alert-success">
+                    <%= successMessage %>
+                </div>
+            <% } %>
+
+            <% if (errorMessage) { %>
+                <div class="alert alert-danger">
+                    <%= errorMessage %>
+                </div>
+            <% } %>
+
+            <form id="editCategoryForm" action="/admin/categories/<%= category._id %>/edit" method="post">
+                <article class="itemlist">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <input type="text" id="categoryName" name="name" class="form-control" value="<%= category.name %>" placeholder="Enter category name" required>
+                            <div id="categoryNameError" class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4 col-deleted">
+                            <label for="categoryDeleted" class="form-label">Deleted</label>
+                            <select id="categoryDeleted" name="deleted" class="form-select" required>
+                                <option value="false" <% if (!category.deleted) { %>selected<% } %>>No</option>
+                                <option value="true" <% if (category.deleted) { %>selected<% } %>>Yes</option>
+                            </select>
+                            <div id="categoryDeletedError" class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-description">
+                            <label for="categoryDescription" class="form-label">Description</label>
+                            <textarea id="categoryDescription" name="description" class="form-control" rows="3" placeholder="Enter category description" required><%= category.description %></textarea>
+                            <div id="categoryDescriptionError" class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-createdAt">
+                            <label for="categoryCreatedAt" class="form-label">Created At</label>
+                            <input type="datetime-local" id="categoryCreatedAt" name="createdAt" class="form-control" value="<%= new Date(category.createdAt).toISOString().slice(0, 16) %>" required>
+                            <div id="categoryCreatedAtError" class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </article>
+                <div class="row align-items-center mt-3">
+                    <div class="col-lg-12 col-sm-12 col-12 text-end">
+                        <button type="submit" class="btn btn-primary">Update Category</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Category name validation
+        const categoryNameInput = document.getElementById('categoryName');
+        const categoryNameError = document.getElementById('categoryNameError');
+
+        const validateCategoryName = () => {
+            if (categoryNameInput.value.trim() === '') {
+                categoryNameError.textContent = '* Category name is required';
+                return false;
+            } else {
+                categoryNameError.textContent = '';
+                return true;
+            }
+        };
+
+        categoryNameInput.addEventListener('input', validateCategoryName);
+
+        // Category createdAt validation
+        const categoryCreatedAtInput = document.getElementById('categoryCreatedAt');
+        const categoryCreatedAtError = document.getElementById('categoryCreatedAtError');
+
+        const validateCategoryCreatedAt = () => {
+            if (categoryCreatedAtInput.value.trim() === '') {
+                categoryCreatedAtError.textContent = '* Created date and time are required';
+                return false;
+            } else {
+                categoryCreatedAtError.textContent = '';
+                return true;
+            }
+        };
+
+        categoryCreatedAtInput.addEventListener('input', validateCategoryCreatedAt);
+
+        // Form submission validation
+        const form = document.getElementById('editCategoryForm');
+
+        form.addEventListener('submit', (event) => {
+            if (!validateCategoryName() || !validateCategoryCreatedAt()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>

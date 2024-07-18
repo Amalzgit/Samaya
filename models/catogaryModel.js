@@ -11,6 +11,10 @@ const categorySchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    description: {
+        type: String,
+        trim: true,
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -18,6 +22,6 @@ const categorySchema = new mongoose.Schema({
 });
 
 // Create Category model
-const Category = mongoose.model('Category', categorySchema);
 
-module.exports = Category;
+module.exports =  mongoose.model('Category', categorySchema);
+
