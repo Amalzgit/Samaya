@@ -34,52 +34,132 @@
                 </div>
             </div>
         </header>
+
         <div class="card-body">
             <% if (successMessage) { %>
                 <div class="alert alert-success">
                     <%= successMessage %>
                 </div>
                 <% } %>
+
+                <% if (errorMessage) { %>
+                    <div class="alert alert-success">
+                        <%= successMessage %>
+                    </div>
+                    <% } %>
+                <!-- <% if (errorMessage && errorMessage.length > 0) { %>
+                    <div class="alert alert-danger">
+                      <ul>
+                        <% errorMessage.forEach(error => { %>
+                          <li><%= error.msg %></li>
+                        <% }); %>
+                      </ul>
+                    </div>
+                  <% } %> -->
                 
-            <form action="/admin/add-product" method="post" enctype="multipart/form-data">
-                <article class="itemlist">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" id="productName" name="name" class="form-control" placeholder="Enter product name">
-                            <% if (errorMessage && errorMessage.name) { %>
-                                <div class="alert alert-danger"><%= errorMessage.name %></div>
-                            <% } %>
+                  <form id="addProductForm" action="/admin/add-product" method="post" enctype="multipart/form-data">
+                    <article class="itemlist">
+                        <div class="row align-items-center">
+                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                <label for="productName" class="form-label">Product Name</label>
+                                <input type="text" id="productName" name="name" class="form-control" placeholder="Enter product name">
+                                <div id="productNameError" class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                <label for="productPrice" class="form-label">Price</label>
+                                <input type="text" id="productPrice" name="price" class="form-control" placeholder="Enter price">
+                                <div id="productPriceError" class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                <label for="productDescription" class="form-label">Description</label>
+                                <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+                                <div id="productDescriptionError" class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                <label for="productImage" class="form-label">Product Image</label>
+                                <input type="file" id="productImage" multiple name="images" class="form-control">
+                                <div id="productImageError" class="invalid-feedback"></div>
+                            </div>
                         </div>
-                        <div class="col-lg-2 col-sm-2 col-4 col-price">
-                            <label for="productPrice" class="form-label">Price</label>
-                            <input type="text" id="productPrice" name="price" class="form-control" placeholder="Enter price">
-                            <% if (errorMessage && errorMessage.price) { %>
-                                <div class="alert alert-danger"><%= errorMessage.price %></div>
-                            <% } %>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productDescription" class="form-label">Description</label>
-                            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
-                            <% if (errorMessage && errorMessage.description) { %>
-                                <div class="alert alert-danger"><%= errorMessage.description %></div>
-                            <% } %>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productImage" class="form-label">Product Image</label>
-                            <input type="file" id="productImage" multiple name="images" class="form-control">
-                            <% if (errorMessage && errorMessage.images) { %>
-                                <div class="alert alert-danger"><%= errorMessage.images %></div>
-                            <% } %>
+                    </article>
+                    <div class="row align-items-center mt-3">
+                        <div class="col-lg-12 col-sm-12 col-12 text-end">
+                            <button type="submit" class="btn btn-primary">Add Product</button>
                         </div>
                     </div>
-                </article>
-                <div class="row align-items-center mt-3">
-                    <div class="col-lg-12 col-sm-12 col-12 text-end">
-                        <button type="submit" class="btn btn-primary">Add Product</button>
-                    </div>
-                </div>
-            </form>
+                </form>
         </div>
     </div>
 </section>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        //email validaton
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        const validateEmail = () => {
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (emailInput.value.trim() === '') {
+                emailError.textContent = '* Email is required';
+                return false
+            } else if (!emailRegex.test(emailInput.value.trim())) {
+
+                emailError.textContent = '* Enter a valid email';
+                return false
+
+            } else {
+                emailError.textContent = '';
+
+                return true
+            }
+        }
+
+        emailInput.addEventListener('input', validateEmail);
+
+
+        //password validaton
+
+
+        const validatePassword = () => {
+
+            if (passwordInput.value.trim() === '') {
+                passwordError.textContent = '* Password is required';
+                return false
+            } else if (passwordInput.value.trim().length < 4) {
+
+                passwordError.textContent = '* Password should be atleast 4 charactors';
+                return false
+
+            } else {
+                passwordError.textContent = '';
+                return true
+            }
+        }
+
+        passwordInput.addEventListener('input', validatePassword);
+
+        const form = document.getElementById('formData');
+
+        form.addEventListener('submit', (event) => {
+
+            if (!validateEmail() || !validatePassword()) {
+
+                event.preventDefault();
+
+            }
+        });
+
+
+    })
+
+
+</script>

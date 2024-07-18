@@ -2,7 +2,7 @@
     <div class="content-header">
         <div>
             <h2 class="content-title card-title">Products List</h2>
-            <p>Lorem ipsum dolor sit amet.</p>
+            <p> All Products.</p>
         </div>
         <div>
             <a href="#" class="btn btn-light rounded font-md">Export</a>
@@ -52,7 +52,7 @@
                             <a class="itemside" href="#">
                                 <div class="left">
                                     
-                                    <img src="/uploads/products/<%= product.images[0]%>" class="img-sm img-thumbnail" alt="Item">
+                                    <img src="/products/<%= product.images[0]%>" class="img-sm img-thumbnail" alt="Item">
                                     
                                 </div>
                                 <div class="info">
@@ -69,12 +69,20 @@
                             <span><%= product.dateAdded.toISOString().split('T')[0] %></span>
                         </div>
                         <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                            <a href="#" class="btn btn-sm font-sm rounded btn-brand">
-                                <i class="material-icons md-edit"></i> Edit
-                            </a>
-                            <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
-                                <i class="material-icons md-delete_forever"></i> Delete
-                            </a>
+
+                            <% if(product.deleted) {%>
+                                <a href="/admin/restore-product/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
+                                    <i class="material-icons md-delete_forever"></i> Restore
+                                </a>
+                            <%} else {%>
+                                <a href="#" class="btn btn-sm font-sm rounded btn-brand">
+                                    <i class="material-icons md-edit"></i> Edit
+                                </a>
+                                <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
+                                    <i class="material-icons md-delete_forever"></i> Delete
+                                </a>
+                            <%}%>
+                            
                         </div>
                     </div> <!-- row .// -->
                 </article> <!-- itemlist  .// -->

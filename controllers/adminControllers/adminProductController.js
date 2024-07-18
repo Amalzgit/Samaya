@@ -1,11 +1,11 @@
 const Product = require('../../models/productModel')
-const { validationResult } = require('express-validator');
+
 
 
 const loadproductList = async (req, res) => {
 
     try {
-        const products = await Product.find({deleted:false})
+        const products = await Product.find()
        return res.render('product-list', { successMessage: '', errorMessage: '', products });
     } catch (error) {
         console.error('Error loading login page:', error);
@@ -26,10 +26,7 @@ const loadAddproduct = async (req, res) => {
 
 const addproduct = async (req, res) => {
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.render('add-products', { successMessage: '', errorMessage: errors.array() })
-    }
+    
 
     const { name, price, description, category,deleted, status } = req.body;
     const images = req.files.map(file => file.filename);
@@ -37,8 +34,6 @@ const addproduct = async (req, res) => {
     if (images.length < 3) {
         return res.render('add-products', { successMessage: '', errorMessage: "Add min 3 images" })
     }
-
-   
 
     try {
         const newProduct = new Product({
@@ -50,8 +45,9 @@ const addproduct = async (req, res) => {
             deleted,
             status
         });
+        
         await newProduct.save();
-        return res.redirect('/admin/product-list', { successMessage: 'Success', errorMessage: "" })
+        return res.redirect('/admin/product-list')
 
     } catch (error) {
         console.log(error);
@@ -67,16 +63,35 @@ const deleteProduct = async (req,res)=>{
         product.deleted =true;
         await product.save();
 
-        return res.redirect('/admin/product-list',{ successMessage: 'Deleted a Product', errorMessage: ""})
+        return res.redirect('/admin/product-list')
     } catch (error) {
+        console.log(error);
         return res.render('product-list', { successMessage: '', errorMessage: "An error occurd While deleting" })
     }
 
 }
 
+const restoreProduct = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const product = await Product.findById(productId);
+
+        product.deleted = false;
+        await product.save();
+
+        return res.redirect('/admin/product-list');
+        
+    } catch (error) {
+        console.log(error);
+        return res.redirect('/admin/product-list');
+    }
+};
+
+
 module.exports = {
     loadproductList,
     loadAddproduct,
     addproduct,
-    deleteProduct
+    deleteProduct,
+    restoreProduct
 }
