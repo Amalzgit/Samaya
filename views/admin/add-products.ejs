@@ -1,0 +1,85 @@
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Add New Product</h2>
+            <p>Add your Products</p>
+        </div>
+        
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                    <select class="form-select">
+                        <option selected>All category</option>
+                        <!-- <option>Analog Watches</option>
+                        <option>Digital Watches</option>
+                        <option>Mechanical Watches</option>
+                        <option>Chronograph Watches</option> -->
+
+
+                    </select>
+                </div>
+                <div class="col-md-2 col-6">
+                    <input type="date" value="02.05.2022" class="form-control">
+                </div>
+                <div class="col-md-2 col-6">
+                    <select class="form-select">
+                        <option selected>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        <div class="card-body">
+            <% if (successMessage) { %>
+                <div class="alert alert-success">
+                    <%= successMessage %>
+                </div>
+                <% } %>
+                
+            <form action="/admin/add-product" method="post" enctype="multipart/form-data">
+                <article class="itemlist">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <label for="productName" class="form-label">Product Name</label>
+                            <input type="text" id="productName" name="name" class="form-control" placeholder="Enter product name">
+                            <% if (errorMessage && errorMessage.name) { %>
+                                <div class="alert alert-danger"><%= errorMessage.name %></div>
+                            <% } %>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4 col-price">
+                            <label for="productPrice" class="form-label">Price</label>
+                            <input type="text" id="productPrice" name="price" class="form-control" placeholder="Enter price">
+                            <% if (errorMessage && errorMessage.price) { %>
+                                <div class="alert alert-danger"><%= errorMessage.price %></div>
+                            <% } %>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <label for="productDescription" class="form-label">Description</label>
+                            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+                            <% if (errorMessage && errorMessage.description) { %>
+                                <div class="alert alert-danger"><%= errorMessage.description %></div>
+                            <% } %>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <label for="productImage" class="form-label">Product Image</label>
+                            <input type="file" id="productImage" multiple name="images" class="form-control">
+                            <% if (errorMessage && errorMessage.images) { %>
+                                <div class="alert alert-danger"><%= errorMessage.images %></div>
+                            <% } %>
+                        </div>
+                    </div>
+                </article>
+                <div class="row align-items-center mt-3">
+                    <div class="col-lg-12 col-sm-12 col-12 text-end">
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

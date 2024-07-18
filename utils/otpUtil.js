@@ -1,14 +1,15 @@
 const otpGenerator = require('otp-generator');
 const nodemailer = require('nodemailer')
-const OTP = require('../models/otpModel')
-
+if(process.env.NOD_ENV !=='production'){
+    require('dotenv').config();
+}
 
 //transporting the otp to the email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'amal@gmail.com',
-        pass: 'qdot vmev trni dyaj'
+        user: process.env.APP_EMAIL,
+        pass: process.env.APP_EMAIL_PASSWORD
     }
 })
 
@@ -29,6 +30,8 @@ const sendOtpEmail = async (email,otp) =>{
             subject: 'OTP for Registration',
             text: `Your OTP is ${otp} . Please do not share this otp with anyone`
         });
+
+        console.log("email send");
 
     } catch (error) {
 

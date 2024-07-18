@@ -5,11 +5,11 @@ const loadHome = async (req, res) => {
     try {
        
         const userData = await User.findById(req.session.user_id);
-        res.render('userHome', { user: userData });
+        return res.render('userHome', { user: userData });
         
     } catch (error) {
         console.error('Error loading user home:', error);
-        res.render('userHome', { user: null, errorMessage: "An error occurred while loading your home page." });
+       return  res.render('userHome', { user: null, errorMessage: "An error occurred while loading your home page." });
     }
 };
 
