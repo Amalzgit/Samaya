@@ -1,4 +1,4 @@
-const isLogin = async (req, res, next) => {
+const isLogedin = async (req, res, next) => {
     try {
         if (req.session.user_id) {
             next(); // User is logged in, proceed to the next middleware/controller
@@ -7,9 +7,10 @@ const isLogin = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error.message);
-       return res.status(500).send('Internal Server Error'); // Handle the error as needed
+        return res.render('/', { successMessage: '', errorMessage: "An error occurred while logging in" });
     }
 };
+
 const isLogout = async (req, res, next) => {
     try {
         if (req.session.user_id) {
@@ -19,11 +20,11 @@ const isLogout = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error.message);
-       return res.status(500).send('Internal Server Error'); // Handle the error as needed
+        return res.render('/', { successMessage: '', errorMessage: "An error occurred while logging out" });
     }
 };
 
-module.exports ={
-    isLogin,
+module.exports = {
+    isLogedin,
     isLogout
-}
+};

@@ -12,7 +12,7 @@ const loadRegister = async (req, res) => {
 };
 
 const insertUser = async (req, res) => {
-    const { firstName, lastName, email, phone, password, isVerified, isAdmin } = req.body;
+    const { firstName, lastName, email, phone, password, isAdmin } = req.body;
   
     try {
       // Validate request
@@ -34,8 +34,7 @@ const insertUser = async (req, res) => {
         email,
         phone,
         password,
-        isAdmin,
-        isVerified
+        isAdmin
       });
   
       const userData = await newUser.save();

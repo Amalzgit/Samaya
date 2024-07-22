@@ -1,0 +1,219 @@
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Pages
+                <span></span> Account
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <% if (user) { %>
+        <div class="container">
+            <h1><%=user.firstName%><%=user.lastName%></h1>
+            <div class="user-info">
+                <p><strong>First Name:</strong> <%=user.firstName%></p>
+                <p><strong>Last Name:</strong> <%=user.lastName%></p>
+                <p><strong>Email:</strong> <%=user.email%></p>
+                <p><strong>Phone:</strong> <%=user.phone%></p>
+            </div>
+            <hr>
+            <div class="user-actions">
+                <button id="toggleEditSection" class="btn bg-dark text-white" >Edit Information</button>
+                <div id="editSection" class="edit-section hidden">
+                    <hr>
+                    <form method="post" id="formData" action="/user-details">
+                        <div class="mb-3">
+                          <label class="form-label">First Name</label>
+                          <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text" value="<%= user.firstName %>">
+                          <span id="firstNameError" class="error" style="color: red;"></span>
+                        </div>
+                
+                        <div class="mb-3">
+                          <label class="form-label">Last Name</label>
+                          <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text" value="<%= user.lastName %>">
+                          <span id="lastNameError" class="error" style="color: red;"></span>
+                        </div>
+                
+                        <div class="mb-3">
+                          <label class="form-label">Email</label>
+                          <input class="form-control" id="email" name="email" placeholder="Your email" type="email" value="<%= user.email %>">
+                          <span id="emailError" class="error" style="color: red;"></span>
+                        </div>
+                
+                        <div class="mb-3">
+                          <label class="form-label">Phone</label>
+                          <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" value="<%= user.phone %>">
+                          <span id="phoneError" class="error" style="color: red;"></span>
+                        </div>
+                
+                        <div class="mb-3">
+                          <label class="form-label">New Password</label>
+                          <div class="input-with-icon">
+                            <input class="form-control" id="newPassword" name="newPassword" placeholder="New Password" type="password">
+                            <span class="toggle-password-icon" id="toggleNewPassword">
+                              <i class="fa fa-eye" aria-hidden="true"></i>
+                            </span>
+                          </div>
+                          <span id="newPasswordError" class="error" style="color: red;"></span>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <div class="input-with-icon">
+                              <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
+                              <span class="toggle-password-icon" id="toggleConfirmPassword">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                              </span>
+                            </div>
+                            <span id="confirmPasswordError" class="error" style="color: red;"></span>
+                          </div>
+                          
+                
+                        <div class="mb-4">
+                          <button type="submit" class="btn bg-dark text-white">Save Changes</button>
+                        </div>
+                      </form>
+                </div>
+            </div>
+        </div>
+        <% } else { %>
+                    <p>Please login</p>
+            <% } %>
+        
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleEditSectionButton = document.getElementById('toggleEditSection');
+      const editSection = document.getElementById('editSection');
+  
+      toggleEditSectionButton.addEventListener('click', function() {
+        editSection.classList.toggle('hidden');
+      });
+  
+      function togglePasswordVisibility(passwordFieldId, toggleButtonId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const toggleButton = document.getElementById(toggleButtonId);
+  
+        toggleButton.addEventListener('click', function() {
+          if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleButton.textContent = 'Hide';
+          } else {
+            passwordField.type = 'password';
+            toggleButton.textContent = 'Show';
+          }
+        });
+      }
+  
+      togglePasswordVisibility('newPassword', 'toggleNewPassword');
+      togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+    });
+  </script>
+  
+  
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const firstNameInput = document.getElementById('firstName');
+      const lastNameInput = document.getElementById('lastName');
+      const mobileInput = document.getElementById('phone');
+      const emailInput = document.getElementById('email');
+      const newPasswordInput = document.getElementById('newPassword');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+  
+      const firstNameError = document.getElementById('firstNameError');
+      const lastNameError = document.getElementById('lastNameError');
+      const mobileError = document.getElementById('phoneError');
+      const emailError = document.getElementById('emailError');
+      const newPasswordError = document.getElementById('newPasswordError');
+      const confirmPasswordError = document.getElementById('confirmPasswordError');
+  
+      const validateFirstName = () => {
+        if (firstNameInput.value.trim() === '') {
+          firstNameError.textContent = '* First name is required';
+          return false;
+        } else {
+          firstNameError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateLastName = () => {
+        if (lastNameInput.value.trim() === '') {
+          lastNameError.textContent = '* Last name is required';
+          return false;
+        } else {
+          lastNameError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateMobile = () => {
+        const mobileRegex = /^[0-9]{10}$/;
+        if (mobileInput.value.trim() === '') {
+          mobileError.textContent = '* Mobile number is required';
+          return false;
+        } else if (!mobileRegex.test(mobileInput.value.trim())) {
+          mobileError.textContent = '* Enter a valid mobile number';
+          return false;
+        } else {
+          mobileError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateEmail = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailInput.value.trim() === '') {
+          emailError.textContent = '* Email is required';
+          return false;
+        } else if (!emailRegex.test(emailInput.value.trim())) {
+          emailError.textContent = '* Enter a valid email';
+          return false;
+        } else {
+          emailError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateNewPassword = () => {
+         if (newPasswordInput.value.trim().length < 0) {
+          newPasswordError.textContent = '* Password should be at least 4 characters';
+          return false;
+        } else {
+          newPasswordError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateConfirmPassword = () => {
+         if (confirmPasswordInput.value.trim() !== newPasswordInput.value.trim()) {
+          confirmPasswordError.textContent = '* Passwords do not match';
+          return false;
+        } else {
+          confirmPasswordError.textContent = '';
+          return true;
+        }
+      };
+  
+      firstNameInput.addEventListener('input', validateFirstName);
+      lastNameInput.addEventListener('input', validateLastName);
+      mobileInput.addEventListener('input', validateMobile);
+      emailInput.addEventListener('input', validateEmail);
+      newPasswordInput.addEventListener('input', validateNewPassword);
+      confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+  
+      const form = document.getElementById('formData');
+  
+      form.addEventListener('submit', (event) => {
+        if (!validateFirstName() || !validateLastName() || !validateMobile() || !validateEmail() || !validateNewPassword() || !validateConfirmPassword()) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+  

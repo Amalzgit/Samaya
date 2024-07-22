@@ -40,10 +40,12 @@ const addCategory = async (req, res) => {
 
 const loadEditCategory =async(req,res)=>{
     try {
-        const category = await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.categoryId);
+
         if (!category) {
-            return res.redirect('/admin/edit-categories'); // Redirect if category not found
+            return res.redirect('/admin/Category');
         }
+
         res.render('edit-categories', { category, successMessage: '', errorMessage: '' });
 
     } catch (error) {
@@ -53,21 +55,27 @@ const loadEditCategory =async(req,res)=>{
 }
 const editCategory = async(req,res)=>{
     try {
-        const { name, deleted, createdAt, description } = req.body;
-        const categoryId = req.params.id;
+        const { name, deleted, description } = req.body;
+        // console.log(name);
+        // console.log(deleted);
+        // console.log(description);
 
-        if (!name || !createdAt || !description) {
-            return res.render('edit-categories', { category: req.body, successMessage: '',errorMessage: 'All fields are required' });
+
+        const categoryId = req.params.categoryId;
+
+        if (!name || !description) {
+            return res.redirect('/admin/categories')
         }
+       
 
-        const updatedCategory = await Category.findByIdAndUpdate(categoryId,{
+         await Category.findByIdAndUpdate(categoryId,{
             name,
             deleted,
-            createdAt,
             description
-        },{new:true})
+        })
        return res.redirect('/admin/categories');
     } catch (error) {
+        console.log(error);
         res.render('edit-categories', {category: req.body,successMessage: '', errorMessage: 'An error occurred while updating the category' });
     }
 }
@@ -83,7 +91,7 @@ const deleteCategory =async(req,res)=>{
 
     }catch(error){
         console.log(error);
-        return res.render('Categories', { successMessage: '', errorMessage: "An error occurd While deleting" })
+        return res.redirect('/admin/Categories')
     }
 }
 
@@ -97,7 +105,7 @@ const restoreCategory =async (req,res)=>{
         return res.redirect('/admin/Categories')
     } catch (error) {
         console.log(error);
-        return res.render('Categories', { successMessage: '', errorMessage: "An error occurd While restoring" })
+        return res.redirect('/admin/Categories')
     }
 }
 

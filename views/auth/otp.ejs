@@ -49,85 +49,87 @@
   </main>
   <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
   
-   <script>
-  const startTimer = (n) => {
-    if (n <= 0) {
-      document.getElementById("countdown").textContent = "Time's up";
-      document.getElementById("verifyButton").style.display = "none";
-      document.getElementById("resendContainer").style.display = "block";
-      localStorage.removeItem("remainingTime");
-    } else {
-      n--;
-      document.getElementById("countdown").textContent = `Time remaining: ${n} seconds`;
-      localStorage.setItem("remainingTime", n);
-      setTimeout(() => {
-        startTimer(n);
-      }, 1000);
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const savedTime = localStorage.getItem("remainingTime");
-    if (savedTime !== null) {
-      startTimer(parseInt(savedTime, 10));
-    } else {
-      startTimer(60);
-    }
-
-    const resendButton = document.getElementById("resendotp");
-
-    resendButton.addEventListener("click", () => {
-      fetch("http://localhost:3000/resendOtp", {})
-        .then((response) => {
-          if (response.status !== 200) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
+  <script>
+    const startTimer = (n) => {
+      if (n <= 0) {
+        document.getElementById("countdown").textContent = "Time's up";
+        document.getElementById("verifyButton").style.display = "none";
+        document.getElementById("resendContainer").style.display = "block";
+        sessionStorage.removeItem("remainingTime");
+      } else {
+        n--;
+        document.getElementById("countdown").textContent = `Time remaining: ${n} seconds`;
+        sessionStorage.setItem("remainingTime", n);
+        setTimeout(() => {
+          startTimer(n);
+        }, 1000);
+      }
+    };
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      sessionStorage.removeItem("remainingTime"); // Clear remaining time on page load
+  
+      const savedTime = sessionStorage.getItem("remainingTime");
+      if (savedTime !== null) {
+        startTimer(parseInt(savedTime, 10));
+      } else {
+        startTimer(60);
+      }
+  
+      const resendButton = document.getElementById("resendotp");
+  
+      resendButton.addEventListener("click", () => {
+        fetch("http://localhost:3000/resendOtp", {})
+          .then((response) => {
+            if (response.status !== 200) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            sessionStorage.removeItem("remainingTime"); // Clear the remaining time
+            startTimer(60);
+            document.getElementById("verifyButton").style.display = "block";
+            document.getElementById("resendContainer").style.display = "none";
+          })
+          .catch((error) => {
+            console.error("There was a problem with the fetch operation:", error);
+          });
+      });
+  
+      const verifyButton = document.getElementById("verifyButton");
+  
+      verifyButton.addEventListener("click", () => {
+        const otp = document.getElementById("otpInput").value;
+        const result = document.getElementById("errorInvalid");
+  
+        console.log("This is message from front end:", otp);
+  
+        fetch("http://localhost:3000/verifyOtp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ otp }),
         })
-        .then((data) => {
-          startTimer(60);
-          document.getElementById("verifyButton").style.display = "block";
-          document.getElementById("resendContainer").style.display = "none";
-        })
-        .catch((error) => {
-          console.error("There was a problem with the fetch operation:", error);
-        });
-    });
-
-    const verifyButton = document.getElementById("verifyButton");
-
-    verifyButton.addEventListener("click", () => {
-      const otp = document.getElementById("otpInput").value;
-      const result = document.getElementById("errorInvalid");
-
-      console.log("This is message from front end:", otp);
-
-      fetch("http://localhost:3000/verifyOtp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ otp }),
-      })
-        .then((response) => {
-          if (response.status === 401) {
+          .then((response) => {
+            if (response.status === 401) {
+              result.style.display = "block";
+              result.innerText = "Invalid OTP";
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              window.location.href = "http://localhost:3000/login";
+            }
+          })
+          .catch((error) => {
+            console.log("Error while fetching the OTP data:", error.message);
             result.style.display = "block";
-            result.innerText = "Invalid OTP";
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data.success) {
-            window.location.href = "http://localhost:3000/login";
-          }
-        })
-        .catch((error) => {
-          console.log("Error while fetching the OTP data:", error.message);
-          result.style.display = "block";
-          result.innerText = "An error occurred. Please try again.";
-        });
+            result.innerText = "An error occurred. Please try again.";
+          });
+      });
     });
-  });
-</script>
-
+  </script>
   

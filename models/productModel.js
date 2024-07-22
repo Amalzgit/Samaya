@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema
  const productSchema =new mongoose.Schema({
      name: {
           type: String,
@@ -18,22 +19,15 @@ const mongoose = require('mongoose');
           required: true
         },
         category: {
-          type: String,
-          default: 'All category'
-        },
-        status: {
-          type: String,
-          enum: ['Active', 'Disabled', 'Show all'],
-          default: 'Active'
-        },
+          type: Schema.Types.ObjectId,
+          ref: 'Category' 
+      },
+
         deleted: {
            type: Boolean, 
            default: false
          },
-        dateAdded: {
-          type: Date,
-          default: Date.now
-        }
-      });
+        
+      },{timestamps:true});
       
  module.exports =mongoose.model('products',productSchema)

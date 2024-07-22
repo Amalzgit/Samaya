@@ -1,6 +1,6 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
-const config = require('../../config/config');
+const config = require('../../config/Sessionconfig');
 const path = require('path');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -37,7 +37,7 @@ auth_route.set('view engine', 'ejs')
 // Routes
 auth_route.get('/login', loginValidater,  authrise.isUser, auth.isLogout, loginController.loginLoad);
 auth_route.post('/login', loginValidater,  authrise.isUser, auth.isLogout, loginController.verifyLogin);
-auth_route.get('/logout', auth.isLogin, loginController.Logout);
+auth_route.get('/logout', auth.isLogedin, loginController.Logout);
 auth_route.use(otp_route);
 auth_route.use(register_route);
 // Fallback route for unmatched routes

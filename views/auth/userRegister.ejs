@@ -84,7 +84,9 @@
 </section>
 
 <script>
-
+window.addEventListener("submit", () => {
+    sessionStorage.clear();
+  })
 
   document.addEventListener("DOMContentLoaded", () => {
     const firstNameInput = document.getElementById('firstName');
