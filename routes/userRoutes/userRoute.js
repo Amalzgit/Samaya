@@ -1,12 +1,13 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
 const userController = require('../../controllers/userController');
-const auth = require('../../middleware/authMiddleware');
-const authrise = require('../../middleware/autheriseMiddleare');
+// const auth = require('../../middleware/authMiddleware');
+// const authrise = require('../../middleware/autheriseMiddleare');
 const session = require('express-session');
 const path = require('path');
-const config = require('../../config/config');
+const config = require('../../config/Sessionconfig');
 const shop_route = require('./shopRoute');
+const userdetials_route = require('./userdetialsRoute');
 const user_route = express();
 
 // Session middleware configuration
@@ -28,6 +29,8 @@ user_route.set('view engine', 'ejs')
 // PUBLIC ROUTES
 user_route.get('/', userController.loadHome);
 user_route.use(shop_route)
+user_route.use(userdetials_route)
 // PRIVATE ROUTES
+user_route.use(userdetials_route)
 
 module.exports = user_route;

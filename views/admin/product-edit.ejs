@@ -6,31 +6,6 @@
         </div>
     </div>
     <div class="card mb-4">
-        <header class="card-header">
-            <div class="row align-items-center">
-                <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                    <select class="form-select">
-                        <option selected>All category</option>
-                        <!-- <option>Analog Watches</option>
-                        <option>Digital Watches</option>
-                        <option>Mechanical Watches</option>
-                        <option>Chronograph Watches</option> -->
-                    </select>
-                </div>
-                <div class="col-md-2 col-6">
-                    <input type="date" value="02.05.2022" class="form-control">
-                </div>
-                <div class="col-md-2 col-6">
-                    <select class="form-select">
-                        <option selected>Status</option>
-                        <option>Active</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
-                    </select>
-                </div>
-            </div>
-        </header>
-
         <div class="card-body">
             <% if (successMessage) { %>
                 <div class="alert alert-success">
@@ -44,49 +19,40 @@
                 </div>
             <% } %>
 
-            <form id="editProductForm" action="/admin/edit-product" method="post" enctype="multipart/form-data">
+            <form id="editProductForm" action="/admin/product-edit/<%= product._id %>" method="post" enctype="multipart/form-data">
                 <article class="itemlist">
                     <div class="row align-items-center">
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                             <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" id="productName" name="name" class="form-control" placeholder="Enter product name">
+                            <input type="text" id="productName" name="name" class="form-control" value="<%= product.name %>" placeholder="Enter product name">
                             <div id="productNameError" class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-2 col-sm-2 col-4 col-price">
                             <label for="productPrice" class="form-label">Price</label>
-                            <input type="text" id="productPrice" name="price" class="form-control" placeholder="Enter price">
+                            <input type="text" id="productPrice" name="price" class="form-control" value="<%= product.price %>" placeholder="Enter price">
                             <div id="productPriceError" class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                             <label for="productDescription" class="form-label">Description</label>
-                            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+                            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"><%= product.description %></textarea>
                             <div id="productDescriptionError" class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                             <label for="productCategory" class="form-label">Category</label>
                             <select id="productCategory" name="category" class="form-select">
-                                <option selected>Select Category</option>
-                                <!-- <option>Analog Watches</option>
-                                <option>Digital Watches</option>
-                                <option>Mechanical Watches</option>
-                                <option>Chronograph Watches</option> -->
+                                <option value="" disabled selected>Select Category</option>
+                                <% for (let category of categories) { %>
+                                    <option value="<%= category._id %>"><%= category.name %></option>
+                               
+                                <% } %>
                             </select>
                             <div id="productCategoryError" class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productStatus" class="form-label">Status</label>
-                            <select id="productStatus" name="status" class="form-select">
-                                <option selected>Select Status</option>
-                                <option>Active</option>
-                                <option>Disabled</option>
-                            </select>
-                            <div id="productStatusError" class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                             <label for="productDeleted" class="form-label">Deleted</label>
                             <select id="productDeleted" name="deleted" class="form-select">
-                                <option selected>No</option>
-                                <option>Yes</option>
+                                <option value="false" <%= product.deleted === false ? 'selected' : '' %>>No</option>
+                                <option value="true" <%= product.deleted === true ? 'selected' : '' %>>Yes</option>
                             </select>
                             <div id="productDeletedError" class="invalid-feedback"></div>
                         </div>
@@ -103,117 +69,127 @@
                     </div>
                 </div>
             </form>
+            
         </div>
     </div>
 </section>
 
 <script>
+
+
     document.addEventListener("DOMContentLoaded", () => {
+      const categoryInput = document.getElementById('category');
+      const nameInput = document.getElementById('name');
+      const priceInput = document.getElementById('price');
+      const descriptionInput = document.getElementById('description');
+      const imagesInput = document.getElementById('images');
+  
+  
+  
+  
+      const categoryError = document.getElementById('categoryError');
+      const nameError = document.getElementById('nameError');
+      const priceError = document.getElementById('priceError');
+      const descriptionError = document.getElementById('descriptionError');
+      const imagesError = document.getElementById('imagesError');
+  
+      const validatecategory = () => {
+        if (Input.value.trim() === '') {
+          Error.textContent = '* Category is required';
+          return false;
+        } else {
+          Error.textContent = '';
+          return true;
+        }
+      }
+  
+      const validatename = () => {
+        if (nameInput.value.trim() === '') {
+          nameError.textContent = '* Last name required';
+          return false;
+        } else {
+          nameError.textContent = '';
+          return true;
+        }
+      }
+  
+      const validateprice = () => {
+        const priceInput = document.getElementById('priceInput');
+    const priceError = document.getElementById('priceError');
+    const priceRegex = /^[0-9]+(\.[0-9]{1,2})?$/; 
 
-        const nameInput = document.getElementById('productName');
-        const priceInput = document.getElementById('productPrice');
-        const descriptionInput = document.getElementById('productDescription');
-        const categoryInput = document.getElementById('productCategory');
-        const statusInput = document.getElementById('productStatus');
-        const deletedInput = document.getElementById('productDeleted');
-        const imageInput = document.getElementById('productImage');
+    const priceValue = priceInput.value.trim();
 
-        const nameError = document.getElementById('productNameError');
-        const priceError = document.getElementById('productPriceError');
-        const descriptionError = document.getElementById('productDescriptionError');
-        const categoryError = document.getElementById('productCategoryError');
-        const statusError = document.getElementById('productStatusError');
-        const deletedError = document.getElementById('productDeletedError');
-        const imageError = document.getElementById('productImageError');
+    if (priceValue === '') {
+        priceError.textContent = '* Price is required';
+        return false;
+    } else if (!priceRegex.test(priceValue)) {
+        priceError.textContent = '* Enter a valid price ';
+        return false;
+    } else if (parseFloat(priceValue) < 0) {
+        priceError.textContent = '* Price cannot be negative';
+        return false;
+    } else {
+        priceError.textContent = '';
+        return true;
+    }
+      }
+  
+      const validatedescription = () => {
+        if (Input.value.trim() === '') {
+          Error.textContent = '* Description is  required';
+          return false;
+        } else {
+          Error.textContent = '';
+          return true;
+        }
+      }
+  
+      const validateimages = () => {
+        const imagesInput = document.getElementById('imagesInput');
+    const imagesError = document.getElementById('imagesError'); 
+    
+    // List of allowed file extensions
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
 
-        const validateName = () => {
-            if (nameInput.value.trim() === '') {
-                nameError.textContent = '* Product name is required';
-                return false;
-            } else {
-                nameError.textContent = '';
-                return true;
-            }
-        };
+    if (imagesInput.files.length === 0) {
+        imagesError.textContent = '* Images are required';
+        return false;
+    }
 
-        const validatePrice = () => {
-            const priceRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
-            if (priceInput.value.trim() === '') {
-                priceError.textContent = '* Price is required';
-                return false;
-            } else if (!priceRegex.test(priceInput.value.trim())) {
-                priceError.textContent = '* Enter a valid price';
-                return false;
-            } else {
-                priceError.textContent = '';
-                return true;
-            }
-        };
+    for (let i = 0; i < imagesInput.files.length; i++) {
+        const file = imagesInput.files[i];
+        
+        // Check file extension
+        if (!allowedExtensions.exec(file.name)) {
+            imagesError.textContent = '* Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed';
+            return false;
+        }
 
-        const validateDescription = () => {
-            if (descriptionInput.value.trim() === '') {
-                descriptionError.textContent = '* Description is required';
-                return false;
-            } else {
-                descriptionError.textContent = '';
-                return true;
-            }
-        };
+        // Check file size (example: 5MB max size)
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+            imagesError.textContent = `* File size should be less than 5MB. ${file.name} is too large`;
+            return false;
+        }
+    }
 
-        const validateCategory = () => {
-            if (categoryInput.value === 'Select Category') {
-                categoryError.textContent = '* Category is required';
-                return false;
-            } else {
-                categoryError.textContent = '';
-                return true;
-            }
-        };
-
-        const validateStatus = () => {
-            if (statusInput.value === 'Select Status') {
-                statusError.textContent = '* Status is required';
-                return false;
-            } else {
-                statusError.textContent = '';
-                return true;
-            }
-        };
-
-        const validateDeleted = () => {
-            if (deletedInput.value === 'Select') {
-                deletedError.textContent = '* Deleted status is required';
-                return false;
-            } else {
-                deletedError.textContent = '';
-                return true;
-            }
-        };
-
-        const validateImages = () => {
-            if (imageInput.files.length === 0) {
-                imageError.textContent = '* At least one image is required';
-                return false;
-            } else {
-                imageError.textContent = '';
-                return true;
-            }
-        };
-
-        nameInput.addEventListener('input', validateName);
-        priceInput.addEventListener('input', validatePrice);
-        descriptionInput.addEventListener('input', validateDescription);
-        categoryInput.addEventListener('change', validateCategory);
-        statusInput.addEventListener('change', validateStatus);
-        deletedInput.addEventListener('change', validateDeleted);
-        imageInput.addEventListener('change', validateImages);
-
-        const form = document.getElementById('editProductForm');
-
-        form.addEventListener('submit', (event) => {
-            if (!validateName() || !validatePrice() || !validateDescription() || !validateCategory() || !validateStatus() || !validateDeleted() || !validateImages()) {
-                event.preventDefault();
-            }
-        });
+    imagesError.textContent = '';
+    return true;
+      }
+  
+      categoryInput.addEventListener('input', validatecategory);
+      nameInput.addEventListener('input', validatename);
+      priceInput.addEventListener('input', validateprice);
+      descriptionInput.addEventListener('input', validatedescription);
+      imagesInput.addEventListener('input', validateimages);
+  
+      const form = document.getElementById('formData');
+  
+      form.addEventListener('submit', (event) => {
+        if (!validatecategory() || !validatename() || !validateprice() || !validatedescription() || !validateimages()) {
+          event.preventDefault();
+        }
+      });
     });
-</script>
+  </script>

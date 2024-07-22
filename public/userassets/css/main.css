@@ -46,6 +46,9 @@ footer, header, hgroup, menu, nav, section {
 body {
   line-height: 1;
 }
+.hidden {
+  display: none;
+}
 
 ol, ul {
   list-style: none;
@@ -937,7 +940,7 @@ button.submit:hover, button[type='submit']:hover {
 
 .btn.btn-brush, .button.btn-brush {
   background-color: transparent;
-  color: #000;
+  color: #f9f9f9;
   border: 0;
   padding: 14px 80px 14px 65px;
   background-repeat: no-repeat;

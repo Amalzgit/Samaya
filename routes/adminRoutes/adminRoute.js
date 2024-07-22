@@ -1,7 +1,7 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
-const config = require('../../config/config');
-const path = require('path');
+const config = require('../../config/Sessionconfig');
+const Outh = require('../../middleware/autheriseMiddleare');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const adminController = require('../../controllers/adminControllers/adminController');
@@ -31,7 +31,7 @@ admin_route.set('layout', './layouts/adminLayout')
 admin_route.set('view engine', 'ejs')
 
 // Routes
-admin_route.get('/adminhome', adminController.loadAdminHome);
+admin_route.get('/adminhome',Outh.isUser, adminController.loadAdminHome);
 admin_route.use(adminProductRoute);
 admin_route.use(admin_categoryRoute)
 // Fallback route for unmatched routes

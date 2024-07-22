@@ -5,7 +5,7 @@ const auth = require('../../middleware/authMiddleware');
 const authrise = require('../../middleware/autheriseMiddleare');
 const session = require('express-session');
 const path = require('path');
-const config = require('../../config/config');
+const config = require('../../config/Sessionconfig');
 const { registrationValidator } = require('../../middleware/validator');
 
 const register_route = express.Router();
@@ -23,7 +23,7 @@ register_route.use(express.static(path.join(__dirname, '../public')));
 
 
 
-register_route.get('/register', registrationValidator, authrise.isUser, auth.isLogout,registrationController.loadRegister);
-register_route.post('/register', registrationValidator,  authrise.isUser, otpController.generateOtp);
+register_route.get('/register', registrationValidator,  auth.isLogout,registrationController.loadRegister);
+register_route.post('/register', registrationValidator,  otpController.generateOtp);
 
 module.exports =register_route

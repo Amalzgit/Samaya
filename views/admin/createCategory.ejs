@@ -33,3 +33,52 @@
         </div> <!-- cady .// -->
     </div> <!-- card .// -->
 </section> <!-- content-main end// -->
+<script>
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+     
+      const nameInput = document.getElementById('name');
+      const descriptionInput = document.getElementById('description');
+     
+      const nameError = document.getElementById('nameError');
+      const descriptionError = document.getElementById('descriptionError');
+  
+     
+  
+      const validatename = () => {
+        if (nameInput.value.trim() === '') {
+          nameError.textContent = '* Last name required';
+          return false;
+        } else {
+          nameError.textContent = '';
+          return true;
+        }
+      }
+  
+  
+  
+      const validatedescription = () => {
+        if (Input.value.trim() === '') {
+          Error.textContent = '* Description is  required';
+          return false;
+        } else {
+          Error.textContent = '';
+          return true;
+        }
+      }
+  
+      
+  
+      nameInput.addEventListener('input', validatename);
+      descriptionInput.addEventListener('input', validatedescription);
+  
+      const form = document.getElementById('formData');
+  
+      form.addEventListener('submit', (event) => {
+        if ( !validatename() ||  !validatedescription() ) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
