@@ -2,6 +2,7 @@ const User =require('../models/userModel')
 
 
 
+
 const loadUserDetails =async (req,res)=>{
     try {
         const user = await User.findById(req.session.user_id); 

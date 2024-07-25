@@ -55,7 +55,7 @@
         document.getElementById("countdown").textContent = "Time's up";
         document.getElementById("verifyButton").style.display = "none";
         document.getElementById("resendContainer").style.display = "block";
-        sessionStorage.removeItem("remainingTime");
+        // sessionStorage.removeItem("remainingTime");
       } else {
         n--;
         document.getElementById("countdown").textContent = `Time remaining: ${n} seconds`;
@@ -67,7 +67,7 @@
     };
   
     document.addEventListener("DOMContentLoaded", () => {
-      sessionStorage.removeItem("remainingTime"); // Clear remaining time on page load
+      // sessionStorage.removeItem("remainingTime"); // Clear remaining time on page load
   
       const savedTime = sessionStorage.getItem("remainingTime");
       if (savedTime !== null) {
@@ -79,7 +79,7 @@
       const resendButton = document.getElementById("resendotp");
   
       resendButton.addEventListener("click", () => {
-        fetch("http://localhost:3000/resendOtp", {})
+        fetch("/resendOtp", {})
           .then((response) => {
             if (response.status !== 200) {
               throw new Error("Network response was not ok");
@@ -87,7 +87,7 @@
             return response.json();
           })
           .then((data) => {
-            sessionStorage.removeItem("remainingTime"); // Clear the remaining time
+            // sessionStorage.removeItem("remainingTime"); // Clear the remaining time
             startTimer(60);
             document.getElementById("verifyButton").style.display = "block";
             document.getElementById("resendContainer").style.display = "none";
@@ -105,7 +105,7 @@
   
         console.log("This is message from front end:", otp);
   
-        fetch("http://localhost:3000/verifyOtp", {
+        fetch("/verifyOtp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +121,7 @@
           })
           .then((data) => {
             if (data.success) {
-              window.location.href = "http://localhost:3000/login";
+              window.location.href = "/";
             }
           })
           .catch((error) => {

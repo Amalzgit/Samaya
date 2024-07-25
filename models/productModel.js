@@ -22,6 +22,11 @@ const Schema = mongoose.Schema
           type: Schema.Types.ObjectId,
           ref: 'Category' 
       },
+      stock: {
+        type: Number,
+        required: true,
+        min: 0 
+    },
 
         deleted: {
            type: Boolean, 

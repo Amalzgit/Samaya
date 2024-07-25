@@ -1559,6 +1559,23 @@ label {
   color: #242424;
 }
 
+/* COUSTOM  BUTTON */
+
+.custom-link-style {
+  display: inline-block;
+  padding: 10px 20px; 
+  background-color: white; 
+  color: #625a5f;
+  font-size: 18px;
+  text-decoration: none; 
+  border-radius: 5px; 
+}
+
+.custom-link-style:hover,
+.custom-link-style:focus {
+  background-color: white; 
+  color: #fcdc8d; 
+}
 /*COMPONENTS -> SLIDER*/
 .single-animation-wrap.slick-active .slider-animated-1 h1 {
   -webkit-animation-delay: 1.4s;
@@ -1672,19 +1689,19 @@ label {
 }
 
 .hero-slider-1.style-2 .hero-slider-content-2 {
-  padding-left: 300px;
-  padding-top: 100px;
+  padding-left: 150px;
+  padding-top: 40px;
 }
 
 .hero-slider-1.style-2 .single-slider-img {
-  position: absolute;
+  position: relative;
   bottom: 0;
   right: 0;
   top: 80px;
 }
 
 .hero-slider-1.style-2 .single-slider-img img {
-  max-width: 550px;
+  max-width: 700px;
 }
 
 .hero-slider-1.style-2.dot-style-1.dot-style-1-position-1 ul {
@@ -1714,7 +1731,7 @@ label {
 }
 
 .hero-slider-1.style-3 .hero-slider-content-2 {
-  position: absolute;
+  position: relative;
   z-index: 2;
   top: 50%;
   -webkit-transform: translateY(-50%);
@@ -1771,7 +1788,7 @@ label {
 
 .hero-slider-content-2 h3 {
   font-size: 34px;
-  font-weight: 700;
+  font-weight: 400;
   margin: 10px 0 15px;
   line-height: 1;
 }
@@ -1796,6 +1813,7 @@ label {
 
 .single-slider-img {
   position: relative;
+  z-index: 1;
 }
 
 .dot-style-1 ul {
@@ -2373,11 +2391,13 @@ label {
   right: 0;
   bottom: 0;
   z-index: 999999;
-  -webkit-transition: .6s;
-  transition: .6s;
+  -webkit-transition: .5s;
+  transition: .5s;
   margin: 0 auto;
 }
-
+.detail-gallery .img-thumbnail.active {
+  border-color: #f6bd43;
+}
 .preloader img.jump {
   max-height: 100px;
 }
@@ -9327,14 +9347,14 @@ span.fi-rs-apps {
     display: none;
   }
   .home-slider .hero-slider-1.style-2 {
-    height: 400px;
+    height: 100px;
   }
   .home-slider .hero-slider-1.style-2 .hero-slider-content-2 {
     padding-left: 0;
     padding-top: 100px;
   }
   .home-slider .hero-slider-1.style-2 .single-slider-img img {
-    max-width: 400px;
+    max-width: 700px;
   }
   .home-slider .hero-slider-1.style-2 .slider-1-height-2 {
     height: 400px;
@@ -9705,6 +9725,7 @@ span.fi-rs-apps {
     text-align: left;
     padding-left: 15px;
     padding-top: 0;
+    z-index: 2;
   }
   .hero-slider-1.style-3 .hero-slider-content-2 h1 {
     font-size: 18px;
