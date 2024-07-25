@@ -113,7 +113,8 @@ const verifyOtp = async (req, res) => {
 
 
             if (userData) {
-
+                req.session.user_id = userData._id;
+                req.session.isAdmin = false; 
                 return res.status(200).json({ success: true, message: "otp validaton successfull" })
 
             } else {

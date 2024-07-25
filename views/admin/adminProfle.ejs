@@ -1,0 +1,58 @@
+<section class="content-main">
+    <div class="content-header">
+        <div class="admin-details">
+            <h2 class="admin-title ">Admin Profile</h2>
+            <hr>
+            <div class="admin-info">
+                <h5> <%= admin.firstName %> <%= admin.lastName %></h5>
+                <p><strong>E-mail:</strong> <b><%= admin.email %></b></p> 
+               
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <h2 class="content-title card-title">User List</h2>
+        </header>
+        
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <!-- <th>User ID</th> -->
+                        <th>Name</th>
+                        <th>E-mail</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <!-- <td><%= user._id %></td> -->
+                            <td><%= user.firstName %> <%= user.lastName %></td>
+                            <td><%= user.email %></td>
+                            <td>
+                                <% if (user.isBlocked) { %>
+                                    <span class="badge bg-danger">Blocked</span>
+                                <% } else { %>
+                                    <span class="badge bg-success">Active</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                
+                                    <% if (user.isBlocked) { %>
+                                        <a class="badge bg-success" href="/admin/unblock-user/<%= user._id %>">unblock</a>
+                                    <% } else { %>
+                                        <a class="badge bg-danger" href="/admin/block-user/<%= user._id %>">block</a>
+                                    <% } %>
+                                
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

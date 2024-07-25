@@ -1,12 +1,13 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
 const config = require('../../config/Sessionconfig');
-const Outh = require('../../middleware/autheriseMiddleare');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const adminController = require('../../controllers/adminControllers/adminController');
 const adminProductRoute = require('./adminProductRouter');
 const admin_categoryRoute = require('./adminCategoryRouter');
+const noCache = require('../../middleware/noCacheMiddleware');
+const adminProfileRoute = require('./adminProfileRoute');
 
 const admin_route = express();
 
@@ -30,10 +31,25 @@ admin_route.use(expressLayouts)
 admin_route.set('layout', './layouts/adminLayout')
 admin_route.set('view engine', 'ejs')
 
+const isAdmin = (req, res, next) => {
+    if (req.session.user_id) {
+        const isAdmin = req.session.isAdmin;
+        if (isAdmin) {
+            next()
+        }
+        else {
+            return res.redirect('/')
+        }
+    }   
+     res.redirect('/login')
+}
+
+// admin_route.use(isAdmin);
 // Routes
-admin_route.get('/adminhome',Outh.isUser, adminController.loadAdminHome);
+admin_route.get('/adminhome',isAdmin, noCache, adminController.loadAdminHome);
 admin_route.use(adminProductRoute);
-admin_route.use(admin_categoryRoute)
+admin_route.use(admin_categoryRoute);
+admin_route.use(adminProfileRoute)
 // Fallback route for unmatched routes
 
 module.exports = admin_route;

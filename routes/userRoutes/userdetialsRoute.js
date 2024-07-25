@@ -7,4 +7,4 @@ const isUser = require('../../middleware/authMiddleware')
 userdetials_route.get('/user-details',isUser.isLogedin,userDetails.loadUserDetails)
 userdetials_route.post('/user-details',isUser.isLogedin,userDetails.updateUSer)
 
-module.exports =userdetials_route
+module.exports =userdetials_route  

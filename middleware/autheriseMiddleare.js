@@ -1,19 +1,9 @@
-const isUser = (req, res, next) => {
-    const isAdmin = req.session.isAdmin;
-    const currentPath = req.originalUrl;
-
-    if (!isAdmin && currentPath.startsWith('/admin')) {
-        return res.redirect('/'); 
+module.exports= isUser = (req, res, next) => {
+    if (req.session.user_id) {
+        const isAdmin = req.session.isAdmin;
+        if (isAdmin) {
+            return res.redirect('/admin/adminhome');
+        }
     }
-
-    if (isAdmin && !currentPath.startsWith('/')) {
-        return res.redirect('/admin/adminhome'); 
-    }
-
-    next();
+    next()
 }
-
-
-module.exports = {
-    isUser
-};
