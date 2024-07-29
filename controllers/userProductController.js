@@ -9,7 +9,9 @@ const getProductById = async (req,res)=>{
         if(!product){
             return res.render('shop',{message:"product not found"});
         }
-        return res.render('ProductDetails',{product})
+        const relatedProducts = await Product.find({ category: product.category, _id: { $ne: productId } }).limit(4);
+
+        res.render('ProductDetails', { product, relatedProducts });
     } catch (error) {
         console.log('Error getting product',error);
         return res.render('shop',{})

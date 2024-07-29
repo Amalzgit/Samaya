@@ -1,3 +1,5 @@
+
+
 <section class="content-main">
     <div class="content-header">
         <div class="admin-details">
@@ -10,49 +12,176 @@
             </div>
         </div>
     </div>
-
-    <div class="card mb-4">
-        <header class="card-header">
-            <h2 class="content-title card-title">User List</h2>
-        </header>
+    <div class="user-actions">
+        <button id="toggleEditSection" class="btn bg-dark text-white" >Edit Information</button>
+        <div id="editSection" class="edit-section hidden">
+            <hr>
+            <form method="post" id="formData" action="/admin/update-admin">
+                <div class="mb-3">
+                  <label class="form-label">First Name</label>
+                  <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text" value="<%= admin.firstName %>">
+                  <span id="firstNameError" class="error" style="color: red;"></span>
+                </div>
         
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <!-- <th>User ID</th> -->
-                        <th>Name</th>
-                        <th>E-mail</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% users.forEach(user => { %>
-                        <tr>
-                            <!-- <td><%= user._id %></td> -->
-                            <td><%= user.firstName %> <%= user.lastName %></td>
-                            <td><%= user.email %></td>
-                            <td>
-                                <% if (user.isBlocked) { %>
-                                    <span class="badge bg-danger">Blocked</span>
-                                <% } else { %>
-                                    <span class="badge bg-success">Active</span>
-                                <% } %>
-                            </td>
-                            <td>
-                                
-                                    <% if (user.isBlocked) { %>
-                                        <a class="badge bg-success" href="/admin/unblock-user/<%= user._id %>">unblock</a>
-                                    <% } else { %>
-                                        <a class="badge bg-danger" href="/admin/block-user/<%= user._id %>">block</a>
-                                    <% } %>
-                                
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                <div class="mb-3">
+                  <label class="form-label">Last Name</label>
+                  <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text" value="<%= admin.lastName %>">
+                  <span id="lastNameError" class="error" style="color: red;"></span>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input class="form-control" id="email" name="email" placeholder="Your email" type="email" value="<%= admin.email %>">
+                  <span id="emailError" class="error" style="color: red;"></span>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Phone</label>
+                  <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" value="<%= admin.phone %>">
+                  <span id="phoneError" class="error" style="color: red;"></span>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">New Password</label>
+                  <div class="input-with-icon">
+                    <input class="form-control" id="newPassword" name="newPassword" placeholder="New Password" type="password">
+                    <span class="toggle-password-icon" id="toggleNewPassword">
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                  <span id="newPasswordError" class="error" style="color: red;"></span>
+                </div>
+        
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <div class="input-with-icon">
+                      <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
+                      <span class="toggle-password-icon" id="toggleConfirmPassword">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                    <span id="confirmPasswordError" class="error" style="color: red;"></span>
+                  </div>
+                  
+        
+                <div class="mb-4">
+                  <button type="submit" class="btn bg-dark text-white">Save Changes</button>
+                </div>
+              </form>
         </div>
     </div>
 </section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleEditSectionButton = document.getElementById('toggleEditSection');
+  const editSection = document.getElementById('editSection');
+
+  toggleEditSectionButton.addEventListener('click', function() {
+    editSection.classList.toggle('hidden');
+  });
+})
+</script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const firstNameInput = document.getElementById('firstName');
+      const lastNameInput = document.getElementById('lastName');
+      const mobileInput = document.getElementById('phone');
+      const emailInput = document.getElementById('email');
+      const newPasswordInput = document.getElementById('newPassword');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+  
+      const firstNameError = document.getElementById('firstNameError');
+      const lastNameError = document.getElementById('lastNameError');
+      const mobileError = document.getElementById('phoneError');
+      const emailError = document.getElementById('emailError');
+      const newPasswordError = document.getElementById('newPasswordError');
+      const confirmPasswordError = document.getElementById('confirmPasswordError');
+  
+      const validateFirstName = () => {
+        if (firstNameInput.value.trim() === '') {
+          firstNameError.textContent = '* First name is required';
+          return false;
+        } else {
+          firstNameError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateLastName = () => {
+        if (lastNameInput.value.trim() === '') {
+          lastNameError.textContent = '* Last name is required';
+          return false;
+        } else {
+          lastNameError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateMobile = () => {
+        const mobileRegex = /^[0-9]{10}$/;
+        if (mobileInput.value.trim() === '') {
+          mobileError.textContent = '* Mobile number is required';
+          return false;
+        } else if (!mobileRegex.test(mobileInput.value.trim())) {
+          mobileError.textContent = '* Enter a valid mobile number';
+          return false;
+        } else {
+          mobileError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateEmail = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailInput.value.trim() === '') {
+          emailError.textContent = '* Email is required';
+          return false;
+        } else if (!emailRegex.test(emailInput.value.trim())) {
+          emailError.textContent = '* Enter a valid email';
+          return false;
+        } else {
+          emailError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateNewPassword = () => {
+         if (newPasswordInput.value.trim().length < 0) {
+          newPasswordError.textContent = '* Password should be at least 4 characters';
+          return false;
+        } else {
+          newPasswordError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateConfirmPassword = () => {
+         if (confirmPasswordInput.value.trim() !== newPasswordInput.value.trim()) {
+          confirmPasswordError.textContent = '* Passwords do not match';
+          return false;
+        } else {
+          confirmPasswordError.textContent = '';
+          return true;
+        }
+      };
+  
+      firstNameInput.addEventListener('input', validateFirstName);
+      lastNameInput.addEventListener('input', validateLastName);
+      mobileInput.addEventListener('input', validateMobile);
+      emailInput.addEventListener('input', validateEmail);
+      newPasswordInput.addEventListener('input', validateNewPassword);
+      confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+  
+      const form = document.getElementById('formData');
+  
+      form.addEventListener('submit', (event) => {
+        if (!validateFirstName() || !validateLastName() || !validateMobile() || !validateEmail() || !validateNewPassword() || !validateConfirmPassword()) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+  

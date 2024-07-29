@@ -1821,7 +1821,7 @@ textarea.form-control {
 }
 
 .order-tracking .steps .step.completed .step-icon:hover {
-  background-color: #;
+  background-color: black;
 }
 
 @media (max-width: 576px) {
@@ -4577,7 +4577,11 @@ body.dark .dropdown-menu .dropdown-item.text-danger {
     padding: 5px 4px;
   }
 }
-
+#imagePreviewContainer img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
 @media all and (max-width: 480px) {
   .table-responsive table {
     min-width: unset;

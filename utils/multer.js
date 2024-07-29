@@ -1,18 +1,35 @@
+
 const multer = require('multer');
 
-
-const storage  = multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null,'uploads/products');
+const productStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/products');
     },
-    filename:(req,file,cb)=>{
-        cb(null,Date.now()+'-'+ file.originalname);
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
 
-const upload =multer({
-    storage:storage,
-    limits:{fileSize: 1024 *1024 * 5 }
+const brandStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/brands');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
 });
 
-module.exports =upload
+const uploadProduct = multer({
+    storage: productStorage,
+    limits: { fileSize: 1024 * 1024 * 5 } 
+});
+
+const uploadBrand = multer({
+    storage: brandStorage,
+    limits: { fileSize: 1024 * 1024 * 5 } 
+});
+
+module.exports = {
+    uploadProduct,
+    uploadBrand
+};

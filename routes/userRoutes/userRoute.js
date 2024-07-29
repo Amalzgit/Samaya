@@ -38,6 +38,8 @@ const isUser = (req, res, next) => {
 }
 
 
+
+
 // PUBLIC ROUTES
 user_route.get('/', noCache, isUser, userController.loadHome);
 user_route.use(shop_route)

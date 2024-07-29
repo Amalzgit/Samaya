@@ -2,7 +2,6 @@ const express = require('express');
 const registrationController = require('../../controllers/registrationController');
 const otpController =require('../../controllers/otpController')
 const auth = require('../../middleware/authMiddleware');
-const authrise = require('../../middleware/autheriseMiddleare');
 const session = require('express-session');
 const path = require('path');
 const config = require('../../config/Sessionconfig');

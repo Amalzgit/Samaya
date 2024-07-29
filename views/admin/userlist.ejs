@@ -1,0 +1,69 @@
+<section class="container-fluid my-4">
+    <div class="card mb-4">
+        <header class="card-header">
+            <h2 class="content-title card-title">User List</h2>
+        </header>
+        
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <!-- <th>User ID</th> -->
+                        <th>Name</th>
+                        <th>E-mail</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <!-- <td><%= user._id %></td> -->
+                            <td><%= user.firstName %> <%= user.lastName %></td>
+                            <td><%= user.email %></td>
+                            <td>
+                                <% if (user.isBlocked) { %>
+                                    <span class="badge bg-danger">Blocked</span>
+                                <% } else { %>
+                                    <span class="badge bg-success">Active</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (user.isBlocked) { %>
+                                    <a class="badge bg-success" href="/admin/unblock-user/<%= user._id %>">unblock</a>
+                                <% } else { %>
+                                    <a class="badge bg-danger" href="/admin/block-user/<%= user._id %>">block</a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function togglePasswordVisibility(passwordFieldId, toggleButtonId) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const toggleButton = document.getElementById(toggleButtonId);
+
+            toggleButton.addEventListener('click', function() {
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    toggleButton.textContent = 'Hide';
+                } else {
+                    passwordField.type = 'password';
+                    toggleButton.textContent = 'Show';
+                }
+            });
+        }
+
+        togglePasswordVisibility('newPassword', 'toggleNewPassword');
+        togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+    });
+</script>

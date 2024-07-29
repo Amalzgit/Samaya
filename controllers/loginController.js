@@ -26,8 +26,8 @@ const verifyLogin = async (req, res) => {
             const passwordMatch = await bcrypt.compare(password, userData.password);
 
             if (passwordMatch) {
-                if (userData.isVerified === 0) {
-                    return res.render('userLogin', { successMessage: "Successfully logged in. Please verify your email.",errorMessage:'' });
+                if (userData.isBlocked == true) {
+                    return res.render('userLogin', { successMessage: "",errorMessage:'User is blocked' });
                 } else {
                     if (userData.isAdmin) {
                         req.session.user_id = userData._id;

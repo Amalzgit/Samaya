@@ -3,7 +3,7 @@ const Product = require('../models/productModel');
 
 const loadHome = async (req, res) => {
     try {
-        const products = await Product.find({})
+        const products = await Product.find({deleted:false})
             .populate({
                 path: 'category',
                 match: { 'deleted': false } 

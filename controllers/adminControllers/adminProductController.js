@@ -1,5 +1,6 @@
 const Product = require('../../models/productModel')
-const Category =require('../../models/catogaryModel')
+const Category =require('../../models/catogaryModel');
+const { validationResult } = require('express-validator');
 
 
 
@@ -34,67 +35,122 @@ const loadAddproduct = async (req, res) => {
     try {
       return  res.render('add-products', { products,categories,successMessage: '', errorMessage: '' });
     } catch (error) {
+        const categories = await Category.find({deleted:false})
+        const products = await Product.find().populate('category')
         console.error('Error loading login page:', error);
-       return res.render('add-products', { successMessage: '', errorMessage: "error loading login page" });
+       return res.render('add-products', {  products,categories, successMessage: '', errorMessage: "error loading login page" });
     }
 
 }
 
 const addproduct = async (req, res) => {
-    const categories = await Category.find({deleted:false})
-    const products = await Product.find().populate('category')  
-    
-
-    const { name, price, description, category,deleted,stock} = req.body;
+    const categories = await Category.find({ deleted: false });
+    const products = await Product.find().populate('category');
+  
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.render('add-products', { products, categories, successMessage: '', errorMessage: errors.array()[0] });
+    }
+  
+    const {
+      name,
+      price,
+      description,
+      category,
+      deleted,
+      stock,
+      brand,
+      caseMaterial,
+      crystalType,
+      dialColor,
+      hourMarkers,
+      handType,
+      bezelType,
+      caseShape,
+      additionalDesignElements,
+      powerReserve,
+      warrantyPeriod,
+      certifications
+    } = req.body;
+  
     const images = req.files.map(file => file.filename);
-// console.log('category _id:',category)
+  
     if (images.length < 3) {
-        return res.render('add-products', {products,categories, successMessage: '', errorMessage: "Add min 3 images" })
+      return res.render('add-products', { products, categories, successMessage: '', errorMessage: "Add min 3 images" });
     }
-
+  
     try {
-        const newProduct = new Product({
-            name,
-            price,
-            description,
-            images,
-            category,
-            stock,
-            deleted,
-            // status
-        });
-        
-        await newProduct.save();
-        return res.redirect('/admin/product-list')
-
+      const newProduct = new Product({
+        name,
+        price,
+        description,
+        images,
+        category,
+        stock,
+        deleted,
+        brand,
+        caseMaterial,
+        crystalType,
+        dialColor,
+        hourMarkers,
+        handType,
+        bezelType,
+        caseShape,
+        additionalDesignElements,
+        powerReserve,
+        warrantyPeriod,
+        certifications
+      });
+  
+      await newProduct.save();
+      return res.redirect('/admin/product-list');
     } catch (error) {
-        console.log(error);
-        return res.render('add-products', { successMessage: '', errorMessage: "An error occurd" })
+      const categories = await Category.find({ deleted: false });
+      const products = await Product.find().populate('category');
+      console.log(error);
+      return res.render('add-products', { products, categories, successMessage: '', errorMessage: "An error occurred" });
     }
-}
-const loadEditProduct = async (req,res)=>{
+  };
+  
+const loadEditProduct = async (req, res) => {
     try {
-        const categories =await Category.find({deleted:false})
-        const product= await Product.findById(req.params.productId).populate('category');
-        // console.log(product);
-        if(!product){
-
-            return res.render('product-edit',{ successMessage: '', errorMessage: "Product not found"})
+        const categories = await Category.find({ deleted: false });
+        const product = await Product.findById(req.params.productId);
         
+        // Debugging logs
+        console.log('Product:', product);
+        console.log('Categories:', categories);
+
+        if (!product) {
+            return res.render('product-edit', {
+                product,
+                categories,
+                successMessage: '',
+                errorMessage: 'Product not found'
+            });
         }
-             return res.render('product-edit',{product,categories, successMessage: '', errorMessage: "" })
-    
+        
+        return res.render('product-edit', {
+            product,
+            categories,
+            successMessage: '',
+            errorMessage: ''
+        });
     } catch (error) {
-        console.log(error);
-        const categories =await Category.find({deleted:false})
-        const product= await Product.findById(req.params.productId).populate('category');
-        return res.render('product-edit',{ categories,product,successMessage: '', errorMessage: "Error loading product edditing page" })
-
+        console.log('Error loading product:', error);
+        const categories = await Category.find({ deleted: false });
+        return res.render('product-edit', {
+            categories,
+            product: null,
+            successMessage: '',
+            errorMessage: 'Error loading product editing page'
+        });
     }
-}
+};
+
 
 const productEdit = async (req, res) => {
-    const { name, price, description, category,stock } = req.body;
+    const { name, price, description, category, stock } = req.body;
     const images = req.files ? req.files.map(file => file.filename) : [];
 
     try {
@@ -102,15 +158,20 @@ const productEdit = async (req, res) => {
         const categories = await Category.find({ deleted: false });
 
         if (!product) {
-            return res.render('product-edit', { categories, product, successMessage: '', errorMessage: "Product not found" });
+            return res.render('product-edit', {
+                categories,
+                product: null,
+                successMessage: '',
+                errorMessage: 'Product not found'
+            });
         }
 
         product.name = name || product.name;
         product.price = price || product.price;
         product.description = description || product.description;
         product.category = category || product.category;
-        product.stock =stock || product.stock
-        product.images = images.length === 0 ? product.images : images;
+        product.stock = stock || product.stock;
+        product.images = images.length > 0 ? images : product.images; // Update images only if new images are provided
 
         await product.save();
 
@@ -120,9 +181,15 @@ const productEdit = async (req, res) => {
         const categories = await Category.find({ deleted: false });
         const product = await Product.findById(req.params.productId).populate('category');
 
-        return res.render('product-edit', { categories, product, successMessage: '', errorMessage: "Error editing product" });
+        return res.render('product-edit', {
+            categories,
+            product,
+            successMessage: '',
+            errorMessage: 'Error editing product'
+        });
     }
 };
+
 
 const deleteProduct = async (req,res)=>{
     try {
@@ -154,8 +221,20 @@ const restoreProduct = async (req, res) => {
         console.log(error);
         return res.redirect('/admin/product-list');
     }
-};
+}
+const removeProduct = async (req,res)=>{
+   try {
+    const productId =req.params.productId;
+    await Product.findByIdAndDelete({_id:productId});
 
+    return res.redirect('/admin/product-list');
+
+   } catch (error) {
+    console.log("remove product error",error);
+    return res.redirect('/admin/product-list');
+  }
+
+}
 
 module.exports = {
     loadproductList,
@@ -164,5 +243,6 @@ module.exports = {
     productEdit,
     loadEditProduct,
     deleteProduct,
-    restoreProduct
+    restoreProduct,
+    removeProduct
 }
