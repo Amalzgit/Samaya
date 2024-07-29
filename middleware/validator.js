@@ -1,4 +1,7 @@
-const { body} = require('express-validator')
+const { body } = require('express-validator')
+const Product = require('../models/productModel');
+const Category = require('../models/catogaryModel');
+
 
 const loginValidater = validate = [
     body('email').isEmail().withMessage('Must be  valid email')
@@ -28,30 +31,33 @@ const registrationValidator = [
         .isLength({ min: 4 }).withMessage('Password must be at least 6 characters long'),
     
 ];
-const productValidator =[
-    
-    body('name').notEmpty().withMessage('Name is required'),
-    body('description').notEmpty().withMessage('Description is required.'),
-    body('price').isFloat({ gt: 0 }).withMessage('Price must be a positive number.'),
-    body('image').custom((value, { req }) => {
-        // Check if image field exists in request body
-        if (!req.file) {
-            throw new Error('Image is required');
-        }
-
-        // Validate file type (optional, adjust as per your requirements)
-        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-        const ext = path.extname(req.file.originalname).toLowerCase().slice(1);
-        if (!allowedExtensions.includes(ext)) {
-            throw new Error('Only jpg, jpeg, png, or gif files are allowed');
-        }
-
-        // Validation passed
-        return true;
-    })
-]
+const productValidator =  [
+    body('name')
+        .notEmpty().withMessage('Name is required')
+        .custom(async (name) => {
+            const existingProduct =await Product.findOne({name})
+           
+            // const theSameProduct = await Product.findById(req.params.prductId)
+           
+            if ( existingProduct ) {
+                throw new Error('Product name already exists');
+            }
+        })
+];
+const categoryValidator = [
+    body('name')
+        .notEmpty().withMessage('Name is required')
+        .custom(async (name) => {
+            const existingCategory = await Category.findOne({ name });
+            
+            if (existingCategory) {
+                throw new Error('Category name already exists');
+            }
+        })
+];
 module.exports = {    
     loginValidater,
     registrationValidator,
-    productValidator
+    productValidator,
+    categoryValidator
 };

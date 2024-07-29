@@ -1,26 +1,24 @@
-// Example usage in your Express app
+
 const express = require('express');
 const connectDB = require('./config/databaseConfig');
 const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
 const isAuthenticated = require('./middleware/isAuthenticated');
-const config = require('./config/Sessionconfig')
-// const nocacheMiddleware = require('./middleware/noCacheMiddleware');
-
+const config = require('./config/Sessionconfig');
 const app = express();
 
 // Database connection
 connectDB();
 
-// Middleware setup for sessions
+// sessions
 app.use(session({
     secret:config.sessionSecret,
     resave: false,
     saveUninitialized: true
 }));
 
-// Use the isAuthenticated middleware
+//  isAuthenticated middleware
 app.use(isAuthenticated);
 
 // View engine setup
@@ -32,11 +30,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
-// Routes
+// Routes Paths
 const userRoute = require('./routes/userRoutes/userRoute');
 const auth_route = require('./routes/authRoutes/authRoutes');
 const adminRoute = require('./routes/adminRoutes/adminRoute');
+const isblocked = require('./middleware/isblocked');
+// const loggerMiddleware = require('./middleware/loggerMiddleware');
 
+
+// Global Middlewares
+// app.use(loggerMiddleware)
+app.use(isblocked)
+
+// Blocked Routes
+
+app.get('/blocked',(req,res)=>{
+res.render('blocked')
+})
+// Routes
 app.use('/', userRoute);     
 app.use('/', auth_route);
 app.use('/admin', adminRoute);

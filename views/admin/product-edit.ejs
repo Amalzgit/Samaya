@@ -47,7 +47,9 @@
                             <select id="productCategory" name="category" class="form-select">
                                 <option value="" disabled selected>Select Category</option>
                                 <% for (let category of categories) { %>
-                                    <option value="<%= category._id %>"><%= category.name %></option>
+                                  <option value="<%= category._id %>" <% if (category._id.toString() === product.category.toString()) { %> selected <% } %> >
+                                    <%= category.name %>
+                                </option>
                                 <% } %>
                             </select>
                             <span id="categoryError" class="error" style="color: red;"></span>
@@ -55,23 +57,25 @@
                         
                             
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productImage" class="form-label">Product Images:</label>
-                            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
-                                <% if (product.images.length > 0) { %>
-                                    <% for (let i = 0; i < product.images.length; i++) { %>
-                                        <div class="col">
-                                            <img src="/products/<%= product.images[i] %>" class="img-thumbnail" alt="Product Image">
-                                        </div>
-                                    <% } %>
-                                <% } else { %>
-                                    <div class="col">
-                                        <p>No images available.</p>
-                                    </div>
-                                <% } %>
-                            </div>
-                            <input type="file" id="productImage" multiple name="images" class="form-control mt-2">
-                            <span id="imagesError" class="error" style="color: red;"></span>
-                        </div>
+                          <label for="productImage" class="form-label">Product Images:</label>
+                          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
+                              <% if (product.images && product.images.length > 0) { %>
+                                  <% product.images.forEach(image => { %>
+                                      <div class="col">
+                                          <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
+                                      </div>
+                                  <% }); %>
+                              <% } else { %>
+                                  <div class="col">
+                                      <p>No images available.</p>
+                                  </div>
+                              <% } %>
+                          </div>
+                          <input type="file" id="productImage" multiple name="images" class="form-control mt-2">
+                          <span id="imagesError" class="error" style="color: red;"></span>
+                      </div>
+                      
+                        
                     </div>
                 </article>
                 
@@ -86,19 +90,18 @@
     </div>
 </section>
 
+
 <script>
-
-
     document.addEventListener("DOMContentLoaded", () => {
-      const categoryInput = document.getElementById('category');
-      const nameInput = document.getElementById('name');
-      const priceInput = document.getElementById('price');
-      const descriptionInput = document.getElementById('description');
-      const imagesInput = document.getElementById('images');
-      const stockInput = document.getElementById('stock');
+      // Get references to form elements
+      const categoryInput = document.getElementById('productCategory');
+      const nameInput = document.getElementById('productName');
+      const priceInput = document.getElementById('productPrice');
+      const descriptionInput = document.getElementById('productDescription');
+      const imagesInput = document.getElementById('productImage');
+      const stockInput = document.getElementById('productStock');
   
-  
-  
+      // Get references to error elements
       const categoryError = document.getElementById('categoryError');
       const nameError = document.getElementById('nameError');
       const priceError = document.getElementById('priceError');
@@ -106,121 +109,125 @@
       const imagesError = document.getElementById('imagesError');
       const stockError = document.getElementById('stockError');
   
-      const validatecategory = () => {
-        if (Input.value.trim() === '') {
-            categoryError.textContent = '* Category is required';
+      // Validation functions
+      const validateCategory = () => {
+        if (categoryInput.value.trim() === '') {
+          categoryError.textContent = '* Category is required';
           return false;
         } else {
-            categoryError.textContent = '';
+          categoryError.textContent = '';
           return true;
         }
-      }
+      };
   
-      const validatename = () => {
+      const validateName = () => {
         if (nameInput.value.trim() === '') {
-          nameError.textContent = '* Last name required';
+          nameError.textContent = '* Product name is required';
           return false;
         } else {
           nameError.textContent = '';
           return true;
         }
-      }
+      };
   
-      const validateprice = () => {
-        const priceInput = document.getElementById('priceInput');
-    const priceError = document.getElementById('priceError');
-    const priceRegex = /^[0-9]+(\.[0-9]{1,2})?$/; 
-
-    const priceValue = priceInput.value.trim();
-
-    if (priceValue === '') {
-        priceError.textContent = '* Price is required';
-        return false;
-    } else if (!priceRegex.test(priceValue)) {
-        priceError.textContent = '* Enter a valid price ';
-        return false;
-    } else if (parseFloat(priceValue) < 0) {
-        priceError.textContent = '* Price cannot be negative';
-        return false;
-    } else {
-        priceError.textContent = '';
-        return true;
-    }
-      }
-      
-      const validatestock =()=>{
-        const stockValue = stockInput.value.trim();
-        if (stockValue === '') {
-        stockError.textContent = '* Stock is required';
-        return false;
-    } else if (isNaN(stockValue) || parseInt(stockValue) < 0) {
-        stockError.textContent = '* Enter a valid stock quantity';
-        return false;
-    } else {
-        stockError.textContent = '';
-        return true;
-    }
-
-      }
-      
+      const validatePrice = () => {
+        const priceValue = priceInput.value.trim();
+        const priceRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
   
-      const validatedescription = () => {
-        if (Input.value.trim() === '') {
-          descriptionError.textContent = '* Description is  required';
+        if (priceValue === '') {
+          priceError.textContent = '* Price is required';
+          return false;
+        } else if (!priceRegex.test(priceValue)) {
+          priceError.textContent = '* Enter a valid price';
+          return false;
+        } else if (parseFloat(priceValue) < 0) {
+          priceError.textContent = '* Price cannot be negative';
           return false;
         } else {
-            descriptionError.textContent = '';
+          priceError.textContent = '';
           return true;
         }
-      }
+      };
   
-      const validateimages = () => {
-        const imagesInput = document.getElementById('imagesInput');
-    const imagesError = document.getElementById('imagesError'); 
-    
-    // List of allowed file extensions
+      const validateStock = () => {
+        const stockValue = stockInput.value.trim();
+        if (stockValue === '') {
+          stockError.textContent = '* Stock is required';
+          return false;
+        } else if (isNaN(stockValue) || parseInt(stockValue) < 0) {
+          stockError.textContent = '* Enter a valid stock quantity';
+          return false;
+        } else {
+          stockError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateDescription = () => {
+        if (descriptionInput.value.trim() === '') {
+          descriptionError.textContent = '* Description is required';
+          return false;
+        } else {
+          descriptionError.textContent = '';
+          return true;
+        }
+      };
+  
+      const validateImages = () => {
+    const imagesInput = document.getElementById('productImage');
+    const imagesError = document.getElementById('imagesError');
     const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+    const maxSize = 5 * 1024 * 1024; // 5MB
 
+    // If there are no files in the input, or the input is empty, we should not validate further
     if (imagesInput.files.length === 0) {
-        imagesError.textContent = '* Images are required';
+        imagesError.textContent = '';
+        return true; // If no new files are being uploaded, no need for validation
+    }
+
+    // Check if at least 3 images are uploaded
+    if (imagesInput.files.length < 3) {
+        imagesError.textContent = '* Min 3 Images are required';
         return false;
     }
 
     for (let i = 0; i < imagesInput.files.length; i++) {
         const file = imagesInput.files[i];
-        
-        // Check file extension
+
+        // Check if the file type is allowed
         if (!allowedExtensions.exec(file.name)) {
             imagesError.textContent = '* Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed';
             return false;
         }
 
-        // Check file size (example: 5MB max size)
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        // Check if the file size exceeds the limit
         if (file.size > maxSize) {
             imagesError.textContent = `* File size should be less than 5MB. ${file.name} is too large`;
             return false;
         }
     }
 
+    // Clear error message if all validations pass
     imagesError.textContent = '';
     return true;
-      }
-  
-      categoryInput.addEventListener('input', validatecategory);
-      nameInput.addEventListener('input', validatename);
-      priceInput.addEventListener('input', validateprice);
-      descriptionInput.addEventListener('input', validatedescription);
-      imagesInput.addEventListener('input', validateimages);
-      stockInput.addEventListener('input', validatestock);
+};
 
   
-      const form = document.getElementById('formData');
+      // Add event listeners
+      categoryInput.addEventListener('input', validateCategory);
+      nameInput.addEventListener('input', validateName);
+      priceInput.addEventListener('input', validatePrice);
+      descriptionInput.addEventListener('input', validateDescription);
+      imagesInput.addEventListener('change', validateImages);
+      stockInput.addEventListener('input', validateStock);
   
+      // Form submit event
+      const form = document.getElementById('editProductForm');
       form.addEventListener('submit', (event) => {
-        if (!validatecategory() || !validatename() || !validateprice() || !validatedescription() || !validatestock() ||!validateimages()) {
+        if (!validateCategory() || !validateName() || !validatePrice() || !validateDescription() || !validateStock() || !validateImages()) {
           event.preventDefault();
         }
       });
     });
   </script>
+  

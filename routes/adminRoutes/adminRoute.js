@@ -2,12 +2,15 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts')
 const config = require('../../config/Sessionconfig');
 const session = require('express-session');
+const noCache = require('../../middleware/noCacheMiddleware');
 const bodyParser = require('body-parser');
 const adminController = require('../../controllers/adminControllers/adminController');
 const adminProductRoute = require('./adminProductRouter');
 const admin_categoryRoute = require('./adminCategoryRouter');
-const noCache = require('../../middleware/noCacheMiddleware');
 const adminProfileRoute = require('./adminProfileRoute');
+const adminBrand_route = require('./adminBrandRoute');
+const review_route = require('./reviewRoute');
+
 
 const admin_route = express();
 
@@ -35,7 +38,7 @@ const isAdmin = (req, res, next) => {
     if (req.session.user_id) {
         const isAdmin = req.session.isAdmin;
         if (isAdmin) {
-            next()
+           return next()
         }
         else {
             return res.redirect('/')
@@ -50,6 +53,8 @@ admin_route.get('/adminhome',isAdmin, noCache, adminController.loadAdminHome);
 admin_route.use(adminProductRoute);
 admin_route.use(admin_categoryRoute);
 admin_route.use(adminProfileRoute)
+admin_route.use(adminBrand_route)
+admin_route.use(review_route)
 // Fallback route for unmatched routes
 
 module.exports = admin_route;

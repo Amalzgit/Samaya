@@ -1,45 +1,27 @@
 <section class="content-main">
-    <div class="content-header">
+    <div class="content-header d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="content-title card-title">Products List</h2>
             <p>All Products.</p>
         </div>
         <div>
-            <a href="#" class="btn btn-light rounded font-md">Export</a>
-            <a href="#" class="btn btn-light rounded font-md">Import</a>
+            <a href="#" class="btn btn-light rounded font-md me-2">Export</a>
+            <a href="#" class="btn btn-light rounded font-md me-2">Import</a>
             <a href="/admin/add-product" class="btn btn-primary btn-sm rounded">Create new</a>
         </div>
     </div>
 
     <div class="card mb-4">
-        <header class="card-header">
-            <div class="row align-items-center">
-                <div class="col col-check flex-grow-0">
-                    <div class="form-check ms-2">
-                        <!-- Placeholder for checkboxes or other form elements -->
-                    </div>
-                </div>
-                <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                    <select id="categorySelect" class="form-select">
-                        <option selected>Select category</option>
-                        <% for (let category of categories) { %>
-                        <option><%= category.name %></option>
-                        <% } %>
-                    </select>
-                </div>
-                <!-- Uncomment below to include status filter -->
-                <!--
-                <div class="col-md-2 col-6">
-                    <select class="form-select">
-                        <option selected>Status</option>
-                        <option>Active</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
-                    </select>
-                </div>
-                -->
+        <header class="card-header d-flex align-items-center justify-content-between">
+            <div class="col-md-3 col-12">
+                <select id="categorySelect" class="form-select">
+                    <option selected>Select category</option>
+                    <% for (let category of categories) { %>
+                    <option value="<%= category._id %>"><%= category.name %></option>
+                    <% } %>
+                </select>
             </div>
-        </header> <!-- card-header end// -->
+        </header>
 
         <div class="card-body">
             <div class="row mb-3">
@@ -47,105 +29,99 @@
                     <h3>Products List</h3>
                 </div>
             </div>
-        
-            <div class="row align-items-center mb-3">
-                <div class="col col-check flex-grow-0">
-                    <!-- Placeholder for checkboxes or other visual elements -->
-                </div>
-                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name fw-bold">
-                    <strong>Name</strong>
-                </div>
-                <div class="col-lg-2 col-sm-2 col-4 col-price fw-bold">
-                    <strong>Price</strong>
-                </div>
-                <div class="col-lg-2 col-sm-2 col-4 col-price fw-bold">
-                    <strong>Description</strong>
-                </div>
-                <div class="col-lg-1 col-sm-1 col-2 col-stock fw-bold">
-                    <strong>Stock</strong>
-                </div>
-                <div class="col-lg-2 col-sm-2 col-4 col-action text-end fw-bold">
-                    <strong>Actions</strong>
-                </div>
-            </div>
-        
-            <% for (let product of products) { %>
-            <article class="itemlist mb-3">
-                <div class="row align-items-center">
-                    <div class="col col-check flex-grow-0">
-                        <!-- Placeholder for checkboxes or other visual elements -->
-                    </div>
-                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                        <a class="itemside" href="#">
-                            <div class="left">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Image</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let product of products) { %>
+                        <tr>
+                            <td class="text-center">
                                 <img src="/products/<%= product.images[0] %>" class="img-sm img-thumbnail" alt="Item">
-                            </div>
-                            <div class="info">
-                                <h6 class="mb-0"><%= product.name %></h6>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-price">
-                        <span><%= product.price %></span>
-                    </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-description">
-                        <span><%= product.description %></span>
-                    </div>
-                    <div class="col-lg-1 col-sm-1 col-2 col-stock">
-                        <span><%= product.stock %></span>
-                    </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                        <% if (product.deleted) { %>
-                        <a href="/admin/restore-product/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
-                            <i class="material-icons md-delete_forever"></i> Restore
-                        </a>
-                        <% } else { %>
-                        <a href="/admin/product-edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                            <i class="material-icons md-edit"></i> Edit
-                        </a>
-                        <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
-                            <i class="material-icons md-delete_forever"></i> Delete
-                        </a>
+                            </td>
+                            <td><%= product.name %></td>
+                            <td><%= product.price %></td>
+                            <td>
+                                <div class="description-container">
+                                    <%= product.description %>
+                                </div>
+                            </td>
+                            <td><%= product.stock %></td>
+                            <td class="text-end">
+                                <% if (product.deleted) { %>
+                                <a href="/admin/restore-product/<%= product._id %>" class="btn btn-sm btn-light rounded me-1">
+                                    <i class="fa-solid fa-unlock"></i>
+                                </a>
+                                <% } else { %>
+                                <a href="/admin/product-edit/<%= product._id %>" class="btn btn-sm btn-brand rounded me-1">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm btn-light rounded me-1">
+                                    <i class="fa-solid fa-lock"></i>
+                                </a>
+                                <% } %>
+                                <a href="/admin/remove-product/<%= product._id %>" class="btn btn-sm btn-light rounded delete-btn">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
                         <% } %>
-                    </div>
-                </div> <!-- row .// -->
-            </article> <!-- itemlist  .// -->
-            <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-         <!-- card-body end// -->
-    </div> <!-- card end// -->
-
-    <!-- Pagination section (if needed) -->
-    <!--
-    <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
-            </ul>
-        </nav>
     </div>
-    -->
 </section>
- <!-- content-main end// -->
 
+<style>
+    .description-container {
+        max-height: 100px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .img-sm {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+</style>
 
- <script>
+<script>
     document.addEventListener("DOMContentLoaded", () => {
         const categorySelect = document.getElementById('categorySelect');
 
         categorySelect.addEventListener('change', () => {
             const selectedCategoryId = categorySelect.value;
             if (selectedCategoryId) {
-                // Redirect or fetch data with the selected category ID
                 window.location.href = `/admin/product-list?category=${selectedCategoryId}`;
-                
-               
             }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent the default link behavior
+
+                const confirmAction = confirm("Are you sure you want to remove this product?");
+                if (confirmAction) {
+                    window.location.href = button.href; // Redirect to the link if confirmed
+                }
+            });
         });
     });
 </script>

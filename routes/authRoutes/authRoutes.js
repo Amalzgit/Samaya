@@ -34,7 +34,7 @@ auth_route.use(expressLayouts)
 auth_route.set('layout', './layouts/authLayout')
 auth_route.set('view engine', 'ejs')
 
-auth_route.use(noCache);
+
 const isLoggedIn = (req, res, next) => {
     if (req.session.user_id) {
         const isAdmin = req.session.isAdmin;
@@ -47,7 +47,7 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 // Routes
-auth_route.get('/login', isLoggedIn, loginValidater, auth.isLogout, loginController.loginLoad);
+auth_route.get('/login', isLoggedIn,noCache, loginValidater, auth.isLogout, loginController.loginLoad);
 auth_route.post('/login', isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
 auth_route.get('/logout', auth.isLogedin, loginController.Logout);
 auth_route.use(otp_route);

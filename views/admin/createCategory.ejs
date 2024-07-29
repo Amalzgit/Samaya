@@ -12,18 +12,30 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
+
+                  <% if (successMessage) { %>
+                    <div class="alert alert-success">
+                        <%= successMessage %>
+                    </div>
+                    <% } %>
+
+                        <% if (errorMessage) { %>
+                            <div class="alert alert-danger">
+                                <%= errorMessage.msg %>
+                            </div>
+                            <% } %>
+
+
                     <form action="/admin/createCategory" method="post">
                         <div class="mb-4">
-                            <label for="category_name" class="form-label">Name</label>
-                            <input type="text" placeholder="Enter category name" name="name" class="form-control" id="category_name" required>
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" placeholder="Enter category name" name="name" class="form-control" id="name" >
+                            <span id="nameError" class="error" style="color: red;"></span>
                         </div>
                         <div class="mb-4">
-                            <label for="category_description" class="form-label">Description</label>
-                            <textarea placeholder="Enter category description" name="description" class="form-control" id="category_description" rows="3"></textarea>
-                        </div>
-                        <div class="mb-4 form-check">
-                            <input type="checkbox" class="form-check-input" name="deleted" id="is_deleted">
-                            <label class="form-check-label" for="is_deleted">Is Deleted</label>
+                            <label for="description" class="form-label">Description</label>
+                            <textarea placeholder="Enter category description" name="description" class="form-control" id="description" rows="3"></textarea>
+                            <span id="descriptionError" class="error" style="color: red;"></span>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Create category</button>
@@ -48,7 +60,7 @@
   
       const validatename = () => {
         if (nameInput.value.trim() === '') {
-          nameError.textContent = '* Last name required';
+          nameError.textContent = '* Category name required';
           return false;
         } else {
           nameError.textContent = '';
@@ -60,10 +72,10 @@
   
       const validatedescription = () => {
         if (Input.value.trim() === '') {
-          Error.textContent = '* Description is  required';
+          descriptionError.textContent = '* Description is  required';
           return false;
         } else {
-          Error.textContent = '';
+          descriptionError.textContent = '';
           return true;
         }
       }

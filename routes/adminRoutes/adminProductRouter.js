@@ -1,29 +1,31 @@
 const express = require('express');
 const adminProductController = require('../../controllers/adminControllers/adminProductController');
+const {productValidator} =require('../../middleware/validator')
 const adminProductRoute = express.Router();
-const upload =require('../../utils/multer');
+const {uploadProduct} =require('../../utils/multer');
 
 
-const isAdmin = (req, res, next) => {
-    if (req.session.user_id) {
-        const isAdmin = req.session.isAdmin;
-        if (isAdmin) {
-            next()
-        }
-        else {
-            return res.redirect('/')
-        }
-    }   
-     res.redirect('/login')
-}
+// const isAdmin = (req, res, next) => {
+//     if (req.session.user_id) {
+//         const isAdmin = req.session.isAdmin;
+//         if (isAdmin) {
+//             next()
+//         }
+//         else {
+//             return res.redirect('/')
+//         }
+//     }   
+//      res.redirect('/login')
+// }
 
-adminProductRoute.get('/product-list',isAdmin,adminProductController.loadproductList);
-adminProductRoute.get('/add-product',isAdmin,adminProductController.loadAddproduct);
-adminProductRoute.post('/add-product',upload.array('images',10),isAdmin,adminProductController.addproduct);
-adminProductRoute.get('/product-edit/:productId',isAdmin,adminProductController.loadEditProduct)
-adminProductRoute.post('/product-edit/:productId',upload.array('images',10),isAdmin,adminProductController.productEdit)
-adminProductRoute.get('/delete-product/:productId',isAdmin,adminProductController.deleteProduct);
-adminProductRoute.get('/restore-product/:productId',isAdmin,adminProductController.restoreProduct)
+adminProductRoute.get('/product-list', adminProductController.loadproductList);
+adminProductRoute.get('/add-product', adminProductController.loadAddproduct);
+adminProductRoute.post('/add-product',uploadProduct.array('images',10),  productValidator, adminProductController.addproduct);
+adminProductRoute.get('/product-edit/:productId', adminProductController.loadEditProduct)
+adminProductRoute.post('/product-edit/:productId',uploadProduct.array('images',10),  productValidator, adminProductController.productEdit)
+adminProductRoute.get('/delete-product/:productId', adminProductController.deleteProduct);
+adminProductRoute.get('/restore-product/:productId', adminProductController.restoreProduct)
+adminProductRoute.get('/remove-product/:productId', adminProductController.removeProduct)
 
 
 
