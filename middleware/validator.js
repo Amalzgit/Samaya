@@ -1,7 +1,7 @@
 const { body } = require('express-validator')
 const Product = require('../models/productModel');
 const Category = require('../models/catogaryModel');
-
+const Brand =require('../models/BrandModel')
 
 const loginValidater = validate = [
     body('email').isEmail().withMessage('Must be  valid email')
@@ -55,9 +55,21 @@ const categoryValidator = [
             }
         })
 ];
+const brandValidator = [
+    body('name')
+        .notEmpty().withMessage('Name is required')
+        .custom(async (name) => {
+            const existingBrand = await Brand.findOne({ name });
+            
+            if (existingBrand) {
+                throw new Error('Brand name already exists');
+            }
+        })
+];
 module.exports = {    
     loginValidater,
     registrationValidator,
     productValidator,
-    categoryValidator
+    categoryValidator,
+    brandValidator
 };

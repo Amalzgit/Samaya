@@ -1,5 +1,5 @@
 const mongoose= require("mongoose");
-const { schema } = require("./catogaryModel");
+// const  schema  = require("./catogaryModel");
 
 const Schema =mongoose;
 

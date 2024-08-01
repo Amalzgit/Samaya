@@ -27,7 +27,7 @@ try {
     user.firstName =firstName || user.firstName
     user.lastName = lastName || user.lastName;
     user.email = email || user.email;
-    user.phone = phone || user.phone
+    user.phone = phone || user.phone;
     
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
         

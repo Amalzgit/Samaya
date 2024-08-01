@@ -80,8 +80,10 @@
                         <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                             <label for="brand" class="form-label">Brand</label>
                             <select id="brand" name="brand" class="form-control">
-                                <option value="" disabled selected>Select a brand</option>
-                                <option value="Sapphire">Richard Millie</option>
+                                <% for (let brand of brands) { %>
+                                    <option value="<%= brand.name %>" ><%= brand.name %></option>
+                                  <% } %>
+                               
                                 
                             </select>
                         </div>

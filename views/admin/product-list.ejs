@@ -5,8 +5,6 @@
             <p>All Products.</p>
         </div>
         <div>
-            <a href="#" class="btn btn-light rounded font-md me-2">Export</a>
-            <a href="#" class="btn btn-light rounded font-md me-2">Import</a>
             <a href="/admin/add-product" class="btn btn-primary btn-sm rounded">Create new</a>
         </div>
     </div>
@@ -21,23 +19,25 @@
                     <% } %>
                 </select>
             </div>
+            <div class="col-md-3 col-12">
+                <select id="brandSelect" class="form-select">
+                    <option selected>Select brand</option>
+                    <% for (let brand of brands) { %>
+                    <option value="<%= brand._id %>"><%= brand.name %></option>
+                    <% } %>
+                </select>
+            </div>
         </header>
 
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col">
-                    <h3>Products List</h3>
-                </div>
-            </div>
-
+        
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover text-center align-middle">
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">Image</th>
                             <th scope="col">Name</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Description</th>
+                            <th scope="col">Brand</th>
                             <th scope="col">Stock</th>
                             <th scope="col">Actions</th>
                         </tr>
@@ -45,33 +45,31 @@
                     <tbody>
                         <% for (let product of products) { %>
                         <tr>
-                            <td class="text-center">
-                                <img src="/products/<%= product.images[0] %>" class="img-sm img-thumbnail" alt="Item">
+                            <td class="text-center align-middle">
+                                <img src="/products/<%= product.images[0] %>" class="img-thumbnail" alt="Item" style="max-width: 100px;">
                             </td>
-                            <td><%= product.name %></td>
-                            <td><%= product.price %></td>
-                            <td>
-                                <div class="description-container">
-                                    <%= product.description %>
+                            <td class="align-middle"><%= product.name %></td>
+                            <td class="align-middle"><%= product.formattedPrice %></td>
+                            <td class="align-middle"><%= product.brand.name %></td>
+                            <td class="align-middle"><%= product.stock %></td>
+                            <td class="text-center align-middle">
+                                <div class="d-flex justify-content-center">
+                                    <% if (product.deleted) { %>
+                                    <a href="/admin/restore-product/<%= product._id %>" class="btn btn-sm btn-success rounded me-1" title="Restore">
+                                        <i class="fa-solid fa-unlock"></i>
+                                    </a>
+                                    <% } else { %>
+                                    <a href="/admin/product-edit/<%= product._id %>" class="btn btn-sm btn-warning rounded me-1" title="Edit">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                    <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm btn-dark rounded me-1" title="Delete">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </a>
+                                    <% } %>
+                                    <a href="/admin/remove-product/<%= product._id %>" class="btn btn-sm btn-danger rounded delete-btn" title="Remove">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 </div>
-                            </td>
-                            <td><%= product.stock %></td>
-                            <td class="text-end">
-                                <% if (product.deleted) { %>
-                                <a href="/admin/restore-product/<%= product._id %>" class="btn btn-sm btn-light rounded me-1">
-                                    <i class="fa-solid fa-unlock"></i>
-                                </a>
-                                <% } else { %>
-                                <a href="/admin/product-edit/<%= product._id %>" class="btn btn-sm btn-brand rounded me-1">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
-                                <a href="/admin/delete-product/<%= product._id %>" class="btn btn-sm btn-light rounded me-1">
-                                    <i class="fa-solid fa-lock"></i>
-                                </a>
-                                <% } %>
-                                <a href="/admin/remove-product/<%= product._id %>" class="btn btn-sm btn-light rounded delete-btn">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
                             </td>
                         </tr>
                         <% } %>
@@ -82,35 +80,49 @@
     </div>
 </section>
 
-<style>
-    .description-container {
-        max-height: 100px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 5px;
-        border-radius: 5px;
-    }
-    .img-sm {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-    }
-</style>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const categorySelect = document.getElementById('categorySelect');
+        const brandSelect = document.getElementById('brandSelect');
 
         categorySelect.addEventListener('change', () => {
             const selectedCategoryId = categorySelect.value;
+            const selectedBrandId = brandSelect.value;
+            let query = '';
+
             if (selectedCategoryId) {
-                window.location.href = `/admin/product-list?category=${selectedCategoryId}`;
+                query += `category=${selectedCategoryId}`;
+            }
+            if (selectedBrandId) {
+                if (query.length > 0) query += '&';
+                query += `brand=${selectedBrandId}`;
+            }
+
+            if (query.length > 0) {
+                window.location.href = `/admin/product-list?${query}`;
             }
         });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+
+        brandSelect.addEventListener('change', () => {
+            const selectedBrandId = brandSelect.value;
+            const selectedCategoryId = categorySelect.value;
+            let query = '';
+
+            if (selectedBrandId) {
+                query += `brand=${selectedBrandId}`;
+            }
+            if (selectedCategoryId) {
+                if (query.length > 0) query += '&';
+                query += `category=${selectedCategoryId}`;
+            }
+
+            if (query.length > 0) {
+                window.location.href = `/admin/product-list?${query}`;
+            }
+        });
+
         const deleteButtons = document.querySelectorAll('.delete-btn');
 
         deleteButtons.forEach(button => {

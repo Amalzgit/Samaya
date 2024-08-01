@@ -4,7 +4,7 @@ const getProductById = async (req,res)=>{
     try {
         const productId =req.params.id;
        
-        const product =await Product.findById(productId).populate('category');
+        const product =await Product.findById(productId).populate('category').populate('brand');
         
         if(!product){
             return res.render('shop',{message:"product not found"});

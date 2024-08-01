@@ -1,94 +1,159 @@
 <section class="content-main">
-    <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Edit Product</h2>
-            <p>Edit your Product Details</p>
+  <div class="content-header mb-4">
+    <h2 class="content-title card-title">Edit Product</h2>
+    <p>Edit your Product Details</p>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-body">
+      <% if (successMessage) { %>
+        <div class="alert alert-success">
+          <i class="fa fa-check-circle"></i> <%= successMessage %>
         </div>
-    </div>
-    <div class="card mb-4">
-        <div class="card-body">
-            <% if (successMessage) { %>
-                <div class="alert alert-success">
-                    <%= successMessage %>
-                </div>
-            <% } %>
+      <% } %>
 
-            <% if (errorMessage) { %>
-                <div class="alert alert-danger">
-                    <%= errorMessage %>
-                </div>
-            <% } %>
-
-            <form id="editProductForm" action="/admin/product-edit/<%= product._id %>" method="post" enctype="multipart/form-data">
-                <article class="itemlist">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" id="productName" name="name" class="form-control" value="<%= product.name %>" placeholder="Enter product name">
-                            <span id="nameError" class="error" style="color: red;"></span>
-                        </div>
-                        <div class="col-lg-2 col-sm-2 col-4 col-price">
-                            <label for="productPrice" class="form-label">Price</label>
-                            <input type="text" id="productPrice" name="price" class="form-control" value="<%= product.price %>" placeholder="Enter price">
-                            <span id="priceError" class="error" style="color: red;"></span>
-                        </div>
-                        <div class="col-lg-2 col-sm-2 col-4 col-price">
-                            <label for="productStock" class="form-label">Stock</label>
-                            <input type="number" id="productStock" name="stock" class="form-control" value="<%= product.stock %>" placeholder="Enter stock quantity">
-                            <span id="stockError" class="error" style="color: red;"></span>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productDescription" class="form-label">Description</label>
-                            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"><%= product.description %></textarea>
-                            <span id="descriptionError" class="error" style="color: red;"></span>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                            <label for="productCategory" class="form-label">Category</label>
-                            <select id="productCategory" name="category" class="form-select">
-                                <option value="" disabled selected>Select Category</option>
-                                <% for (let category of categories) { %>
-                                  <option value="<%= category._id %>" <% if (category._id.toString() === product.category.toString()) { %> selected <% } %> >
-                                    <%= category.name %>
-                                </option>
-                                <% } %>
-                            </select>
-                            <span id="categoryError" class="error" style="color: red;"></span>
-                        </div>
-                        
-                            
-                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                          <label for="productImage" class="form-label">Product Images:</label>
-                          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
-                              <% if (product.images && product.images.length > 0) { %>
-                                  <% product.images.forEach(image => { %>
-                                      <div class="col">
-                                          <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
-                                      </div>
-                                  <% }); %>
-                              <% } else { %>
-                                  <div class="col">
-                                      <p>No images available.</p>
-                                  </div>
-                              <% } %>
-                          </div>
-                          <input type="file" id="productImage" multiple name="images" class="form-control mt-2">
-                          <span id="imagesError" class="error" style="color: red;"></span>
-                      </div>
-                      
-                        
-                    </div>
-                </article>
-                
-                <div class="row align-items-center mt-3">
-                    <div class="col-lg-12 col-sm-12 col-12 text-end">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </div>
-            </form>
-            
+      <% if (errorMessage) { %>
+        <div class="alert alert-danger">
+          <i class="fa fa-exclamation-triangle"></i> <%= errorMessage %>
         </div>
+      <% } %>
+
+      <form id="editProductForm" action="/admin/product-edit/<%= product._id %>" method="post" enctype="multipart/form-data">
+        <div class="row mb-3">
+          <div class="col-md-6 mb-3">
+            <label for="productName" class="form-label">Product Name <i class="fa fa-tag"></i></label>
+            <input type="text" id="productName" name="name" class="form-control" value="<%= product.name %>" placeholder="Enter product name">
+            <span id="nameError" class="error text-danger"></span>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="productPrice" class="form-label">Price <i class="fa fa-dollar-sign"></i></label>
+            <input type="text" id="productPrice" name="price" class="form-control" value="<%= product.price %>" placeholder="Enter price">
+            <span id="priceError" class="error text-danger"></span>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="productStock" class="form-label">Stock <i class="fa fa-cubes"></i></label>
+            <input type="number" id="productStock" name="stock" class="form-control" value="<%= product.stock %>" placeholder="Enter stock quantity">
+            <span id="stockError" class="error text-danger"></span>
+          </div>
+          <div class="col-md-12 mb-3">
+            <label for="productDescription" class="form-label">Description <i class="fa fa-info-circle"></i></label>
+            <textarea id="productDescription" name="description" class="form-control" rows="3" placeholder="Enter product description"><%= product.description %></textarea>
+            <span id="descriptionError" class="error text-danger"></span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="productCategory" class="form-label">Category <i class="fa fa-list"></i></label>
+            <select id="productCategory" name="category" class="form-select">
+              <option value="" disabled selected>Select Category</option>
+              <% for (let category of categories) { %>
+                <option value="<%= category._id %>" <% if (category._id.toString() === product.category.toString()) { %> selected <% } %>>
+                  <%= category.name %>
+                </option>
+              <% } %>
+            </select>
+            <span id="categoryError" class="error text-danger"></span>
+          </div>
+
+          <div class="col-md-12 mb-3">
+            <label for="productImage" class="form-label">Product Images <i class="fa fa-image"></i></label>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
+              <% if (product.images && product.images.length > 0) { %>
+                <% product.images.forEach(image => { %>
+                  <div class="col">
+                    <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <div class="col">
+                  <p>No images available.</p>
+                </div>
+              <% } %>
+            </div>
+            <input type="file" id="productImage" multiple name="images" class="form-control mt-2">
+            <span id="imagesError" class="error text-danger"></span>
+          </div>
+        </div>
+
+        <!-- New fields added here -->
+        <div class="row mb-3">
+          <div class="col-md-4 mb-3">
+            <label for="brand" class="form-label">Brand <i class="fa fa-industry"></i></label>
+            <select id="brand" name="brand" class="form-select">
+              <option value="" disabled>Select a brand</option>
+              <% for (let brand of brands) { %>
+                <option value="<%= brand.name %>" <% if (brand._id.toString() === product.brand.toString()) { %> selected <% } %>><%= brand.name %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="caseMaterial" class="form-label">Case Material <i class="fa fa-cogs"></i></label>
+            <input type="text" id="caseMaterial" name="caseMaterial" class="form-control" value="<%= product.caseMaterial %>" placeholder="Enter case material">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="crystalType" class="form-label">Crystal Type <i class="fa fa-gem"></i></label>
+            <select id="crystalType" name="crystalType" class="form-select">
+              <option value="" disabled>Select Crystal Type</option>
+              <option value="Sapphire" <% if (product.crystalType === 'Sapphire') { %> selected <% } %>>Sapphire</option>
+              <option value="Mineral" <% if (product.crystalType === 'Mineral') { %> selected <% } %>>Mineral</option>
+              <option value="Acrylic" <% if (product.crystalType === 'Acrylic') { %> selected <% } %>>Acrylic</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4 mb-3">
+            <label for="dialColor" class="form-label">Dial Color <i class="fa fa-palette"></i></label>
+            <input type="text" id="dialColor" name="dialColor" class="form-control" value="<%= product.dialColor %>" placeholder="Enter dial color">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="hourMarkers" class="form-label">Hour Markers <i class="fa fa-clock"></i></label>
+            <input type="text" id="hourMarkers" name="hourMarkers" class="form-control" value="<%= product.hourMarkers %>" placeholder="Enter hour markers">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="handType" class="form-label">Hand Type <i class="fa fa-hand-pointer"></i></label>
+            <input type="text" id="handType" name="handType" class="form-control" value="<%= product.handType %>" placeholder="Enter hand type">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4 mb-3">
+            <label for="bezelType" class="form-label">Bezel Type <i class="fa fa-briefcase"></i></label>
+            <input type="text" id="bezelType" name="bezelType" class="form-control" value="<%= product.bezelType %>" placeholder="Enter bezel type">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="caseShape" class="form-label">Case Shape <i class="fa fa-circle"></i></label>
+            <input type="text" id="caseShape" name="caseShape" class="form-control" value="<%= product.caseShape %>" placeholder="Enter case shape">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="additionalDesignElements" class="form-label">Additional Design Elements <i class="fa fa-star"></i></label>
+            <input type="text" id="additionalDesignElements" name="additionalDesignElements" class="form-control" value="<%= product.additionalDesignElements %>" placeholder="Enter additional design elements">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4 mb-3">
+            <label for="powerReserve" class="form-label">Power Reserve <i class="fa fa-battery-full"></i></label>
+            <input type="text" id="powerReserve" name="powerReserve" class="form-control" value="<%= product.powerReserve %>" placeholder="Enter power reserve">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="warrantyPeriod" class="form-label">Warranty Period <i class="fa fa-calendar-check"></i></label>
+            <input type="text" id="warrantyPeriod" name="warrantyPeriod" class="form-control" value="<%= product.warrantyPeriod %>" placeholder="Enter warranty period">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="certifications" class="form-label">Certifications <i class="fa fa-certificate"></i></label>
+            <input type="text" id="certifications" name="certifications" class="form-control" value="<%= product.certifications %>" placeholder="Enter certifications">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
 </section>
+
 
 
 <script>

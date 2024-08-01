@@ -1,15 +1,4 @@
 ﻿<main class="main">
-
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/" rel="nofollow">Home</a>
-                <!-- <span></span> shop
-                <span></span> -->
-            </div>
-        </div>
-    </div>
-
     <section class="home-slider position-relative">
         <div class="hero-slider-1 style-2 dot-style-1 dot-style-1-position-1">
             <div class="single-hero-slider single-animation-wrap">
@@ -37,18 +26,45 @@
     </section>
 
     <section class="banners mb-20">
-        
+        <!-- Additional content can be added here -->
     </section>
-
+    <section>
+        <div class="brand-belt">
+            <% for(let brand of brands) { %>
+                <div class="brand-item">
+                    <a ><img src="brands/<%= brand.logo %>" alt="<%= brand.name %>"></a>
+                </div>
+            <% } %>
+        </div>
+    </section>
+    
     <section class="product-tabs pt-80 pb-20 wow fadeIn animated">
         <div class="container">
             <div class="row">
-                <div class="col-lg-12"> <!-- Utilizing the entire width of the container -->
+                <div class="col-lg-12">
                     <div class="tab-content wow fadeIn animated" id="myTabContent">
                         <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
                             <div class="row">
                                 <% for(let product of products) { %>
-                                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4"> <!-- Adjusted column size and added margin -->
+
+                                    <!-- <div class="container mt-5">
+                                        <div class="card mx-auto" style="max-width: 18rem;">
+                                            <img src="/products/<%= product.images[0] %>    " class="card-img-top" alt="Big Bang Original Steel Ceramic Watch">
+                                            <div class="card-body text-center">
+                                                <p class="text-muted text-uppercase small"><%=product.category.name%></p>
+                                                <h5 class="card-title fw-bold"><%=product.name%></h5>
+                                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                                    <p class="fw-semibold mb-0"><%=product.price%> *</p>
+                                                    <button class="btn btn-link text-muted p-0">
+                                                        <i class="bi bi-heart fs-5"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 -->
+
+                                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
                                         <div class="product-cart-wrap">
                                             <div class="product-img-action-wrap">
                                                 <div class="product-img product-img-zoom">
@@ -60,9 +76,7 @@
                                                 <div class="product-action-1">
                                                     <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
                                                 </div>
-                                                <div class="product-badges product-badges-position product-badges-mrg">
-                                                    <span class="hot">Hot</span>
-                                                </div>
+                                               
                                             </div>
                                             <div class="product-content-wrap">
                                                 <div class="product-category">
@@ -75,14 +89,14 @@
                                                     </span>
                                                 </div>
                                                 <div class="product-price">
-                                                    <span>Price :₹ <%= product.price %>.00</span>
+                                                    <span>Price :<%= product.formattedPrice %></span>
                                                 </div>
                                                 <div class="product-action-1 show">
                                                     <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> 
                                 <% } %>
                             </div>
                         </div>
@@ -91,11 +105,47 @@
             </div>
         </div>
     </section>
-    
-    
+
+
 </main>
 
 
 
 
-
+<style>
+    .brand-belt {
+        display: flex;
+        overflow-x: auto; /* Allow horizontal scrolling */
+        white-space: nowrap;
+        padding: 10px;
+        background-color: white; /* Black background for the brand belt */
+        border-radius: 10px;
+        justify-content:center; /* Align items to the start */
+        gap: 20px; /* Add a gap between items */
+    }
+    
+    .brand-item {
+        flex: 0 0 auto; /* Prevent items from growing or shrinking */
+        text-align: center;
+        color: #ffffff; /* Ensure text is visible on the dark background */
+    }
+    
+    .brand-item img {
+        width: 200px; /* Fixed width for all images */
+        height: 100px; /* Fixed height for all images */
+        object-fit: cover; /* Ensure images are uniformly sized */
+        display: block;
+        margin: 0 auto 10px;
+        border-radius: 5px; /* Rounded corners for a modern look */
+    }
+    
+    .brand-item p {
+        margin: 0 0 5px;
+        font-size: 14px; /* Slightly smaller text for elegance */
+    }
+    
+    .brand-item a:hover {
+        text-decoration: underline;
+    }
+    </style>
+    

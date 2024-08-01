@@ -1,90 +1,156 @@
-<section class="content-main mt-80 mb-80">
-  <div class="card mx-auto card-login">
-    <div class="card-body">
-      <h4 class="card-title mb-4">Create an Account</h4>
+<section class="registration-container">
+  <!-- Left Side with Image -->
+  <div class="media-content">
+    <img src="userassets/Page-hero/login.jpg" alt="Background" class="media-image">
+    <div class="overlay-text">
+      
+    </div>
+  </div>
 
+  <!-- Right Side with Form -->
+  <div class="form-content">
+    <div class="card mx-auto card-login">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Sign up</h4>
 
-
-      <% if (successMessage) { %>
-        <div class="alert alert-success">
-          <%= successMessage %>
-        </div>
+        <% if (successMessage) { %>
+          <div class="alert alert-success">
+            <%= successMessage %>
+          </div>
         <% } %>
-          <% if (errorMessage) { %>
-            <div class="alert alert-danger">
-              <%= errorMessage %>
-            </div>
-            <% } %>
+        <% if (errorMessage) { %>
+          <div class="alert alert-danger">
+            <%= errorMessage %>
+          </div>
+        <% } %>
 
-              <form method="post" id="formData" action="/register">
-                <div class="mb-3">
-                  <label class="form-label">First Name</label>
-                  <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text">
-                  <span id="firstNameError" class="error" style="color: red;"></span>
-                </div> <!-- form-group// -->
+        <form method="post" id="formData" action="/register">
+          <div class="mb-3">
+            <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text">
+            <span id="firstNameError" class="error"></span>
+          </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Last Name</label>
-                  <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text">
-                  <span id="lastNameError" class="error" style="color: red;"></span>
-                </div> <!-- form-group// -->
+          <div class="mb-3">
+            <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text">
+            <span id="lastNameError" class="error"></span>
+          </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Email</label>
-                  <input class="form-control" id="email" name="email" placeholder="Your email" type="text">
-                  <span id="emailError" class="error" style="color: red;"></span>
-                </div> <!-- form-group// -->
+          <div class="mb-3">
+            <input class="form-control" id="email" name="email" placeholder="Email" type="text">
+            <span id="emailError" class="error"></span>
+          </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Phone</label>
-                  <div class="row gx-2">
-                    <div class="col-4"> <input class="form-control" value="+91" type="tel"> </div>
-                    <div class="col-8"> <input class="form-control" id="phone" name="phone" placeholder="Phone"
-                        type="tel"> </div>
-                    <span id="phoneError" class="error" style="color: red;"></span>
-                  </div>
-                </div> <!-- form-group// -->
+          <div class="mb-3">
+            <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel">
+            <span id="phoneError" class="error"></span>
+          </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Create password</label>
-                  <input class="form-control" id="password" name="password" placeholder="Password" type="password">
-                  <span id="passwordError" class="error" style="color: red;"></span>
-                </div> <!-- form-group// -->
+          <div class="mb-3">
+            <input class="form-control" id="password" name="password" placeholder="Create Password" type="password">
+            <span id="passwordError" class="error"></span>
+          </div>
+          
+          <div class="mb-3">
+            <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
+            <span id="confirmPasswordError" class="error"></span>
+          </div>
 
+          <div class="mb-4">
+            <button type="submit" class="btn btn-primary w-100">Sign up</button>
+          </div>
+        </form>
 
-                <div class="mb-3">
-                  <p class="small text-center text-muted">By signing up, you confirm that you’ve read and accepted our
-                    User Notice and Privacy Policy.</p>
-                </div> <!-- form-group  .// -->
-
-                <div class="mb-4">
-                  <button type="submit" class="btn btn-primary w-100"> Sign up </button>
-                </div> <!-- form-group// -->
-              </form>
-              <p class="text-center small text-muted mb-15">or sign up with</p>
-              <div class="d-grid gap-3 mb-4">
-                <a href="#" class="btn w-100 btn-light font-sm">
-                  <svg aria-hidden="true" class="icon-svg" width="20" height="20" viewBox="0 0 20 20">
-                    <path
-                      d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"
-                      fill="#4285F4"></path>
-                    <path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"
-                      fill="#34A853"></path>
-                    <path d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z" fill="#FBBC05"></path>
-                    <path
-                      d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z"
-                      fill="#EA4335"></path>
-                  </svg> Sign in using Google
-                </a>
-
-              </div>
-              <p class="text-center mb-2">Already have an account? <a href="/login">Sign in now</a></p>
+        <p class="text-center small text-muted mb-3">or sign up with</p>
+        <div class="d-grid gap-3 mb-4">
+          <a href="#" class="btn w-100 btn-light font-sm google-signin">
+              <svg aria-hidden="true" class="icon-svg" width="20" height="20" viewBox="0 0 20 20">
+                  <path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z" fill="#4285F4"></path>
+                  <path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z" fill="#34A853"></path>
+                  <path d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z" fill="#FBBC05"></path>
+                  <path d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z" fill="#EA4335"></path>
+              </svg> Sign in using Google
+          </a>
+      </div>
+        
+        <p class="text-center mb-0">Already have an account? <a href="/login">Sign in</a></p>
+      </div>
     </div>
   </div>
 </section>
 
+<style>
+  /* Your existing styles */
+  
+  /* Additional styles */
+  .registration-container {
+    display: flex;
+    height: 100vh;
+  }
+
+  .media-content {
+    position: relative;
+    flex: 1;
+  }
+
+  .media-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+  }
+
+  .form-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+  }
+
+  .card-login {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+  }
+
+  .form-control {
+    padding: 0.75rem 1rem;
+  }
+
+  .btn-primary {
+    background-color: #000;
+    border-color: #000;
+  }
+
+  .btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+  }
+
+  .btn-outline-dark {
+    border-color: #ccc;
+  }
+
+  .error {
+    color: red;
+    font-size: 0.75rem;
+    display: block;
+    margin-top: 0.25rem;
+  }
+</style>
+
+
+
 <script>
-window.addEventListener("submit", () => {
+  window.addEventListener("submit", () => {
     sessionStorage.clear();
   })
 
@@ -94,8 +160,7 @@ window.addEventListener("submit", () => {
     const mobileInput = document.getElementById('phone');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
-
-
+    const confirmPasswordInput = document.getElementById('confirmPassword');
 
 
     const firstNameError = document.getElementById('firstNameError');
@@ -103,6 +168,8 @@ window.addEventListener("submit", () => {
     const mobileError = document.getElementById('phoneError');
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+
 
     const validateFirstName = () => {
       if (firstNameInput.value.trim() === '') {
@@ -164,17 +231,31 @@ window.addEventListener("submit", () => {
         return true;
       }
     }
+    const validateConfirmPassword = () => {
+    if (confirmPasswordInput.value.trim() === '') {
+      confirmPasswordError.textContent = '* Confirm password is required';
+      return false;
+    } else if (confirmPasswordInput.value.trim() !== passwordInput.value.trim()) {
+      confirmPasswordError.textContent = '* Passwords do not match';
+      return false;
+    } else {
+      confirmPasswordError.textContent = '';
+      return true;
+    }
+  };
 
     firstNameInput.addEventListener('input', validateFirstName);
     lastNameInput.addEventListener('input', validateLastName);
     mobileInput.addEventListener('input', validateMobile);
     emailInput.addEventListener('input', validateEmail);
     passwordInput.addEventListener('input', validatePassword);
+    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
 
     const form = document.getElementById('formData');
 
     form.addEventListener('submit', (event) => {
-      if (!validateFirstName() || !validateLastName() || !validateMobile() || !validateEmail() || !validatePassword()) {
+      if (!validateFirstName() || !validateLastName() || !validateMobile() || !validateEmail() || !validatePassword()||!validateConfirmPassword()) {
         event.preventDefault();
       }
     });

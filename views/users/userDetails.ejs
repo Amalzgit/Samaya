@@ -1,229 +1,335 @@
 <main class="main">
   <div class="page-header breadcrumb-wrap">
     <div class="container">
-        <div class="breadcrumb">
-            <a href="/" rel="nofollow">Home</a>
-            <span></span> User details
-            <!-- <span></span> <%=product.name%> -->
-        </div>
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> User Details
+      </div>
     </div>
-</div>
+  </div>
 
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="index.html" rel="nofollow">Home</a>
-                <span></span> Pages
-                <span></span> Account
+  <section class="pt-150 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 m-auto">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="dashboard-menu">
+                <ul class="nav flex-column" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="true">
+                      <i class="fi-rs-settings-sliders mr-10"></i>User Details
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">
+                      <i class="fi-rs-shopping-bag mr-10"></i>Orders
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
+                      <i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">
+                      <i class="fi-rs-marker mr-10"></i>My Address
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="false">
+                      <i class="fi-rs-user mr-10"></i>Account Details
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="forgot-password-tab" data-bs-toggle="tab" href="#forgot-password" role="tab" aria-controls="forgot-password" aria-selected="false">
+                      <i class="fi-rs-user mr-10"></i>Forgot Password
+                    </a>
+                  </li>
+                  <li class="nav-item ">
+                    <a class="nav-link " style="color: red;" href="/logout">
+                      <i class="fi-rs-sign-out mr-10"></i>Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
-        </div>
-    </div>
-    <section class="mt-50 mb-50">
-        <% if (user) { %>
-        <div class="container">
-            <h1><%=user.firstName%><%=user.lastName%></h1>
-            <div class="user-info">
-                <p><strong>First Name:</strong> <%=user.firstName%></p>
-                <p><strong>Last Name:</strong> <%=user.lastName%></p>
-                <p><strong>Email:</strong> <%=user.email%></p>
-                <p><strong>Phone:</strong> <%=user.phone%></p>
-            </div>
-            <hr>
-            <div class="user-actions">
-                <button id="toggleEditSection" class="btn bg-dark text-white" >Edit Information</button>
-                <div id="editSection" class="edit-section hidden">
-                    <hr>
-                    <form method="post" id="formData" action="/user-details">
+            <div class="col-md-8">
+              <div class="tab-content">
+                <!-- User Details Tab -->
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                  <div class="card">
+                    <div class="container">
+                      <!-- Profile Header -->
+                      <header class="profile-header mb-4">
+                        <h1><%= user.firstName %> <%= user.lastName %></h1>
+                      </header>
+                      <!-- User Info Section -->
+                      <section class="user-info mb-4">
+                        <p><strong>First Name:</strong> <%= user.firstName %></p>
+                        <p><strong>Last Name:</strong> <%= user.lastName %></p>
+                        <p><strong>Email:</strong> <%= user.email %></p>
+                        <p><strong>Phone:</strong> <%= user.phone %></p>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Forgot Password Tab -->
+                <div class="tab-pane fade" id="forgot-password" role="tabpanel" aria-labelledby="forgot-password-tab">
+                  <div class="card">
+                    <div class="container">
+                      <section class="forgot-password mb-4">
+                        <p>If you've forgotten your password, please click the link below to reset it:</p>
+                        <a href="/forgot-password" class="btn btn-link">Forgot Password</a>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Orders Tab -->
+                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Your Orders</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Order</th>
+                              <th>Date</th>
+                              <th>Status</th>
+                              <th>Total</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>#1357</td>
+                              <td>March 15, 2024</td>
+                              <td>Processing</td>
+                              <td>$125.00 for 2 items</td>
+                              <td><a href="#" class="btn-small d-block">View</a></td>
+                            </tr>
+                            <tr>
+                              <td>#2468</td>
+                              <td>June 29, 2024</td>
+                              <td>Completed</td>
+                              <td>$364.00 for 5 items</td>
+                              <td><a href="#" class="btn-small d-block">View</a></td>
+                            </tr>
+                            <tr>
+                              <td>#2366</td>
+                              <td>August 02, 2024</td>
+                              <td>Completed</td>
+                              <td>$280.00 for 3 items</td>
+                              <td><a href="#" class="btn-small d-block">View</a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Track Orders Tab -->
+                <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Orders Tracking</h5>
+                    </div>
+                    <div class="card-body contact-form-area">
+                      <p>To track your order, please enter your Order ID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
+                      <div class="row">
+                        <div class="col-lg-8">
+                          <form class="contact-form-style mt-30 mb-50" action="#" method="post">
+                            <div class="input-style mb-20">
+                             
+                              <label>Order ID</label>
+                              <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square">
+                            </div>
+                            <div class="input-style mb-20">
+                              <label>Billing Email</label>
+                              <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square">
+                            </div>
+                            <button class="submit submit-auto-width" type="submit">Track</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Address Tab -->
+                <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="card mb-3 mb-lg-0">
+                        <div class="card-header">
+                          <h5 class="mb-0">Billing Address</h5>
+                        </div>
+                        <div class="card-body">
+                          <address>
+                            3522 Interstate 75 Business Spur,<br>
+                            Sault Ste. Marie,<br>
+                            MI 49783
+                          </address>
+                          <p>New York</p>
+                          <a href="#" class="btn-small">Edit</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="card">
+                        <div class="card-header">
+                          <h5 class="mb-0">Shipping Address</h5>
+                        </div>
+                        <div class="card-body">
+                          <address>
+                            4299 Express Lane<br>
+                            Sarasota, FL 34249 USA<br>
+                            Phone: (941) 227-4444
+                          </address>
+                          <p>Sarasota</p>
+                          <a href="#" class="btn-small">Edit</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <a class="btn btn-dark btn-lg mt-3" href="#">
+                    <i class="fa fa-plus-circle mr-2"></i> Add Address
+                  </a>
+                  
+                </div>
+  
+                <!-- Account Details Tab -->
+                <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5>Edit Account Details</h5>
+                    </div>
+                    <div class="card-body">
+                      <p>Already have an account? <a href="page-login-register.html">Log in instead!</a></p>
+                      <form method="post" id="formData" action="/user-details">
                         <div class="mb-3">
-                          <label class="form-label">First Name</label>
+                          <label class="form-label" for="firstName">First Name</label>
                           <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text" value="<%= user.firstName %>">
-                          <span id="firstNameError" class="error" style="color: red;"></span>
+                          <span id="firstNameError" class="error text-danger"></span>
                         </div>
-                
+  
                         <div class="mb-3">
-                          <label class="form-label">Last Name</label>
+                          <label class="form-label" for="lastName">Last Name</label>
                           <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text" value="<%= user.lastName %>">
-                          <span id="lastNameError" class="error" style="color: red;"></span>
+                          <span id="lastNameError" class="error text-danger"></span>
                         </div>
-                
+  
                         <div class="mb-3">
-                          <label class="form-label">Email</label>
+                          <label class="form-label" for="email">Email</label>
                           <input class="form-control" id="email" name="email" placeholder="Your email" type="email" value="<%= user.email %>">
-                          <span id="emailError" class="error" style="color: red;"></span>
+                          <span id="emailError" class="error text-danger"></span>
                         </div>
-                
+  
                         <div class="mb-3">
-                          <label class="form-label">Phone</label>
+                          <label class="form-label" for="phone">Phone</label>
                           <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" value="<%= user.phone %>">
-                          <span id="phoneError" class="error" style="color: red;"></span>
+                          <span id="phoneError" class="error text-danger"></span>
                         </div>
-                
+  
                         <div class="mb-3">
-                          <label class="form-label">New Password</label>
+                          <label class="form-label" for="newPassword">New Password</label>
                           <div class="input-with-icon">
                             <input class="form-control" id="newPassword" name="newPassword" placeholder="New Password" type="password">
                             <span class="toggle-password-icon" id="toggleNewPassword">
                               <i class="fa fa-eye" aria-hidden="true"></i>
                             </span>
                           </div>
-                          <span id="newPasswordError" class="error" style="color: red;"></span>
+                          <span id="newPasswordError" class="error text-danger"></span>
                         </div>
-                
+  
                         <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <div class="input-with-icon">
-                              <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
-                              <span class="toggle-password-icon" id="toggleConfirmPassword">
-                                <i class="fa fa-eye" aria-hidden="true"></i>
-                              </span>
-                            </div>
-                            <span id="confirmPasswordError" class="error" style="color: red;"></span>
+                          <label class="form-label" for="confirmPassword">Confirm Password</label>
+                          <div class="input-with-icon">
+                            <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
+                            <span class="toggle-password-icon" id="toggleConfirmPassword">
+                              <i class="fa fa-eye" aria-hidden="true"></i>
+                            </span>
                           </div>
-                          
-                
+                          <span id="confirmPasswordError" class="error text-danger"></span>
+                        </div>
+  
                         <div class="mb-4">
                           <button type="submit" class="btn bg-dark text-white">Save Changes</button>
                         </div>
                       </form>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-        <% } else { %>
-                    <p>Please login</p>
-            <% } %>
-        
-    </section>
+      </div>
+    </div>
+  </section>
+  
 </main>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggleEditSectionButton = document.getElementById('toggleEditSection');
-      const editSection = document.getElementById('editSection');
-  
-      toggleEditSectionButton.addEventListener('click', function() {
-        editSection.classList.toggle('hidden');
-      });
-  
-      function togglePasswordVisibility(passwordFieldId, toggleButtonId) {
-        const passwordField = document.getElementById(passwordFieldId);
-        const toggleButton = document.getElementById(toggleButtonId);
-  
-        toggleButton.addEventListener('click', function() {
-          if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            toggleButton.textContent = 'Hide';
-          } else {
-            passwordField.type = 'password';
-            toggleButton.textContent = 'Show';
-          }
-        });
+document.addEventListener('DOMContentLoaded', function() {
+  const togglePasswordVisibility = (passwordFieldId, toggleButtonId) => {
+    const passwordField = document.getElementById(passwordFieldId);
+    const toggleButton = document.getElementById(toggleButtonId);
+
+    toggleButton.addEventListener('click', () => {
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleButton.innerHTML = '<i class="fa fa-eye-slash" aria-hidden="true"></i>';
+      } else {
+        passwordField.type = 'password';
+        toggleButton.innerHTML = '<i class="fa fa-eye" aria-hidden="true"></i>';
       }
-  
-      togglePasswordVisibility('newPassword', 'toggleNewPassword');
-      togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
     });
-  </script>
-  
-  
+  };
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const firstNameInput = document.getElementById('firstName');
-      const lastNameInput = document.getElementById('lastName');
-      const mobileInput = document.getElementById('phone');
-      const emailInput = document.getElementById('email');
-      const newPasswordInput = document.getElementById('newPassword');
-      const confirmPasswordInput = document.getElementById('confirmPassword');
-  
-      const firstNameError = document.getElementById('firstNameError');
-      const lastNameError = document.getElementById('lastNameError');
-      const mobileError = document.getElementById('phoneError');
-      const emailError = document.getElementById('emailError');
-      const newPasswordError = document.getElementById('newPasswordError');
-      const confirmPasswordError = document.getElementById('confirmPasswordError');
-  
-      const validateFirstName = () => {
-        if (firstNameInput.value.trim() === '') {
-          firstNameError.textContent = '* First name is required';
-          return false;
-        } else {
-          firstNameError.textContent = '';
-          return true;
-        }
-      };
-  
-      const validateLastName = () => {
-        if (lastNameInput.value.trim() === '') {
-          lastNameError.textContent = '* Last name is required';
-          return false;
-        } else {
-          lastNameError.textContent = '';
-          return true;
-        }
-      };
-  
-      const validateMobile = () => {
-        const mobileRegex = /^[0-9]{10}$/;
-        if (mobileInput.value.trim() === '') {
-          mobileError.textContent = '* Mobile number is required';
-          return false;
-        } else if (!mobileRegex.test(mobileInput.value.trim())) {
-          mobileError.textContent = '* Enter a valid mobile number';
-          return false;
-        } else {
-          mobileError.textContent = '';
-          return true;
-        }
-      };
-  
-      const validateEmail = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailInput.value.trim() === '') {
-          emailError.textContent = '* Email is required';
-          return false;
-        } else if (!emailRegex.test(emailInput.value.trim())) {
-          emailError.textContent = '* Enter a valid email';
-          return false;
-        } else {
-          emailError.textContent = '';
-          return true;
-        }
-      };
-  
-      const validateNewPassword = () => {
-         if (newPasswordInput.value.trim().length < 0) {
-          newPasswordError.textContent = '* Password should be at least 4 characters';
-          return false;
-        } else {
-          newPasswordError.textContent = '';
-          return true;
-        }
-      };
-  
-      const validateConfirmPassword = () => {
-         if (confirmPasswordInput.value.trim() !== newPasswordInput.value.trim()) {
-          confirmPasswordError.textContent = '* Passwords do not match';
-          return false;
-        } else {
-          confirmPasswordError.textContent = '';
-          return true;
-        }
-      };
-  
-      firstNameInput.addEventListener('input', validateFirstName);
-      lastNameInput.addEventListener('input', validateLastName);
-      mobileInput.addEventListener('input', validateMobile);
-      emailInput.addEventListener('input', validateEmail);
-      newPasswordInput.addEventListener('input', validateNewPassword);
-      confirmPasswordInput.addEventListener('input', validateConfirmPassword);
-  
-      const form = document.getElementById('formData');
-  
-      form.addEventListener('submit', (event) => {
-        if (!validateFirstName() || !validateLastName() || !validateMobile() || !validateEmail() || !validateNewPassword() || !validateConfirmPassword()) {
-          event.preventDefault();
-        }
-      });
+  togglePasswordVisibility('newPassword', 'toggleNewPassword');
+  togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+
+  const validateField = (input, errorElement, validationFn) => {
+    input.addEventListener('input', () => {
+      const isValid = validationFn(input.value);
+      errorElement.textContent = isValid ? '' : '* Invalid input';
+      return isValid;
     });
-  </script>
-  
+  };
+
+  const form = document.getElementById('formData');
+
+  const validateFirstName = (value) => value.trim() !== '';
+  const validateLastName = (value) => value.trim() !== '';
+  const validateMobile = (value) => /^[0-9]{10}$/.test(value.trim());
+  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  const validateNewPassword = (value) => value.trim().length >= 4;
+  const validateConfirmPassword = (value) => value === document.getElementById('newPassword').value;
+
+  validateField(document.getElementById('firstName'), document.getElementById('firstNameError'), validateFirstName);
+  validateField(document.getElementById('lastName'), document.getElementById('lastNameError'), validateLastName);
+  validateField(document.getElementById('phone'), document.getElementById('phoneError'), validateMobile);
+  validateField(document.getElementById('email'), document.getElementById('emailError'), validateEmail);
+  validateField(document.getElementById('newPassword'), document.getElementById('newPasswordError'), validateNewPassword);
+  validateField(document.getElementById('confirmPassword'), document.getElementById('confirmPasswordError'), validateConfirmPassword);
+
+  form.addEventListener('submit', (event) => {
+    const isFirstNameValid = validateFirstName(document.getElementById('firstName').value);
+    const isLastNameValid = validateLastName(document.getElementById('lastName').value);
+    const isMobileValid = validateMobile(document.getElementById('phone').value);
+    const isEmailValid = validateEmail(document.getElementById('email').value);
+    const isNewPasswordValid = validateNewPassword(document.getElementById('newPassword').value);
+    const isConfirmPasswordValid = validateConfirmPassword(document.getElementById('confirmPassword').value);
+
+    if (!isFirstNameValid || !isLastNameValid || !isMobileValid || !isEmailValid || !isNewPasswordValid || !isConfirmPasswordValid) {
+      event.preventDefault();
+    }
+  });
+});
+</script>
