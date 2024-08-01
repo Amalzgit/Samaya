@@ -49,7 +49,7 @@ const isLoggedIn = (req, res, next) => {
 // Routes
 auth_route.get('/login', isLoggedIn,noCache, loginValidater, auth.isLogout, loginController.loginLoad);
 auth_route.post('/login', isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
-auth_route.get('/logout', auth.isLogedin, loginController.Logout);
+auth_route.get('/logout', auth.isLogedin,noCache, loginController.Logout);
 auth_route.use(otp_route);
 auth_route.use(register_route);
 // Fallback route for unmatched routes
