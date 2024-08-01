@@ -8,263 +8,227 @@
     </div>
   </div>
 
-  <section class="pt-150 pb-150">
+  <section class="py-5">
     <div class="container">
       <div class="row">
-        <div class="col-lg-10 m-auto">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="dashboard-menu">
-                <ul class="nav flex-column" role="tablist">
-                  <li class="nav-item">
-                    <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="true">
-                      <i class="fi-rs-settings-sliders mr-10"></i>User Details
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">
-                      <i class="fi-rs-shopping-bag mr-10"></i>Orders
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
-                      <i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">
-                      <i class="fi-rs-marker mr-10"></i>My Address
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="false">
-                      <i class="fi-rs-user mr-10"></i>Account Details
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="forgot-password-tab" data-bs-toggle="tab" href="#forgot-password" role="tab" aria-controls="forgot-password" aria-selected="false">
-                      <i class="fi-rs-user mr-10"></i>Forgot Password
-                    </a>
-                  </li>
-                  <li class="nav-item ">
-                    <a class="nav-link " style="color: red;" href="/logout">
-                      <i class="fi-rs-sign-out mr-10"></i>Logout
-                    </a>
-                  </li>
-                </ul>
+        <div class="col-lg-3">
+          <div class="card">
+            <div class="card-header bg-dark text-white">
+              <h4 class="mb-0"><i class="fa fa-user-circle mr-2"></i> Dashboard</h4>
+            </div>
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="true">
+                <i class="fa fa-cog mr-2"></i> User Details
+              </a>
+              <a class="list-group-item list-group-item-action" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">
+                <i class="fa fa-shopping-bag mr-2"></i> Orders
+              </a>
+              <a class="list-group-item list-group-item-action" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
+                <i class="fa fa-truck mr-2"></i> Track Your Order
+              </a>
+              <a class="list-group-item list-group-item-action" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">
+                <i class="fa fa-map-marker-alt mr-2"></i> My Address
+              </a>
+              <a class="list-group-item list-group-item-action" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="false">
+                <i class="fa fa-user mr-2"></i> Edit Account Details
+              </a>
+              <a class="list-group-item list-group-item-action" id="forgot-password-tab" data-bs-toggle="tab" href="#forgot-password" role="tab" aria-controls="forgot-password" aria-selected="false">
+                <i class="fa fa-key mr-2"></i> Forgot Password
+              </a>
+              <a class="list-group-item list-group-item-action text-danger" href="/logout">
+                <i class="fa fa-sign-out-alt mr-2"></i> Logout
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="tab-content">
+            <!-- User Details Tab -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <header class="mb-4">
+                    <h2 class="mb-0"><%= user.firstName %> <%= user.lastName %></h2>
+                  </header>
+                  <div>
+                    <p><strong>First Name:</strong> <%= user.firstName %></p>
+                    <p><strong>Last Name:</strong> <%= user.lastName %></p>
+                    <p><strong>Email:</strong> <%= user.email %></p>
+                    <p><strong>Phone:</strong> <%= user.phone %></p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="col-md-8">
-              <div class="tab-content">
-                <!-- User Details Tab -->
-                <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                  <div class="card">
-                    <div class="container">
-                      <!-- Profile Header -->
-                      <header class="profile-header mb-4">
-                        <h1><%= user.firstName %> <%= user.lastName %></h1>
-                      </header>
-                      <!-- User Info Section -->
-                      <section class="user-info mb-4">
-                        <p><strong>First Name:</strong> <%= user.firstName %></p>
-                        <p><strong>Last Name:</strong> <%= user.lastName %></p>
-                        <p><strong>Email:</strong> <%= user.email %></p>
-                        <p><strong>Phone:</strong> <%= user.phone %></p>
-                      </section>
-                    </div>
+  
+            <!-- Forgot Password Tab -->
+            <div class="tab-pane fade" id="forgot-password" role="tabpanel" aria-labelledby="forgot-password-tab">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <p>If you've forgotten your password, please click the link below to reset it:</p>
+                  <a href="/forgot-password" class="btn btn-outline-primary"><i class="fa fa-key mr-2"></i> Forgot Password</a>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Orders Tab -->
+            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+              <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                  <h4 class="mb-0"><i class="fa fa-shopping-bag mr-2"></i> Your Orders</h4>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Order</th>
+                          <th>Date</th>
+                          <th>Status</th>
+                          <th>Total</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>#1357</td>
+                          <td>March 15, 2024</td>
+                          <td><span class="badge bg-warning">Processing</span></td>
+                          <td>$125.00 for 2 items</td>
+                          <td><a href="#" class="btn btn-outline-primary btn-sm">View</a></td>
+                        </tr>
+                        <tr>
+                          <td>#2468</td>
+                          <td>June 29, 2024</td>
+                          <td><span class="badge bg-success">Completed</span></td>
+                          <td>$364.00 for 5 items</td>
+                          <td><a href="#" class="btn btn-outline-primary btn-sm">View</a></td>
+                        </tr>
+                        <tr>
+                          <td>#2366</td>
+                          <td>August 02, 2024</td>
+                          <td><span class="badge bg-success">Completed</span></td>
+                          <td>$280.00 for 3 items</td>
+                          <td><a href="#" class="btn btn-outline-primary btn-sm">View</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
+              </div>
+            </div>
   
-                <!-- Forgot Password Tab -->
-                <div class="tab-pane fade" id="forgot-password" role="tabpanel" aria-labelledby="forgot-password-tab">
-                  <div class="card">
-                    <div class="container">
-                      <section class="forgot-password mb-4">
-                        <p>If you've forgotten your password, please click the link below to reset it:</p>
-                        <a href="/forgot-password" class="btn btn-link">Forgot Password</a>
-                      </section>
-                    </div>
-                  </div>
+            <!-- Track Orders Tab -->
+            <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+              <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                  <h4 class="mb-0"><i class="fa fa-truck mr-2"></i> Orders Tracking</h4>
                 </div>
-  
-                <!-- Orders Tab -->
-                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                  <div class="card">
-                    <div class="card-header">
-                      <h5 class="mb-0">Your Orders</h5>
+                <div class="card-body">
+                  <p>To track your order, please enter your Order ID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
+                  <form action="#" method="post" class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label" for="order-id">Order ID</label>
+                      <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="form-control">
                     </div>
-                    <div class="card-body">
-                      <div class="table-responsive">
-                        <table class="table">
-                          <thead>
-                            <tr>
-                              <th>Order</th>
-                              <th>Date</th>
-                              <th>Status</th>
-                              <th>Total</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>#1357</td>
-                              <td>March 15, 2024</td>
-                              <td>Processing</td>
-                              <td>$125.00 for 2 items</td>
-                              <td><a href="#" class="btn-small d-block">View</a></td>
-                            </tr>
-                            <tr>
-                              <td>#2468</td>
-                              <td>June 29, 2024</td>
-                              <td>Completed</td>
-                              <td>$364.00 for 5 items</td>
-                              <td><a href="#" class="btn-small d-block">View</a></td>
-                            </tr>
-                            <tr>
-                              <td>#2366</td>
-                              <td>August 02, 2024</td>
-                              <td>Completed</td>
-                              <td>$280.00 for 3 items</td>
-                              <td><a href="#" class="btn-small d-block">View</a></td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    <div class="col-md-6">
+                      <label class="form-label" for="billing-email">Billing Email</label>
+                      <input name="billing-email" placeholder="Email you used during checkout" type="email" class="form-control">
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-primary mt-2" type="submit">Track</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Address Tab -->
+            <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+              <div class="row">
+                <% addresses.forEach(address =>{ %>
+                  <div class="col-lg-6">
+                    <div class="card mb-4">
+                      <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0"><%= address.type %> Address</h4>
+                      </div>
+                      <div class="card-body">
+                        <address>
+                          <strong>Full Name:</strong> <%= address.fullName %><br>
+                          <strong>Country:</strong> <%= address.country %><br>
+                          <strong>Mobile Number:</strong> <%= address.mobileNumber %><br>
+                          <strong>Address Line 1:</strong> <%= address.addressLine1 %><br>
+                          <% if (address.addressLine2) { %>
+                            <strong>Address Line 2:</strong> <%= address.addressLine2 %><br>
+                          <% } %>
+                          <% if (address.landmark) { %>
+                            <strong>Landmark:</strong> <%= address.landmark %><br>
+                          <% } %>
+                          <strong>Pincode:</strong> <%= address.pincode %><br>
+                          <strong>Town/City:</strong> <%= address.townCity %><br>
+                          <strong>State:</strong> <%= address.state %><br>
+                        </address>
+                        <a href="/edit-address/<%= address._id %>" class="btn btn-outline-primary btn-sm">Edit</a>
+                        <a href="/delete-address/<%= address._id %>" class="btn btn-danger btn-sm">Delete</a>
                       </div>
                     </div>
                   </div>
+                <% }); %>
+              </div>
+              <a class="btn btn-dark btn-lg mt-3" href="/add-address">
+                <i class="fa fa-plus-circle mr-2"></i> Add Address
+              </a>
+            </div>
+  
+            <!-- Account Details Tab -->
+            <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
+              <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                  <h4 class="mb-0"><i class="fa fa-user mr-2"></i> Edit Account Details</h4>
                 </div>
-  
-                <!-- Track Orders Tab -->
-                <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
-                  <div class="card">
-                    <div class="card-header">
-                      <h5 class="mb-0">Orders Tracking</h5>
+                <div class="card-body">
+                  <form method="post" id="formData" action="/user-details">
+                    <div class="mb-3">
+                      <label class="form-label" for="firstName">First Name</label>
+                      <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text" value="<%= user.firstName %>">
+                      <span id="firstNameError" class="error text-danger"></span>
                     </div>
-                    <div class="card-body contact-form-area">
-                      <p>To track your order, please enter your Order ID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
-                      <div class="row">
-                        <div class="col-lg-8">
-                          <form class="contact-form-style mt-30 mb-50" action="#" method="post">
-                            <div class="input-style mb-20">
-                             
-                              <label>Order ID</label>
-                              <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square">
-                            </div>
-                            <div class="input-style mb-20">
-                              <label>Billing Email</label>
-                              <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square">
-                            </div>
-                            <button class="submit submit-auto-width" type="submit">Track</button>
-                          </form>
-                        </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="lastName">Last Name</label>
+                      <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text" value="<%= user.lastName %>">
+                      <span id="lastNameError" class="error text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="email">Email</label>
+                      <input class="form-control" id="email" name="email" placeholder="Your email" type="email" value="<%= user.email %>">
+                      <span id="emailError" class="error text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="phone">Phone</label>
+                      <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" value="<%= user.phone %>">
+                      <span id="phoneError" class="error text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="newPassword">New Password</label>
+                      <div class="input-group">
+                        <input class="form-control" id="newPassword" name="newPassword" placeholder="New Password" type="password">
+                        <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                          <i class="fa fa-eye"></i>
+                        </button>
                       </div>
+                      <span id="newPasswordError" class="error text-danger"></span>
                     </div>
-                  </div>
-                </div>
-  
-                <!-- Address Tab -->
-                <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
-                  <div class="row">
-                    <div class="col-lg-6">
-                      <div class="card mb-3 mb-lg-0">
-                        <div class="card-header">
-                          <h5 class="mb-0">Billing Address</h5>
-                        </div>
-                        <div class="card-body">
-                          <address>
-                            3522 Interstate 75 Business Spur,<br>
-                            Sault Ste. Marie,<br>
-                            MI 49783
-                          </address>
-                          <p>New York</p>
-                          <a href="#" class="btn-small">Edit</a>
-                        </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="confirmPassword">Confirm Password</label>
+                      <div class="input-group">
+                        <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
+                        <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                          <i class="fa fa-eye"></i>
+                        </button>
                       </div>
+                      <span id="confirmPasswordError" class="error text-danger"></span>
                     </div>
-                    <div class="col-lg-6">
-                      <div class="card">
-                        <div class="card-header">
-                          <h5 class="mb-0">Shipping Address</h5>
-                        </div>
-                        <div class="card-body">
-                          <address>
-                            4299 Express Lane<br>
-                            Sarasota, FL 34249 USA<br>
-                            Phone: (941) 227-4444
-                          </address>
-                          <p>Sarasota</p>
-                          <a href="#" class="btn-small">Edit</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <a class="btn btn-dark btn-lg mt-3" href="#">
-                    <i class="fa fa-plus-circle mr-2"></i> Add Address
-                  </a>
-                  
-                </div>
-  
-                <!-- Account Details Tab -->
-                <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
-                  <div class="card">
-                    <div class="card-header">
-                      <h5>Edit Account Details</h5>
-                    </div>
-                    <div class="card-body">
-                      <p>Already have an account? <a href="page-login-register.html">Log in instead!</a></p>
-                      <form method="post" id="formData" action="/user-details">
-                        <div class="mb-3">
-                          <label class="form-label" for="firstName">First Name</label>
-                          <input class="form-control" id="firstName" name="firstName" placeholder="First Name" type="text" value="<%= user.firstName %>">
-                          <span id="firstNameError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-3">
-                          <label class="form-label" for="lastName">Last Name</label>
-                          <input class="form-control" id="lastName" name="lastName" placeholder="Last Name" type="text" value="<%= user.lastName %>">
-                          <span id="lastNameError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-3">
-                          <label class="form-label" for="email">Email</label>
-                          <input class="form-control" id="email" name="email" placeholder="Your email" type="email" value="<%= user.email %>">
-                          <span id="emailError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-3">
-                          <label class="form-label" for="phone">Phone</label>
-                          <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" value="<%= user.phone %>">
-                          <span id="phoneError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-3">
-                          <label class="form-label" for="newPassword">New Password</label>
-                          <div class="input-with-icon">
-                            <input class="form-control" id="newPassword" name="newPassword" placeholder="New Password" type="password">
-                            <span class="toggle-password-icon" id="toggleNewPassword">
-                              <i class="fa fa-eye" aria-hidden="true"></i>
-                            </span>
-                          </div>
-                          <span id="newPasswordError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-3">
-                          <label class="form-label" for="confirmPassword">Confirm Password</label>
-                          <div class="input-with-icon">
-                            <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password">
-                            <span class="toggle-password-icon" id="toggleConfirmPassword">
-                              <i class="fa fa-eye" aria-hidden="true"></i>
-                            </span>
-                          </div>
-                          <span id="confirmPasswordError" class="error text-danger"></span>
-                        </div>
-  
-                        <div class="mb-4">
-                          <button type="submit" class="btn bg-dark text-white">Save Changes</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+                    <button type="submit" class="btn btn-dark">Save Changes</button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -273,8 +237,27 @@
       </div>
     </div>
   </section>
-  
 </main>
+<style>
+  h4 {
+    font-family: "Spartan", sans-serif;
+    color: #f3eded;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .btn-danger {
+    background-color: #dc3545 !important; /* Red background */
+    border-color: #dc3545 !important;     /* Red border */
+    color: #fff !important;               /* White text */
+  }
+  .list-group-item.active {
+    z-index: 2;
+    color: #fff; /* Text color */
+    background-color: #000; /* Background color */
+    border-color: #000; /* Border color */
+  }
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const togglePasswordVisibility = (passwordFieldId, toggleButtonId) => {
