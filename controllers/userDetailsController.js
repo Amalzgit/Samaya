@@ -3,14 +3,12 @@ const Address = require("../models/addressModel");
 
 const loadUserDetails = async (req, res) => {
   try {
-    const [user, addresses] = await Promise.all([
-      User.findById(req.session.user_id),
-      Address.find()
-    ]);
-
+    const user = await User.findById(req.session.user_id);
+    const addresses = await Address.find({ user: req.session.user_id });
+    
     return res.render("userDetails", {
       user,
-      addresses,
+      addresses, 
       successMessage: "",
       errorMessage: "",
     });
@@ -25,8 +23,9 @@ const loadUserDetails = async (req, res) => {
   }
 };
 
+
 const updateUser = async (req, res) => {
-  const { firstName, lastName, email, phone, newPassword, confirmPassword } = req.body;
+  const { firstName, lastName, newPassword, confirmPassword } = req.body;
 
   try {
     const user = await User.findById(req.session.user_id);
@@ -40,8 +39,7 @@ const updateUser = async (req, res) => {
 
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
-    user.email = email || user.email;
-    user.phone = phone || user.phone;
+   
 
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
       user.password = newPassword; // Use newPassword directly
@@ -49,20 +47,20 @@ const updateUser = async (req, res) => {
 
     await user.save();
     req.session.user = user;
-    return res.redirect("/user-details");
+    res.json({ success: true });
   } catch (error) {
     console.error("Error while updating user:", error);
-    return res.render("userDetails", {
-      user: req.body,
-      successMessage: "",
-      errorMessage: "Error updating user",
-    });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
 const loadAddAddress = async (req, res) => {
-  try {
-    return res.render("addAddress", { layout: false });
+  try{
+  const userId = req.session.user_id;
+
+  const addresses = await Address.find({ user: userId });
+
+  return res.render('addAddress', { layout: false, addresses });
   } catch (error) {
     console.error("Error while rendering add address page:", error);
   }
@@ -142,6 +140,7 @@ const editAddress = async (req,res)=>{
           const { addressId } = req.params;
           
           await Address.findByIdAndUpdate(addressId,{
+            country:country || country,
             fullName:fullName || fullName,
           mobileNumber:mobileNumber || mobileNumber,
           pincode:pincode ||pincode,
@@ -167,11 +166,11 @@ const deleteAddress= async (req,res)=>{
    const {addressId} =req.params;
    await Address.findByIdAndDelete(addressId);
 
-   return res.redirect('/user-details')
+   res.json({ success: true });
 
   } catch (error) {
    console.log("remove Address error",error);
-   return res.redirect('/user-details')
+   res.status(500).json({ success: false, message: 'Server error' });
   }
 
 }

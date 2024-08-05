@@ -1,0 +1,190 @@
+<section class="mt-5 mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table shopping-summery text-center clean">
+                        <thead>
+                            <tr class="main-heading">
+                                <th scope="col">Image</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Subtotal</th>
+                                <th scope="col">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (cart && cart.items.length > 0) { %>
+                                <% cart.items.forEach(item => { %>
+                                    <tr>
+                                        <td class="image product-thumbnail">
+                                            <img src="/products/<%= item.product.images[0] %>" alt="<%= item.product.name %>" class="img-fluid">
+                                        </td>
+                                        <td class="product-des product-name">
+                                            <a href="/product/<%= item.product._id %>"><%= item.product.name %></a>
+                                        </td>
+                                        <td class="price">
+                                            <span> <%= item.product.formattedPrice %> </span>
+                                        </td>
+                                        <td class="text-center" data-title="Quantity">
+                                            <div class="quantity-adjustment d-flex align-items-center justify-content-center">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease" data-product-id="<%= item.product._id %>"><i class="fa fa-minus"></i></button>
+                                                <input type="text" name="quantity" id="quantity_<%= item.product._id %>" class="form-control form-control-sm text-center mx-1" style="width: 50px;" value="<%= item.quantity %>" min="1" max="<%= item.product.stock %>" readonly>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="increase" data-product-id="<%= item.product._id %>"><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </td>
+                                        <td class="text-right">
+                                            <% 
+                                              const pricePerUnit = parseFloat(item.product.formattedPrice.replace(/[^0-9.-]+/g, '')); // Remove currency symbols
+                                              const subtotal = pricePerUnit * item.quantity;
+                                              const formattedSubtotal = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(subtotal); // Format subtotal as currency
+                                            %>
+                                            <span><%= formattedSubtotal %></span>
+                                        </td>
+                                        <td class="action">
+                                            <form action="/cart/remove" method="POST" class="d-inline">
+                                                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                                <button type="submit" class="btn btn-light btn-sm text-muted"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <h4>Your Cart is Empty</h4>
+                                        <a href="/shop" class="btn btn-dark">
+                                            <i class="fas fa-shopping-cart"></i> Shop Now
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                            <tr>
+                                <td colspan="6" class="text-end">
+                                    <form action="/cart/clear" method="POST">
+                                        <button type="submit" class="btn btn-light btn-sm text-muted">
+                                            <i class="fa fa-times"></i> Clear Cart
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cart-action text-end">
+                    <!-- Cart action buttons or links can go here -->
+                </div>
+                <div class="divider center_icon mt-5 mb-5"><i class="fa fa-fingerprint"></i></div>
+                <div class="row mb-5">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-4 mt-4">
+                            <div class="heading_s1 mb-2">
+                                <h4>Apply Coupon</h4>
+                            </div>
+                            <div class="total-amount">
+                                <div class="left">
+                                    <div class="coupon">
+                                        <form action="/cart/apply-coupon" method="POST">
+                                            <div class="form-row row justify-content-center">
+                                                <div class="form-group col-lg-6">
+                                                    <input class="form-control form-control-sm" name="coupon" placeholder="Enter Your Coupon" type="text">
+                                                </div>
+                                                <div class="form-group col-lg-6">
+                                                    <button class="btn btn-dark btn-sm" type="submit"><i class="fa fa-tag mr-1"></i> Apply</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="border p-4 border-radius cart-totals">
+                            <div class="heading_s1 mb-2">
+                                <h4>Cart Totals</h4>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <% if (cart && cart.items.length > 0) { %>
+                                    <tbody>
+                                        <tr>
+                                            <td class="cart_total_label">Cart Subtotal</td>
+                                            <td class="cart_total_amount"><span class="font-lg fw-400 text-brand" ><%= cart.formattedPrice %></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="cart_total_label">Shipping</td>
+                                            <td class="cart_total_amount"> <i class="fa fa-gift mr-1"></i> Free Shipping</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="cart_total_label">Total</td>
+                                            <td class="cart_total_amount"><strong><span class="font-xl fw-400 text-brand" id="totalPrice"><%= cart.formattedPrice %></span></strong></td>
+                                        </tr>
+                                    </tbody>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="2">Your cart is empty.</td>
+                                        </tr>
+                                    <% } %>
+                                </table>
+                            </div>
+                            <a href="/checkout" class="btn btn-dark btn-sm"><i class="fa fa-box mr-1"></i> Proceed To Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.quantity-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            const action = event.target.closest('button').dataset.action;
+            const productId = event.target.closest('button').dataset.productId;
+            const inputElement = document.querySelector(`#quantity_${productId}`);
+            let quantity = parseInt(inputElement.value, 10);
+
+            if (action === 'increase') {
+                quantity = Math.min(quantity + 1, parseInt(inputElement.max, 10));
+            } else if (action === 'decrease') {
+                quantity = Math.max(quantity - 1, 1);
+            }
+
+            inputElement.value = quantity;
+
+            try {
+                const response = await fetch('/cart/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId, quantity })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    // Update subtotal for this item
+                    const subtotalElement = event.target.closest('tr').querySelector('.text-right span');
+                    subtotalElement.textContent = result.formattedSubtotal;
+
+                    // Update cart total
+                    document.querySelector('.cart_total_amount .font-xl').textContent = result.formattedTotal;
+
+                    console.log('Cart updated successfully.');
+                } else {
+                    console.error('Error updating cart:', result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+    </script>
+    

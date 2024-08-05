@@ -1,16 +1,7 @@
 const express = require('express');
 const product_route = express.Router()
 const userProController =require('../../controllers/userProductController');
-
-const isUser = (req, res, next) => {
-    if (req.session.user_id) {
-        const isAdmin = req.session.isAdmin;
-        if (isAdmin) {
-            return res.redirect('/admin/adminhome');
-        }
-    }
-    next()
-}
+const isUser = require('../../middleware/isUser');
 
 
 // product_route.post('/add-review',isUser,userProController.addReview)

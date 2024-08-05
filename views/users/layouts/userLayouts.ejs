@@ -17,8 +17,16 @@
     <link rel="stylesheet" href="/userassets/css/main.css?v=3.4">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-</head>
 
+</head>
+<style>
+    .icon-size {
+        font-size: 1.5rem; 
+    }
+    .icon-spacing {
+        margin-right: 1rem;
+    }
+</style>
 <body>
     
     <header class="header-area header-style-2 header-height-2">
@@ -73,38 +81,34 @@
         <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
             <div class="container">
                 <div class="header-wrap">
-                    <!-- Logo Section -->
                     <div class="logo logo-width-1">
                         <a href="/">
                             <img src="/userassets/imgs/theme/sama.png" alt="logo">
                         </a>
                     </div>
         
-                    <!-- Header Right Section -->
                     <div class="header-right">
-                        <!-- Search Bar -->
                         <div class="search-style-1 pl-200">
                             <form action="#">
                                 <input type="text" placeholder="Search for items...">
                             </form>
                         </div>
-        
-                        <!-- Header Action Right Section -->
+                        
                         <div class="header-action-right d-flex align-items-center">
                             <!-- Wishlist Icon -->
-                            <button class="d-flex align-items-center text-decoration-none bg-transparent border-0" onclick="window.location.href='shop-wishlist.html';" style="cursor: pointer;">
-                                <i class="fas fa-heart fa-lg"></i>
-                                <!-- <span class="badge bg-primary ms-2">4</span> -->
-                            </button>
-        
+                            <a href="/wishlist" class="d-flex align-items-center text-decoration-none bg-transparent border-0 icon-spacing" style="cursor: pointer;">
+                                <i class="fa-brands fa-gratipay icon-size"></i>
+                                
+                            </a>
                             <!-- Cart Icon with Dropdown -->
                             <div class="header-action-item position-relative">
-                                <button class="d-flex align-items-center text-decoration-none bg-transparent border-0" onclick="window.location.href='shop-cart.html';">
-                                    <i class="fas fa-shopping-cart fa-lg"></i>
-                                    <!-- <span class="badge bg-primary ms-2">2</span> -->
-                                </button>
+                                <a href="/cart" class="d-flex align-items-center text-decoration-none bg-transparent border-0">
+                                    <i class="fa-solid fa-dolly icon icon-size"></i>
+                                    
+                                </a>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -155,9 +159,9 @@
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="shop-cart.html">
+                                <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/userassets/imgs/theme/icons/icon-cart.svg">
-                                    <span class="pro-count white">2</span>
+                                    <!-- <span class="pro-count white">2</span> -->
                                 </a>
                                 
                             </div>
@@ -226,6 +230,7 @@
     </div>
     
     <%- body %>
+    
     <footer class="footer pt-150">
         <div class="container">
             <div class="row">
@@ -296,7 +301,10 @@
         <div class="preloader d-flex align-items-center justify-content-center">
             <div class="preloader-inner position-relative">
                 <div class="text-center">
-                    <h5 class="mb-5">Awaiting your arrival at 'Samaya' – Where Time Meets Luxury...</h5>
+                    <h5 class="mb-10">
+                        "Welcome to <span style="color: rgb(252, 195, 9); font-size: 1.2em;">S A M A Y A</span>  Where Elegance Meets Timeless Luxury. Please Log In to Begin Your Journey."
+                    </h5>
+                    
                     <div class="loader">
                         <div class="bar bar1"></div>
                         <div class="bar bar2"></div>
@@ -306,7 +314,6 @@
             </div>
         </div>
     </div>
-   
     </style>
     <!-- Vendor JS-->
     <script src="/userassets/js/vendor/modernizr-3.6.0.min.js"></script>

@@ -3,14 +3,15 @@ const adminBrandController = require('../../controllers/adminControllers/adminBr
 const adminBrand_route = express.Router();
 const { uploadBrand } = require('../../utils/multer');
 const { brandValidator } = require('../../middleware/validator');
+const isAdmin = require('../../middleware/isAdmin');
 
-adminBrand_route.get('/brands', adminBrandController.getBrands);
-adminBrand_route.get('/create-brand', adminBrandController.getCreateBrands);
-adminBrand_route.post('/create-brand', uploadBrand.single('brandLogo'), adminBrandController.createBrand);
-adminBrand_route.get('/edit-brand/:brandId', adminBrandController.loadEditBrand);
-adminBrand_route.post('/edit-brand/:brandId', uploadBrand.single('brandLogo'), brandValidator, adminBrandController.editBrand);
-adminBrand_route.get('/delete-brand/:brandId', adminBrandController.deleteBrand);
-adminBrand_route.get('/restore-brand/:brandId', adminBrandController.restoreBrand);
-adminBrand_route.get('/remove-brand/:brandId', adminBrandController.removeBrand);
+adminBrand_route.get('/brands', isAdmin,adminBrandController.getBrands);
+adminBrand_route.get('/create-brand', isAdmin,adminBrandController.getCreateBrands);
+adminBrand_route.post('/create-brand', uploadBrand.single('brandLogo'), isAdmin,adminBrandController.createBrand);
+adminBrand_route.get('/edit-brand/:brandId', isAdmin,adminBrandController.loadEditBrand);
+adminBrand_route.post('/edit-brand/:brandId', uploadBrand.single('brandLogo'), brandValidator, isAdmin,adminBrandController.editBrand);
+adminBrand_route.get('/delete-brand/:brandId', isAdmin,adminBrandController.deleteBrand);
+adminBrand_route.get('/restore-brand/:brandId', isAdmin,adminBrandController.restoreBrand);
+adminBrand_route.get('/remove-brand/:brandId', isAdmin,adminBrandController.removeBrand);
 
 module.exports = adminBrand_route;
