@@ -9,7 +9,7 @@ const auth = require('../../middleware/authMiddleware');
 const { loginValidater } = require('../../middleware/validator');
 const otp_route = require('./otpRoute');
 const register_route = require('./registerRoute');
-const noCache = require('../../middleware/noCacheMiddleware');
+const nocache = require('../../middleware/nocache');
 
 const auth_route = express();
 
@@ -47,9 +47,9 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 // Routes
-auth_route.get('/login', isLoggedIn,noCache, loginValidater, auth.isLogout, loginController.loginLoad);
-auth_route.post('/login', isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
-auth_route.get('/logout', auth.isLogedin,noCache, loginController.Logout);
+auth_route.get('/login', nocache, isLoggedIn, loginValidater, auth.isLogout, loginController.loginLoad);
+auth_route.post('/login',nocache, isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
+auth_route.get('/logout', nocache, auth.isLogedin, loginController.Logout);
 auth_route.use(otp_route);
 auth_route.use(register_route);
 // Fallback route for unmatched routes

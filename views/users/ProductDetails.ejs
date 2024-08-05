@@ -71,22 +71,31 @@
                                                 <span class="in-stock text-success ml-5"><%= product.stock %> pieces left</span>
                                             <% } %>
                                         </li>
-                                    </ul>
-                                    
+                                    </ul> 
+                                    <% if (successMessage) { %>
+                                        <div class="alert alert-success">
+                                            <%= successMessage %>
+                                        </div>
+                                    <% } %>
+                                    <% if (errorMessage) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMessage %>
+                                        </div>
+                                    <% } %>
                                     <!-- Conditionally display these divs based on stock -->
                                     <% if (product.stock > 0) { %>
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                         <div class="detail-extralink">
-                                            <div class="detail-qty border radius">
-                                                <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                                <span class="qty-val">1</span>
-                                                <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                                            </div>
-                                            <div class="product-extra-link2">
-                                                <button type="submit" class="button button-add-to-cart">Add to cart</button>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                                <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
-                                            </div>
+                                            
+                                            <form action="/cart/add" method="POST">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                               
+                                                <input class="form-control w-25" type="hidden" name="quantity" value="1" min="1" max="<%= product.stock %>">
+                                                <hr>
+                                                <button type="submit" <%=product.stock > 0 ? '' : 'disabled' %>>
+                                                    <%=product.stock > 0 ? 'Add to cart' : 'Out of stock' %>
+                                                </button>
+                                            </form>
                                         </div>
                                     <% } %>
                                     
@@ -275,25 +284,41 @@
     });
 </script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom JavaScript for Thumbnail Click -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var mainImage = document.getElementById('mainImage').querySelector('img');
-        var thumbnails = document.querySelectorAll('.img-thumbnail');
+    // Function to handle thumbnail image clicks
+    function thumbnailClick(index) {
+        // Get all thumbnail images
+        const thumbnails = document.querySelectorAll('.img-thumbnail');
+        // Get the main image element
+        const mainImage = document.getElementById('mainImage').querySelector('img');
 
-        thumbnails.forEach(function(thumbnail, index) {
-            thumbnail.addEventListener('click', function() {
-                // Change main image source to clicked thumbnail's source
-                mainImage.src = this.src;
-                mainImage.alt = this.alt;
+        // Find the clicked thumbnail
+        const clickedThumbnail = thumbnails[index];
+        // Update the main image source with the clicked thumbnail source
+        if (clickedThumbnail) {
+            mainImage.src = clickedThumbnail.src;
+        }
+    }
+    
+    // Function to update the stock and button status
+    function updateStockStatus() {
+        // Get the stock value from the data attribute or directly from a hidden field if used
+        const stockElement = document.querySelector('input[name="quantity"]');
+        const stock = parseInt(stockElement.getAttribute('max'));
 
-                // Optional: Add/remove active class for styling purposes
-                thumbnails.forEach(function(thumb) {
-                    thumb.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-    });
+        // Get the submit button
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        // Disable or enable the button based on stock
+        if (stock <= 0) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Out of stock';
+        } else {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Add to cart';
+        }
+    }
+
+    // Run updateStockStatus on page load
+    document.addEventListener('DOMContentLoaded', updateStockStatus);
 </script>

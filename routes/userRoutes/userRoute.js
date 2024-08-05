@@ -7,7 +7,10 @@ const config = require('../../config/Sessionconfig');
 const shop_route = require('./shopRoute');
 const userdetials_route = require('./userdetialsRoute');
 const product_route = require('./productRoute');
-const noCache = require('../../middleware/noCacheMiddleware');
+const nocache = require('../../middleware/nocache');
+const cart_Route = require('./cartRoute');
+const isUser = require('../../middleware/isUser');
+// const nocache = require('nocache');
 const user_route = express();
 
 
@@ -27,26 +30,17 @@ user_route.use(expressLayouts)
 user_route.set('layout', './layouts/userLayouts')
 user_route.set('view engine', 'ejs')
 
-const isUser = (req, res, next) => {
-    if (req.session.user_id) {
-        const isAdmin = req.session.isAdmin;
-        if (isAdmin) {
-            return res.redirect('/admin/adminhome');
-        }
-    }
-    next()
-}
-
 
 
 
 // PUBLIC ROUTES
-user_route.get('/', noCache, isUser, userController.loadHome);
+user_route.get('/', nocache, isUser, userController.loadHome);
 user_route.use(shop_route)
 user_route.use(product_route)
 
 // PRIVATE ROUTES
 user_route.use(userdetials_route)
+user_route.use(cart_Route)
 
 
 module.exports = user_route;

@@ -11,7 +11,7 @@ const getProductById = async (req,res)=>{
         }
         const relatedProducts = await Product.find({ category: product.category, _id: { $ne: productId } }).limit(4);
 
-        res.render('ProductDetails', { product, relatedProducts });
+        res.render('ProductDetails', { product, relatedProducts ,successMessage:"",errorMessage:""});
     } catch (error) {
         console.log('Error getting product',error);
         return res.render('shop',{})

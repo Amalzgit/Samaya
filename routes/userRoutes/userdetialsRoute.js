@@ -1,23 +1,13 @@
 const express =require('express');
 const userdetials_route = express.Router();
-const userDetails =require('../../controllers/userDetailsController')
-
-
-const isUser = (req, res, next) => {
-    if (req.session.user_id) {
-        const isAdmin = req.session.isAdmin;
-        if (isAdmin) {
-            return res.redirect('/admin/adminhome');
-        }
-    }
-    next()
-}
+const userDetails =require('../../controllers/userDetailsController');
+const isAuth = require('../../middleware/isAuth');
+const isUser = require('../../middleware/isUser');
 
 
 
-// userdetials_route.use(noCache)
-// userdetials_route.use(isUser)
-userdetials_route.get('/user-details', isUser,userDetails.loadUserDetails);
+
+userdetials_route.get('/user-details', isAuth,isUser,userDetails.loadUserDetails);
 userdetials_route.post('/user-details', isUser, userDetails.updateUser);
 userdetials_route.get('/add-address', isUser, userDetails.loadAddAddress);
 userdetials_route.post('/add-address', userDetails.addAddress);

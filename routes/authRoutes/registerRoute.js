@@ -6,6 +6,7 @@ const session = require('express-session');
 const path = require('path');
 const config = require('../../config/Sessionconfig');
 const { registrationValidator } = require('../../middleware/validator');
+const nocache = require('../../middleware/nocache');
 
 const register_route = express.Router();
 
@@ -21,8 +22,7 @@ register_route.use(session({
 register_route.use(express.static(path.join(__dirname, '../public')));
 
 
-
-register_route.get('/register', registrationValidator,  auth.isLogout,registrationController.loadRegister);
-register_route.post('/register', registrationValidator,  otpController.generateOtp);
+register_route.get('/register',nocache, registrationValidator,  auth.isLogout,registrationController.loadRegister);
+register_route.post('/register', nocache,registrationValidator,  otpController.generateOtp);
 
 module.exports =register_route
