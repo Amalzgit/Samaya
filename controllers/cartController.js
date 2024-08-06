@@ -1,7 +1,6 @@
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
 const Address = require('../models/addressModel'); 
-const Order =require('../models/orderModel');
 
 
 const loadCart =async(req,res)=>{
@@ -9,7 +8,7 @@ const loadCart =async(req,res)=>{
 
     userId =req.session.user_id
     const cart = await Cart.findOne({user:userId}).populate('items.product');
-    console.log(cart);
+    
     
     return res.render('cart',{cart})
  } catch (error) {
@@ -106,21 +105,7 @@ const updateCart =async (req,res)=>{
             {new:true}
         ).populate('items.product');
 
-        // if (!cart) {
-        //     return res.status(404).json({ error: 'Cart not found' });
-        // }
-
-        // // Find the index of the item in the cart
-        // const itemIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
-
-        // if (itemIndex === -1) {
-        //     return res.status(404).json({ error: 'Item not found in cart' });
-        // }
-
-        // // Update the quantity of the item
-        // cart.items[itemIndex].quantity = quantity;
-
-        // Recalculate the total price
+        
         cart.total = cart.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
 
         // Save the updated cart
@@ -142,10 +127,70 @@ const updateCart =async (req,res)=>{
     }
 }
 
+
+
+// checkout
+
+const Checkout = async (req,res)=>{
+    try {
+      const cartData =JSON.parse(req.body.cartData);
+      
+      
+      req.session.CheckoutCart =cartData
+  
+      
+      
+      res.redirect('/checkout-page');
+    } catch (error) {
+      console.log("checkout error:",error);
+      res.redirect('/cart');
+  
+    }
+  };
+  const getCheckout = async (req, res) => {
+    try {
+      const userId = req.session.user_id
+      const cartData = req.session.CheckoutCart;
+      const userAddress = await Address.find({ user :userId });
+      const selectedAddress =userAddress.find(address=>address.isDefault ) || userAddress[0]
+      
+  
+      res.render('checkout', {
+        cart: cartData,
+        addresses: userAddress, 
+        selectedAddress,
+        layout: false
+      });
+    } catch (error) {
+      console.log("Error in getCheckout:", error);
+      res.status(500).send("An error occurred while processing your request.");
+    }
+  };
+
+  const changeAddress =async (req,res) =>{
+  try {
+    const { addressId } = req.body;
+    req.session.selectedAddressId = addressId;
+    res.sendStatus(200);
+  } catch (error) {
+    console.log("change address :",error);
+  }
+}
+
+
+
+
 module.exports = {
     addItemToCart,
     loadCart,
     removeItemFromCart,
     clearCart,
-    updateCart
+    updateCart,
+
+  // checkout
+  Checkout,
+  getCheckout,
+  changeAddress
+  
+
 };

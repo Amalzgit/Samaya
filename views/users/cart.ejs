@@ -129,7 +129,10 @@
                                     <% } %>
                                 </table>
                             </div>
-                            <a href="/checkout" class="btn btn-dark btn-sm"><i class="fa fa-box mr-1"></i> Proceed To Checkout</a>
+                            <form action="/checkout" method="POST">
+                                <input type="hidden" name="cartData" value="<%= JSON.stringify(cart) %>">
+                                <button type="submit" class="btn btn-dark btn-sm"><i class="fa fa-box mr-1"></i> Proceed To Checkout</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -175,7 +178,8 @@
 
                     // Update cart total
                     document.querySelector('.cart_total_amount .font-xl').textContent = result.formattedTotal;
-
+                    
+                    
                     console.log('Cart updated successfully.');
                 } else {
                     console.error('Error updating cart:', result.error);
@@ -186,5 +190,5 @@
         });
     });
 });
-    </script>
+</script>
     
