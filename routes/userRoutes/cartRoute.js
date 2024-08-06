@@ -9,14 +9,13 @@ cart_Route.get('/cart',isAuth,isUser,cartController.loadCart)
 cart_Route.post('/cart/add',isAuth, isUser,cartController.addItemToCart)
 cart_Route.post('/cart/remove',isAuth, isUser, cartController.removeItemFromCart);
 cart_Route.post('/cart/clear',isAuth,isUser, cartController.clearCart);
+cart_Route.post('/cart/update',isAuth,isUser, cartController. updateCart);
 
+// checkout
 
-
-cart_Route.post('/cart/update', cartController. updateCart);
-
-// cart_Route.get('/checkout',isAuth,isUser, cartController.loadCheckout);
-// cart_Route.post('/place-order',isAuth, isUser, cartController.placeOrder);
-// // cart_Route.get('/order-confirmation/:orderId', cartController.placedOrder);
+cart_Route.post('/checkout',isAuth, isUser, cartController.Checkout);
+cart_Route.get ('/checkout-page',isAuth, isUser , cartController.getCheckout);
+cart_Route.post('/update-selected-address', isAuth,isUser,cartController.changeAddress);
 
 
 module.exports =cart_Route

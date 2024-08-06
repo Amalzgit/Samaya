@@ -10,6 +10,7 @@ const product_route = require('./productRoute');
 const nocache = require('../../middleware/nocache');
 const cart_Route = require('./cartRoute');
 const isUser = require('../../middleware/isUser');
+const order_Route = require('./orderRoute');
 // const nocache = require('nocache');
 const user_route = express();
 
@@ -39,8 +40,8 @@ user_route.use(shop_route)
 user_route.use(product_route)
 
 // PRIVATE ROUTES
-user_route.use(userdetials_route)
-user_route.use(cart_Route)
-
+user_route.use(userdetials_route);
+user_route.use(cart_Route);
+user_route.use(order_Route)
 
 module.exports = user_route;

@@ -7,22 +7,14 @@ const orderItemSchema = new Schema({
     ref: 'Product',
     required: true
   },
-  name: {
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  quantity: { type: Number, required: true, min: 1 },
+  totalPrice: { type: Number, required: true },
+  status: {
     type: String,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  totalPrice: {
-    type: Number,
-    required: true
+    enum: ['Active', 'Cancelled'],
+    default: 'Active'
   }
 });
 
@@ -45,10 +37,7 @@ const orderSchema = new Schema({
     country: String,
     type: String
   },
-  totalPrice: {
-    type: Number,
-    required: true
-  },
+  totalPrice: { type: Number, required: true },
   status: {
     type: String,
     enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
@@ -67,17 +56,14 @@ const orderSchema = new Schema({
     },
     transactionId: String
   }
-}, { 
+}, {
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
 orderSchema.virtual('formattedTotalPrice').get(function() {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR'
-  }).format(this.totalPrice);
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(this.totalPrice);
 });
 
 module.exports = mongoose.model('Order', orderSchema);
