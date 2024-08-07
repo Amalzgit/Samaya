@@ -251,6 +251,11 @@
                     $('#addressModal').modal('hide');
                 });
             });
+
+            const initialItem = defaultAddressItem || firstAddressItem;
+        if (initialItem) {
+            initialItem.click(); // Trigger click event programmatically
+        }
         });
         </script>
     <!-- Bootstrap and jQuery (Optional for advanced functionality) -->

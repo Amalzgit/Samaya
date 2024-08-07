@@ -11,6 +11,7 @@ const adminProfileRoute = require('./adminProfileRoute');
 const adminBrand_route = require('./adminBrandRoute');
 const review_route = require('./reviewRoute');
 const isAdmin = require('../../middleware/isAdmin');
+const adminOrder = require('./adminOrderRoute');
 
 
 const admin_route = express();
@@ -43,6 +44,7 @@ admin_route.use(admin_categoryRoute);
 admin_route.use(adminProfileRoute)
 admin_route.use(adminBrand_route)
 admin_route.use(review_route)
+admin_route.use(adminOrder)
 // Fallback route for unmatched routes
 
 module.exports = admin_route;

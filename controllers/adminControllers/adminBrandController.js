@@ -21,12 +21,12 @@ const getCreateBrands = async (req, res) => {
 
 const createBrand = async (req, res) => {
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.log(errors);
-        return res.render('createCategory', { successMessage: '', errorMessage: errors.array()[0] });
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     console.log(errors);
+    //     return res.render('createCategory', { successMessage: '', errorMessage: errors.array()[0] });
 
-    }
+    // }
     try {
         const { brandName, brandDescription } = req.body;
         const brandLogo = req.file.filename;
