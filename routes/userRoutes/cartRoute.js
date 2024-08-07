@@ -11,6 +11,11 @@ cart_Route.post('/cart/remove',isAuth, isUser, cartController.removeItemFromCart
 cart_Route.post('/cart/clear',isAuth,isUser, cartController.clearCart);
 cart_Route.post('/cart/update',isAuth,isUser, cartController. updateCart);
 
+cart_Route.get('/checkout-add-address', isUser, cartController.loadAddAddress);
+cart_Route.post('/checkout-add-address',isUser, cartController.addAddress);
+cart_Route.get('/checkout-edit-address/:addressId', isUser, cartController.loadEditAddress);
+cart_Route.post('/checkout-edit-address/:addressId',isUser, cartController.editAddress);
+
 // checkout
 
 cart_Route.post('/checkout',isAuth, isUser, cartController.Checkout);

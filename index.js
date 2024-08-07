@@ -35,11 +35,11 @@ const userRoute = require('./routes/userRoutes/userRoute');
 const auth_route = require('./routes/authRoutes/authRoutes');
 const adminRoute = require('./routes/adminRoutes/adminRoute');
 const isblocked = require('./middleware/isblocked');
-const loggerMiddleware = require('./middleware/loggerMiddleware');
+// const loggerMiddleware = require('./middleware/loggerMiddleware');
 
 
 // Global Middlewares
-app.use(loggerMiddleware)
+// app.use(loggerMiddleware)
 app.use(isblocked)
 
 // Blocked Routes

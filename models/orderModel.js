@@ -1,6 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const addressSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
+  mobileNumber: { type: String, required: true },
+  pincode: { type: String, required: true },
+  addressLine1: { type: String, required: true },
+  addressLine2: { type: String },
+  landmark: { type: String },
+  townCity: { type: String, required: true },
+  state: { type: String, required: true },
+  country: { type: String, required: true },
+  type: { type: String, required: true }
+});
+
 const orderItemSchema = new Schema({
   product: {
     type: Schema.Types.ObjectId,
@@ -25,18 +38,7 @@ const orderSchema = new Schema({
     required: true
   },
   items: [orderItemSchema],
-  address: {
-    fullName: String,
-    mobileNumber: String,
-    pincode: String,
-    addressLine1: String,
-    addressLine2: String,
-    landmark: String,
-    townCity: String,
-    state: String,
-    country: String,
-    type: String
-  },
+  address: { type: addressSchema, required: true },
   totalPrice: { type: Number, required: true },
   status: {
     type: String,

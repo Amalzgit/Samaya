@@ -38,15 +38,6 @@
   <section class="banners mb-20 pt-50">
     <!-- Additional content can be added here -->
   </section>
-  <section>
-    <div class="brand-belt">
-      <% for(let brand of brands) { %>
-      <div class="brand-item">
-        <a><img src="brands/<%= brand.logo %>" alt="<%= brand.name %>" /></a>
-      </div>
-      <% } %>
-    </div>
-  </section>
 
   <section class="product-tabs pt-80 pb-20 wow fadeIn animated">
     <div class="container">
@@ -138,44 +129,190 @@
       </div>
     </div>
   </section>
+
+  <section>
+    <div class="brand-belt">
+        <% for(let brand of brands) { %>
+        <div class="brand-item">
+            <a href="#"><img src="brands/<%= brand.logo %>" alt="<%= brand.name %>" /></a>
+        </div>
+        <% } %>
+    </div>
+</section>
+
+  <section class="full-width-section">
+    <video src="userassets/Page-hero/edtChoice.mp4" autoplay muted loop playsinline></video>
+    <div class="overlay-text">ᵉᵈⁱᵗᵒʳ'ˢ ᵖⁱᶜᵏˢ</div>
+</section>
+
+<section class="reviews-section">
+  <h2>What Our Customers Say</h2>
+  <br>
+  <div class="reviews-container">
+      <div class="review-card">
+          <h3>Great Product!</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dolor nec libero feugiat luctus.</p>
+          <div class="author">John Doe</div>
+      </div>
+      <div class="review-card">
+          <h3>Highly Recommend</h3>
+          <p>Integer euismod orci ac sem lacinia, sit amet fermentum justo aliquet. Suspendisse potenti.</p>
+          <div class="author">Jane Smith</div>
+      </div>
+      <div class="review-card">
+          <h3>Excellent Service</h3>
+          <p>Quisque non venenatis augue. Nulla facilisi. Sed vehicula est vel purus consequat, vitae vestibulum nunc bibendum.</p>
+          <div class="author">Alice Johnson</div>
+      </div>
+  </div>
+</section>
 </main>
 
 <style>
-  .brand-belt {
+    /* Basic reset */
+    body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        /* Reviews section styling */
+        .reviews-section {
+            padding: 40px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .reviews-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .reviews-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .review-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            text-align: left;
+            position: relative;
+        }
+        .review-card::before {
+            content: '◡̈';
+            font-size: 3em;
+            color: #060606;
+            position: absolute;
+            top: -20px;
+            left: 10px;
+        }
+        .review-card h3 {
+            font-size: 1.2em;
+            margin: 0;
+            color: #0b0b0b;
+        }
+        .review-card p {
+            font-size: 1em;
+            color: #666;
+            margin: 10px 0;
+        }
+        .review-card .author {
+            font-size: 0.9em;
+            color: #999;
+        }
+  
+        /* Basic reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Full-width section */
+        .full-width-section {
+            position: relative;
+            width: 100%;
+            height: 100vh; 
+        }
+        /* Video styling */
+        .full-width-section video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Ensure the video height is the same as the section height */
+            object-fit: cover; /* Ensures the video covers the section */
+        }
+        /* Optional overlay text */
+        .overlay-text {
+            position: absolute;
+            top: 10px; /* Adjust as needed */
+            left: 10px; /* Adjust as needed */
+            color: rgb(137, 136, 136);
+            font-size: 20px;
+            background-color: rgba(0, 0, 0, 0.5); /* Optional background for better text readability */
+            padding: 10px;
+            border-radius: 5px;
+        }
+    
+  
+        .brand-belt {
     display: flex;
-    overflow-x: hidden; /* Allow horizontal scrolling */
-    -webkit-scrollbar {
-      display: none;
-    }
-    white-space: nowrap;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Hide vertical scrollbar if not needed */
+    white-space: nowrap; /* Prevent content from wrapping */
     padding: 10px;
-    background-color: white; /* Black background for the brand belt */
+    background-color: white; /* Background color for the brand belt */
     border-radius: 10px;
-    justify-content: center; /* Align items to the start */
-    gap: 20px; /* Add a gap between items */
-  }
+    justify-content: flex-start; /* Align items to the start */
+    gap: 20px; /* Consistent gap between items */
+    position: relative; /* Ensure proper positioning of scrollbar */
+}
 
-  .brand-item {
+/* Custom scrollbar styles for WebKit browsers (Chrome, Safari) */
+.brand-belt::-webkit-scrollbar {
+    height: 8px; /* Height of the scrollbar */
+}
+
+.brand-belt::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background color of the track */
+    border-radius: 10px; /* Rounded corners for the track */
+}
+
+.brand-belt::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scrollbar handle */
+    border-radius: 10px; /* Rounded corners for the handle */
+}
+
+.brand-belt::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color for the handle on hover */
+}
+
+.brand-item {
     flex: 0 0 auto; /* Prevent items from growing or shrinking */
     text-align: center;
-    color: #ffffff; /* Ensure text is visible on the dark background */
-  }
+    color: #000; /* Ensure text is visible */
+}
 
-  .brand-item img {
+.brand-item img {
     width: 200px; /* Fixed width for all images */
     height: 100px; /* Fixed height for all images */
     object-fit: cover; /* Ensure images are uniformly sized */
     display: block;
     margin: 0 auto 10px;
     border-radius: 5px; /* Rounded corners for a modern look */
-  }
+}
 
-  .brand-item p {
+.brand-item p {
     margin: 0 0 5px;
     font-size: 14px; /* Slightly smaller text for elegance */
-  }
+}
 
-  .brand-item a:hover {
+.brand-item a:hover {
     text-decoration: underline;
-  }
+}
+
 </style>

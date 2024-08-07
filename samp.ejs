@@ -1,0 +1,53 @@
+<div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+<div class="card mb-4">
+  <div class="card-header bg-dark text-white">
+    <h4 class="mb-0"><i class="fa fa-shopping-cart mr-2"></i> Your Orders</h4>
+  </div>
+  <div class="card-body">
+    <% if (orders && orders.length > 0) { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td>#<%= order._id.toString().slice(-6).toUpperCase() %></td>
+              <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+              <td>
+                <% order.items.forEach((item, index) => { %>
+                  <%= item.product.name %> (x<%= item.quantity %>)
+                  <%= index < order.items.length - 1 ? ', ' : '' %>
+                <% }) %>
+              </td>
+              <td><%= order.totalPrice %></td>
+              
+              if (order.status === 'Processing'){<td><span class="badge bg-warning">Processing</span></td> 
+              else if (order.status === 'Shipped'){<td><span class="badge bg-info">Shipped</span></td>
+              else if (order.status === 'Delivered'){<td><span class="badge bg-success">Delivered</span></td>
+              else if (order.status === 'Cancelled'){<td><span class="badge bg-danger">Cancelled</span></td>
+            }
+          }
+        }
+          }
+          </td>
+              <td>
+                <a href="/order/<%= order._id %>" class="btn btn-sm btn-outline-primary">View Details</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>You haven't placed any orders yet.</p>
+    <% } %>
+  </div>
+</div>
+</div>

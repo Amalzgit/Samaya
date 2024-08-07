@@ -1,12 +1,18 @@
 const User = require("../models/userModel");
 const Address = require("../models/addressModel");
-
+const Order =require('../models/orderModel')
 const loadUserDetails = async (req, res) => {
   try {
     const user = await User.findById(req.session.user_id);
     const addresses = await Address.find({ user: req.session.user_id });
+    const orders =await Order.find({user:user })
+                             .populate('items.product')
+                             .sort({createdAt: -1})
 
+    // console.log("orders",orders);
+    
     res.render("userDetails", {
+      orders,
       user,
       addresses,
       successMessage: "",

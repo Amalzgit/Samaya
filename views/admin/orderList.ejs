@@ -1,0 +1,148 @@
+<div class="container mt-4 pb-200">
+    <h1 class="mb-4">Orders</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% orders.forEach((order, index) => { %>
+                    <tr id="order-<%= order._id %>">
+                        <td><%= index + 1 %></td>
+                        <td><%= order.id %></td>
+                        <td><%= order.user.firstName %> <%= order.user.lastName %></td>
+                        <td><%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></td>
+
+                        <td>
+                            <select class="form-control status-dropdown" onchange="changeStatus('<%= order._id %>', this.value)" 
+                                <% if (order.status === 'Delivered' || order.status === 'Cancelled') { %> disabled <% } %> >
+                                <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            </select>
+                        </td>
+                        <td>
+                            <a href="/order-details/<%= order.id %>" class="btn btn-info btn-sm" title="View Order Details">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<style>
+    .status-pending {
+        background-color: #fff3cd; /* Light yellow for Pending */
+    }
+
+    .status-processing {
+        background-color: #cce5ff; /* Light blue for Processing */
+    }
+
+    .status-shipped {
+        background-color: #d4edda; /* Light green for Shipped */
+    }
+
+    .status-delivered {
+        background-color: #adf2bb; /* Light cyan for Delivered */
+    }
+
+    .status-cancelled {
+        background-color: #f8d7da; /* Light red for Cancelled */
+    }
+
+    .status-dropdown {
+        width: 150px;
+        transition: background-color 0.3s ease;
+    }
+
+    .status-dropdown:disabled {
+        background-color: #f8f9fa;
+    }
+</style>
+
+
+<script>
+    function changeStatus(orderId, status) {
+        fetch(`/admin/update-order-status/${orderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Unknown error');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message); 
+            updateRowStatus(orderId, status); // Update row color
+        })
+        .catch(error => {
+            alert(error.message);
+            console.error('Error:', error);
+        });
+    }
+
+    
+    function updateRowStatus(orderId, status) {
+        const row = document.querySelector(`#order-${orderId}`);
+        if (row) {
+            // Remove existing status classes
+            row.classList.remove('status-pending', 'status-processing', 'status-shipped', 'status-delivered', 'status-cancelled');
+            
+            // Add new status class
+            switch (status) {
+                case 'Pending':
+                    row.classList.add('status-pending');
+                    break;
+                case 'Processing':
+                    row.classList.add('status-processing');
+                    break;
+                case 'Shipped':
+                    row.classList.add('status-shipped');
+                    break;
+                case 'Delivered':
+                    row.classList.add('status-delivered');
+                    break;
+                case 'Cancelled':
+                    row.classList.add('status-cancelled');
+                    break;
+                default:
+                    break;
+            }
+
+            // Update dropdown status
+            const select = row.querySelector('.status-dropdown');
+            if (select) {
+                select.value = status;
+                select.disabled = status === 'Delivered' || status === 'Cancelled';
+            }
+        }
+    }
+
+     document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const status = row.querySelector('.status-dropdown').value;
+            row.classList.add(`status-${status.toLowerCase()}`);
+        });
+    });
+</script>

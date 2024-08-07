@@ -20,40 +20,41 @@
                     <div class="row product-grid-3">
                         <% for(let product of products) { %>
                         <div class="col-lg-4 col-md-4 col-12 col-sm-6">
-                            <div class="product-cart-wrap mb-30">
-                                <div class="product-img-action-wrap">
-                                    <div class="product-img product-img-zoom">
-                                        <a href="/product/<%= product._id %>">
-                                            <img class="default-img" src="/products/<%= product.images[0] %>" alt="">
-                                            <img class="hover-img" src="/products/<%= product.images[1] %>" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-action-1">
-                                        <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                    </div>
-                                    
-                                </div>
-                                <div class="product-content-wrap">
-                                    <div class="product-category">
-                                        <a href="/product/<%= product._id %>"><%= product.category.name %></a>
-                                    </div>
-                                    <h2><a href="/product/<%= product._id %>"><%= product.name %></a></h2>
-                                    <div class="rating-result" title="90%">
-                                        <span>
-                                            <span>90%</span>
-                                        </span>
-                                    </div>
-                                    <div class="product-price">
-                                        <span>Price: <%= product.formattedPrice %></span>
-                                    </div>
-                                    <div class="product-action-1 show">
-                                       
-                                    </div>
-                                </div>
+                          <div class="product-cart-wrap mb-30">
+                            <div class="product-img-action-wrap">
+                              <div class="product-img product-img-zoom">
+                                <a href="/product/<%= product._id %>">
+                                  <img class="default-img" src="/products/<%= product.images[0] %>" alt="">
+                                  <img class="hover-img" src="/products/<%= product.images[1] %>" alt="">
+                                </a>
+                              </div>
+                              <div class="product-action-1">
+                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                              </div>
+                              <% if (product.stock <= 0) { %>
+                                <div class="sold-out-badge">SOLD OUT</div>
+                              <% } %>
                             </div>
+                            <div class="product-content-wrap">
+                              <div class="product-category">
+                                <a href="/product/<%= product._id %>"><%= product.category.name %></a>
+                              </div>
+                              <h2><a href="/product/<%= product._id %>"><%= product.name %></a></h2>
+                              <div class="rating-result" title="90%">
+                                <span>
+                                  <span>90%</span>
+                                </span>
+                              </div>
+                              <div class="product-price">
+                                <span>Price: <%= product.formattedPrice %></span>
+                              </div>
+                              <div class="product-action-1 show">
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <% } %>
-                    </div>
+                      </div>
                     
                 </div>
                 <div class="col-lg-3 primary-sidebar sticky-sidebar">
@@ -89,7 +90,42 @@
         </div>
     </section>
 </main>
+<style>
+    .sold-out-badge {
+  position: absolute;
+  top: 20px;
+  right: -20px;
+  background-color: #524646;
+  color: white;
+  padding: 5px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  transform: rotate(45deg);
+  transform-origin: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 10;
+}
 
+.sold-out-badge::before,
+.sold-out-badge::after {
+  content: '';
+  position: absolute;
+  background-color: #352121;
+  height: 5px;
+  width: 100%;
+  left: 0;
+}
+
+.sold-out-badge::before {
+  top: -10px;
+  transform: skew(45deg);
+}
+
+.sold-out-badge::after {
+  bottom: -10px;
+  transform: skew(-45deg);
+}
+</style>
 
 
 
