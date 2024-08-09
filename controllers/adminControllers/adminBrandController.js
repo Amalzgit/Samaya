@@ -1,10 +1,11 @@
 const Brand = require('../../models/BrandModel');
-const {validationResult}=require('../../middleware/validator')
+const { validationResult } = require('express-validator');
+
 
 const getBrands = async (req, res) => {
     try {
         const brands = await Brand.find();
-        return res.render('Brands', { brands });
+        return res.render('Brands', { brands,successMessage: '', errorMessage: ''});
     } catch (error) {
         console.log("Error while rendering brands", error);
         return res.redirect('/admin/adminhome');
@@ -13,7 +14,7 @@ const getBrands = async (req, res) => {
 
 const getCreateBrands = async (req, res) => {
     try {
-        return res.render('CreateBrand');
+        return res.render('CreateBrand',{successMessage: '', errorMessage: ''});
     } catch (error) {
         console.log("Error while rendering create brands", error);
     }
@@ -21,12 +22,12 @@ const getCreateBrands = async (req, res) => {
 
 const createBrand = async (req, res) => {
 
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     console.log(errors);
-    //     return res.render('createCategory', { successMessage: '', errorMessage: errors.array()[0] });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        return res.render('CreateBrand', { successMessage: '', errorMessage: errors.array()[0] });
 
-    // }
+    }
     try {
         const { brandName, brandDescription } = req.body;
         const brandLogo = req.file.filename;

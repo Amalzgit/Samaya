@@ -74,6 +74,10 @@ const productSchema = new mongoose.Schema({
   deleted: {
     type: Boolean,
     default: false
+  },
+  featured: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true });
 
@@ -83,5 +87,5 @@ productSchema.virtual('formattedPrice').get(function () {
     currency: 'INR'
   }).format(this.price);
 });
-
+productSchema.index({ name: 'text', description: 'text' });
 module.exports = mongoose.model('Product', productSchema);

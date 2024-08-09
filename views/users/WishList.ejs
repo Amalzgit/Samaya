@@ -1,0 +1,82 @@
+
+
+<div class="container my-5">
+    <h1 class="mb-4">Your Wishlist</h1>
+
+    <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
+        <table class="table table-striped wishlist-table">
+            <thead>
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Add to Cart</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% wishlist.products.forEach(product => { %>
+                    <tr>
+                        <td><img src="products/<%= product.images[0] %>" alt="<%= product.name %>" class="img-fluid"></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.formattedPrice %></td>
+                        <td>
+                            <% if (product.stock > 0) { %>
+                                <form action="/cart/add" method="POST">
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                            <% } else { %>
+                                <p class="text-danger">Out of Stock</p>
+                            <% } %>
+                        </td>
+                        <td>
+                            <form action="/wishlist/remove" method="POST">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Your wishlist is empty.</p>
+    <% } %>
+
+    <a href="/" class="btn btn-primary mt-4">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const message = params.get('message');
+    const error = params.get('error');
+
+    if (message) {
+      
+    }
+
+    if (error) {
+      alert(error);
+    }
+  });
+</script>
+
+<style>
+    .img-fluid {
+        max-height: 100px; /* Adjust the height as needed */
+        object-fit: cover;
+    }
+    .wishlist-table th, .wishlist-table td {
+        vertical-align: middle;
+    }
+</style>
+
+

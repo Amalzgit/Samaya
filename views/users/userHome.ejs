@@ -39,7 +39,7 @@
     <!-- Additional content can be added here -->
   </section>
 
-  <section class="product-tabs pt-80 pb-20 wow fadeIn animated">
+  <section class="product-tabs pt-30 pb-20 wow fadeIn animated">
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
@@ -48,79 +48,59 @@
               class="tab-pane fade show active"
               id="tab-one"
               role="tabpanel"
-              aria-labelledby="tab-one"
-            >
+              aria-labelledby="tab-one">
+            
               <div class="row">
                 <% for(let product of products) { %>
 
-                <!-- <div class="container mt-5">
-                                        <div class="card mx-auto" style="max-width: 18rem;">
-                                            <img src="/products/<%= product.images[0] %>    " class="card-img-top" alt="Big Bang Original Steel Ceramic Watch">
-                                            <div class="card-body text-center">
-                                                <p class="text-muted text-uppercase small"><%=product.category.name%></p>
-                                                <h5 class="card-title fw-bold"><%=product.name%></h5>
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <p class="fw-semibold mb-0"><%=product.price%> *</p>
-                                                    <button class="btn btn-link text-muted p-0">
-                                                        <i class="bi bi-heart fs-5"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                 -->
 
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
-                  <div class="product-cart-wrap">
-                    <div class="product-img-action-wrap">
-                      <div class="product-img product-img-zoom">
-                        <a href="/product/<%= product._id %>">
-                          <img
-                            class="default-img img-fluid"
-                            src="/products/<%= product.images[0] %>"
-                            alt=""
-                          />
-                          <img
-                            class="hover-img img-fluid"
-                            src="/products/<%= product.images[1] %>"
-                            alt=""
-                          />
-                        </a>
+                  <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                    <div class="product-cart-wrap">
+                      <div class="product-img-action-wrap">
+                        <div class="product-img product-img-zoom">
+                          <a href="/product/<%= product._id %>">
+                            <img
+                              class="default-img img-fluid"
+                              src="/products/<%= product.images[0] %>"
+                              alt=""
+                            />
+                            <img
+                              class="hover-img img-fluid"
+                              src="/products/<%= product.images[1] %>"
+                              alt=""
+                            />
+                          </a>
+                        </div>
                       </div>
-                      <div class="product-action-1">
-                        <a
-                          aria-label="Add To Wishlist"
-                          class="action-btn hover-up"
-                          href="shop-wishlist.html"
-                          ><i class="fi-rs-heart"></i
-                        ></a>
+                      <div class="product-content-wrap">
+                        <div class="product-category">
+                          <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
+                        </div>
+                        <h2>
+                          <a href="/product/<%= product._id %>"><%= product.name %></a>
+                        </h2>
+                        <div class="rating-result" title="90%">
+                          <span>
+                            <span>90%</span>
+                          </span>
+                        </div>
+                        <div class="product-price">
+                          <span>Price :<%= product.formattedPrice %></span>
+                        </div>
+                        <div class="product-action-1 show">
+                          <a
+                              aria-label="Add To Wishlist"
+                              class="action-btn hover-up wishlist-icon"
+                              
+                              onclick="addToWishlist('<%= product._id %>', this)"
+                          >
+                              <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
+                          </a>
                       </div>
-                    </div>
-                    <div class="product-content-wrap">
-                      <div class="product-category">
-                        <a href="/product/<%= product._id %>"
-                          ><%= product.category.name %></a
-                        >
-                      </div>
-                      <h2>
-                        <a href="/product/<%= product._id %>"
-                          ><%= product.name %></a
-                        >
-                      </h2>
-                      <div class="rating-result" title="90%">
-                        <span>
-                          <span>90%</span>
-                        </span>
-                      </div>
-                      <div class="product-price">
-                        <span>Price :<%= product.formattedPrice %></span>
-                      </div>
-                      <div class="product-action-1 show">
-                        
                       </div>
                     </div>
                   </div>
-                </div>
+                  
                 <% } %>
               </div>
             </div>
@@ -168,151 +148,33 @@
 </section>
 </main>
 
-<style>
-    /* Basic reset */
-    body, html {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        /* Reviews section styling */
-        .reviews-section {
-            padding: 40px;
-            background-color: #f8f9fa;
-            text-align: center;
-        }
-        .reviews-section h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .reviews-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .review-card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            padding: 20px;
-            text-align: left;
-            position: relative;
-        }
-        .review-card::before {
-            content: '◡̈';
-            font-size: 3em;
-            color: #060606;
-            position: absolute;
-            top: -20px;
-            left: 10px;
-        }
-        .review-card h3 {
-            font-size: 1.2em;
-            margin: 0;
-            color: #0b0b0b;
-        }
-        .review-card p {
-            font-size: 1em;
-            color: #666;
-            margin: 10px 0;
-        }
-        .review-card .author {
-            font-size: 0.9em;
-            color: #999;
-        }
-  
-        /* Basic reset */
-        body, html {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        /* Full-width section */
-        .full-width-section {
-            position: relative;
-            width: 100%;
-            height: 100vh; 
-        }
-        /* Video styling */
-        .full-width-section video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%; /* Ensure the video height is the same as the section height */
-            object-fit: cover; /* Ensures the video covers the section */
-        }
-        /* Optional overlay text */
-        .overlay-text {
-            position: absolute;
-            top: 10px; /* Adjust as needed */
-            left: 10px; /* Adjust as needed */
-            color: rgb(137, 136, 136);
-            font-size: 20px;
-            background-color: rgba(0, 0, 0, 0.5); /* Optional background for better text readability */
-            padding: 10px;
-            border-radius: 5px;
-        }
-    
-  
-        .brand-belt {
-    display: flex;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    overflow-y: hidden; /* Hide vertical scrollbar if not needed */
-    white-space: nowrap; /* Prevent content from wrapping */
-    padding: 10px;
-    background-color: white; /* Background color for the brand belt */
-    border-radius: 10px;
-    justify-content: flex-start; /* Align items to the start */
-    gap: 20px; /* Consistent gap between items */
-    position: relative; /* Ensure proper positioning of scrollbar */
-}
 
-/* Custom scrollbar styles for WebKit browsers (Chrome, Safari) */
-.brand-belt::-webkit-scrollbar {
-    height: 8px; /* Height of the scrollbar */
-}
+<script>
+async function addToWishlist(productId, element) {
+  try {
+    const response = await fetch('/wishlist/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ productId }),
+      credentials: 'same-origin',
+    });
 
-.brand-belt::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Background color of the track */
-    border-radius: 10px; /* Rounded corners for the track */
-}
+    const result = await response.json();
 
-.brand-belt::-webkit-scrollbar-thumb {
-    background: #888; /* Color of the scrollbar handle */
-    border-radius: 10px; /* Rounded corners for the handle */
+    if (result.success) {
+      // Update the icon to indicate the product is in the wishlist
+      const icon = element.querySelector('i');
+      icon.classList.remove('fa-heart');
+      icon.classList.add('fa-heart-solid');
+      // alert('Product added to wishlist.');
+    } else {
+      alert(result.message || 'Something went wrong!');
+    }
+  } catch (error) {
+    // alert('Server error: Unable to add to wishlist.');
+  }
 }
-
-.brand-belt::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Darker color for the handle on hover */
-}
-
-.brand-item {
-    flex: 0 0 auto; /* Prevent items from growing or shrinking */
-    text-align: center;
-    color: #000; /* Ensure text is visible */
-}
-
-.brand-item img {
-    width: 200px; /* Fixed width for all images */
-    height: 100px; /* Fixed height for all images */
-    object-fit: cover; /* Ensure images are uniformly sized */
-    display: block;
-    margin: 0 auto 10px;
-    border-radius: 5px; /* Rounded corners for a modern look */
-}
-
-.brand-item p {
-    margin: 0 0 5px;
-    font-size: 14px; /* Slightly smaller text for elegance */
-}
-
-.brand-item a:hover {
-    text-decoration: underline;
-}
-
-</style>
+</script> 

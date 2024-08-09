@@ -57,14 +57,12 @@ const categoryValidator = [
 ];
 const brandValidator = [
     body('name')
-    .notEmpty().withMessage('Name is required')
+    .notEmpty().withMessage('Brand name already exists')
     .custom(async (name) => {
         const existingBrand = await Brand.findOne({ name });
-
         if (existingBrand) {
-            return Promise.reject('Brand name already exists');
+            throw new Error('Brand name already exists');
         }
-        return true;
     })
 ];
 module.exports = {    

@@ -1,157 +1,192 @@
-﻿<main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/" rel="nofollow">Home</a>
-                <span></span> Shop
+﻿
+<main class="main">
+  <div class="page-header breadcrumb-wrap">
+      <div class="container">
+          <div class="breadcrumb">
+              <a href="/" rel="nofollow">Home</a>
+              <span></span> Shop
+          </div>
+      </div>
+  </div>
+  
+  <section class="mt-50 mb-50">
+    <div class="container">
+      <div class="row flex-row-reverse">
+        <div class="col-lg-9">
+          <div class="shop-product-fillter">
+            <div class="sort-by-product-area">
+              <select id="sortOption" class="form-select">
+                <option value="featured" <%= currentSort === 'featured' ? 'selected' : '' %>>Featured</option>
+                <option value="popularity" <%= currentSort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                <option value="price_asc" <%= currentSort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+                <option value="price_desc" <%= currentSort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
+                <option value="rating" <%= currentSort === 'rating' ? 'selected' : '' %>>Ratings</option>
+                <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>New Arrivals</option>
+                <option value="name_asc" <%= currentSort === 'name_asc' ? 'selected' : '' %>>Name: A to Z</option>
+                <option value="name_desc" <%= currentSort === 'name_desc' ? 'selected' : '' %>>Name: Z to A</option>
+              </select>
             </div>
+            <form id="searchForm" action="/shop" method="GET" class="search-form d-flex">
+              <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search products..." value="<%= currentSearch %>">
+              <button type="submit" class="btn btn-outline-secondary ml-2">
+                <i class="fas fa-search"></i>
+              </button>
+            </form>
+          </div>
+          <div class="row product-grid-3">
+            <% for(let product of products) { %>
+              <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="product-cart-wrap">
+                  <div class="product-img-action-wrap">
+                    <div class="product-img product-img-zoom">
+                      <a href="/product/<%= product._id %>">
+                        <img
+                          class="default-img img-fluid"
+                          src="/products/<%= product.images[0] %>"
+                          alt=""
+                        />
+                        <img
+                          class="hover-img img-fluid"
+                          src="/products/<%= product.images[1] %>"
+                          alt=""
+                        />
+                      </a>
+                    </div>
+                  </div>
+                  <div class="product-content-wrap">
+                    <div class="product-category">
+                      <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
+                    </div>
+                    <h2>
+                      <a href="/product/<%= product._id %>"><%= product.name %></a>
+                    </h2>
+                    <div class="rating-result" title="90%">
+                      <span>
+                        <span>90%</span>
+                      </span>
+                    </div>
+                    <div class="product-price">
+                      <span>Price: ₹<%= new Intl.NumberFormat('en-IN').format(product.price) %>.00</span>
+                    </div>
+                    <div class="product-action-1 show">
+                      <a
+                          aria-label="Add To Wishlist"
+                          class="action-btn hover-up wishlist-icon"
+                          href="#"
+                          onclick="addToWishlist('<%= product._id %>', this)"
+                      >
+                          <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
+                      </a>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
         </div>
+        <div class="col-lg-3 primary-sidebar sticky-sidebar">
+          <!-- Category Filter -->
+          <div class="widget-category mb-30">
+            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+            <ul id="categoryLinks" class="categories">
+              <li><a href="/shop" class="fw-bold <%= !currentCategory ? 'active' : '' %>">All Categories</a></li>
+              <% for (let category of categories) { %>
+                <li><a href="#" data-category="<%= category.name %>" class="category-link <%= currentCategory === category.name ? 'active' : '' %>"><%= category.name %></a></li>
+              <% } %>
+            </ul>
+          </div>
+          
+          <!-- Brands Filter -->
+          <div class="widget-category mb-30">
+            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Brands</h5>
+            <ul id="brandLinks" class="categories">
+              <li><a href="/shop" class="fw-bold <%= !currentBrand ? 'active' : '' %>">All Brands</a></li>
+              <% brands.forEach(brand => { %>
+                <li><a href="#" data-brand="<%= brand.name %>" class="brand-link <%= currentBrand === brand.name ? 'active' : '' %>"><%= brand.name %></a></li>
+              <% }) %>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <section class="mt-50 mb-50">
-        <div class="container">
-            <div class="row flex-row-reverse">
-                <div class="col-lg-9">
-                    <div class="shop-product-fillter">
-                        <div class="sort-by-product-area">
-                            <!-- Placeholder for sorting and filtering options -->
-                        </div>
-                    </div>
-                    <div class="row product-grid-3">
-                        <% for(let product of products) { %>
-                        <div class="col-lg-4 col-md-4 col-12 col-sm-6">
-                          <div class="product-cart-wrap mb-30">
-                            <div class="product-img-action-wrap">
-                              <div class="product-img product-img-zoom">
-                                <a href="/product/<%= product._id %>">
-                                  <img class="default-img" src="/products/<%= product.images[0] %>" alt="">
-                                  <img class="hover-img" src="/products/<%= product.images[1] %>" alt="">
-                                </a>
-                              </div>
-                              <div class="product-action-1">
-                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                              </div>
-                              <% if (product.stock <= 0) { %>
-                                <div class="sold-out-badge">SOLD OUT</div>
-                              <% } %>
-                            </div>
-                            <div class="product-content-wrap">
-                              <div class="product-category">
-                                <a href="/product/<%= product._id %>"><%= product.category.name %></a>
-                              </div>
-                              <h2><a href="/product/<%= product._id %>"><%= product.name %></a></h2>
-                              <div class="rating-result" title="90%">
-                                <span>
-                                  <span>90%</span>
-                                </span>
-                              </div>
-                              <div class="product-price">
-                                <span>Price: <%= product.formattedPrice %></span>
-                              </div>
-                              <div class="product-action-1 show">
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <% } %>
-                      </div>
-                    
-                </div>
-                <div class="col-lg-3 primary-sidebar sticky-sidebar">
-                    <!-- Category Filter -->
-                    <div class="widget-category mb-30">
-                        <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
-                        <ul id="categoryLinks" class="categories">
-                            <li><a href="/shop" class="fw-bold">All Categories</a></li>
-                            <% for (let category of categories) { %>
-                            <li><a data-category-id="<%= category._id %>" class="category-link"><%= category.name %></a></li>
-                            <% } %>
-                        </ul>
-                    </div>
-                    
-                    <!-- Brands Filter -->
-                    <div class="widget-category mb-30">
-                        <h5 class="section-title style-1 mb-30 wow fadeIn animated">Brands</h5>
-                        <ul id="brandLinks" class="categories">
-                            <li><a href="/shop" class="fw-bold">All Brands</a></li>
-                            <% brands.forEach(brand => { %>
-                            <li><a data-brand-name="<%= brand.name %>" class="brand-link"><%= brand.name %></a></li>
-                            <% }) %>
-                        </ul>
-                    </div>
-                    
-                    <!-- Product Sidebar Widget (optional) -->
-                    <div class="sidebar-widget product-sidebar mb-30 p-30 bg-grey border-radius-10">
-                        <!-- Placeholder for new products or promotions -->
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </section>
+  </section>
+  
+  
+  
 </main>
-<style>
-    .sold-out-badge {
-  position: absolute;
-  top: 20px;
-  right: -20px;
-  background-color: #524646;
-  color: white;
-  padding: 5px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  transform: rotate(45deg);
-  transform-origin: center;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  z-index: 10;
-}
 
-.sold-out-badge::before,
-.sold-out-badge::after {
-  content: '';
-  position: absolute;
-  background-color: #352121;
-  height: 5px;
-  width: 100%;
-  left: 0;
-}
-
-.sold-out-badge::before {
-  top: -10px;
-  transform: skew(45deg);
-}
-
-.sold-out-badge::after {
-  bottom: -10px;
-  transform: skew(-45deg);
-}
-</style>
-
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+    <script>
+      async function addToWishlist(productId, element) {
+        try {
+          const response = await fetch('/wishlist/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ productId }),
+            credentials: 'same-origin',
+          });
+      
+          const result = await response.json();
+      
+          if (result.success) {
+            // Update the icon to indicate the product is in the wishlist
+            const icon = element.querySelector('i');
+            icon.classList.remove('fa-heart');
+            icon.classList.add('fa-heart-solid');
+            // alert('Product added to wishlist.');
+          } else {
+            alert(result.message || 'Something went wrong!');
+          }
+        } catch (error) {
+          // alert('Server error: Unable to add to wishlist.');
+        }
+      }
+      </script> 
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
         const categoryLinks = document.querySelectorAll('.category-link');
-
+        const brandLinks = document.querySelectorAll('.brand-link');
+        const sortOption = document.getElementById('sortOption');
+        const searchForm = document.getElementById('searchForm');
+    
+        function updateShop(params) {
+            const currentUrl = new URL(window.location.href);
+            Object.entries(params).forEach(([key, value]) => {
+                if (value) {
+                    currentUrl.searchParams.set(key, value);
+                } else {
+                    currentUrl.searchParams.delete(key);
+                }
+            });
+            window.location.href = currentUrl.toString();
+        }
+    
         categoryLinks.forEach(link => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
-                const categoryId = link.getAttribute('data-category-id');
-                const categoryName = link.textContent.trim(); // Extract category name from link text
-
-                // Send GET request with selected category name as query parameter
-                window.location.href = `/shop?category=${encodeURIComponent(categoryName)}`;
+                const category = link.getAttribute('data-category');
+                updateShop({ category, page: 1 });
             });
         });
     
-
-    const brandLinks = document.querySelectorAll('.brand-link');
         brandLinks.forEach(link => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
-                const brandName = link.getAttribute('data-brand-name');
-                window.location.href = `/shop?brand=${encodeURIComponent(brandName)}`;
+                const brand = link.getAttribute('data-brand');
+                updateShop({ brand, page: 1 });
             });
         });
-    });    
-</script>
+    
+        sortOption.addEventListener('change', () => {
+            updateShop({ sort: sortOption.value, page: 1 });
+        });
+    
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const searchValue = document.getElementById('searchInput').value;
+            updateShop({ search: searchValue, page: 1 });
+        });
+    });
+    </script>

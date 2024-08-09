@@ -57,7 +57,7 @@ const loadEditCategory =async(req,res)=>{
             return res.redirect('/admin/Categories');
         }
 
-        res.render('createCategory', { category, successMessage: '', errorMessage: '' });
+        res.render('edit-categories', { category, successMessage: '', errorMessage: '' });
 
     } catch (error) {
         return res.render('Categories', { successMessage: '', errorMessage: "An error occurred when rendering edit category" });

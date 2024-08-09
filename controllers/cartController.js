@@ -6,9 +6,8 @@ const User = require('../models/userModel')
 const loadCart =async(req,res)=>{
  try {
 
-    userId =req.session.user_id
-    const cart = await Cart.findOne({user:userId}).populate('items.product');
-    
+    const Id = req.session.user_id
+    const cart = await Cart.findOne({user:Id}).populate('items.product');
     
     return res.render('cart',{cart})
  } catch (error) {

@@ -50,11 +50,27 @@ const updateOrderStatus = async(req,res)=>{
     }
 };
 
+const showOrderdetails =async(req,res)=>{
+    try {
+        const orderId =req.params.orderId;
+        const order =await Order.findById(orderId)
+        .populate('items.product')
+        .populate('user','name email')
 
+        if(!order){
+            return res.status(404).render("error",{message:'Order not foud'});
+        }
+        res.render('admin_order_details',{order ,layout:false})
+    } catch (error) {
+        console.error("Error fetching Order" , error);
+        res.status(500).render('error',{message:'An error occurred while fetching Order!!'})
+    }
+}
 
 
 
 module.exports={
     getOrderList,
-    updateOrderStatus
+    updateOrderStatus,
+    showOrderdetails
 }
