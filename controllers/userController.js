@@ -22,8 +22,8 @@ const loadHome = async (req, res) => {
 
         // Fetch active brands
         const brands = await Brand.find({ isActive: true });
-
         return res.render('userHome', {
+            
             user,
             products: filteredProducts,
             brands,

@@ -10,6 +10,16 @@
         </header> <!-- card-header end// -->
         <div class="card-body">
             <form action="/admin/create-brand" method="POST" enctype="multipart/form-data" id="createBrandForm">
+                <% if (successMessage) { %>
+                    <div class="alert alert-success">
+                        <%= successMessage.msg %>
+                    </div>
+                <% } %>
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger">
+                        <%= errorMessage.msg %>
+                    </div>
+                <% } %>
                 <div class="row gx-3 mb-3">
                     <div class="col-lg-12 text-center">
                         <img id="image-preview" class="image-preview" alt="Image Preview" style="display: none; width: 150px; height: auto;">

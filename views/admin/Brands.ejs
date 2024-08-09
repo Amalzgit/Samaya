@@ -1,3 +1,4 @@
+
 <section class="content-main">
     <div class="content-header d-flex justify-content-between align-items-center">
         <div>
@@ -13,8 +14,8 @@
     <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3">
-                <div class=" ">
-                   <input  type="text" placeholder="Search..." class="form-control ">
+                <div class="">
+                   <input type="text" placeholder="Search..." class="form-control">
                 </div>
             </div>
         </header> <!-- card-header end// -->
@@ -38,14 +39,17 @@
                                     <i class="fa-solid fa-undo"></i>
                                 </a>
                                 <% } else { %>
-                                <a href="/admin/delete-brand/<%= brand._id %>" class="text-secondary me-2" title="Delete">
+                                <a href="#" 
+                                   class="text-secondary me-2 delete-btn" 
+                                   data-url="/admin/delete-brand/<%= brand._id %>" 
+                                   title="Delete">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
                                 <% } %>
-                                <a href="/admin/remove-brand/<%= brand._id %>" 
-                                    class="text-danger me-2" 
-                                    title="Permanently Remove" 
-                                    onclick="return confirm('Are you sure you want to permanently remove this brand?');">
+                                <a href="#" 
+                                   class="text-danger me-2 remove-btn" 
+                                   data-url="/admin/remove-brand/<%= brand._id %>" 
+                                   title="Permanently Remove">
                                     <i class="fa-solid fa-trash-alt"></i>
                                  </a>
                             </div>
@@ -95,5 +99,51 @@
     .card-body .d-flex {
         margin-top: auto;
     }
-    
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const removeButtons = document.querySelectorAll('.remove-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); // Prevent the default link behavior
+
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action will delete the brand.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                });
+
+                if (result.isConfirmed) {
+                    window.location.href = button.getAttribute('data-url'); // Redirect to the link if confirmed
+                }
+            });
+        });
+
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); // Prevent the default link behavior
+
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action will permanently remove the brand.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (result.isConfirmed) {
+                    window.location.href = button.getAttribute('data-url'); // Redirect to the link if confirmed
+                }
+            });
+        });
+    });
+</script>

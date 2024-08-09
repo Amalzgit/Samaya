@@ -17,6 +17,9 @@ adminProductRoute.get('/delete-product/:productId', isAdmin ,adminProductControl
 adminProductRoute.get('/restore-product/:productId', isAdmin ,adminProductController.restoreProduct)
 adminProductRoute.get('/remove-product/:productId', isAdmin ,adminProductController.removeProduct)
 
+// adminProductRoute.post('/product/:productId/add-image', uploadProduct.single('image'), adminProductController.addProductImage);
+// adminProductRoute.delete('/product/:productId/remove-image/:imageName', adminProductController.removeProductImage);
+
 
 
 module.exports = adminProductRoute

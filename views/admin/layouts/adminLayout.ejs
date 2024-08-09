@@ -17,6 +17,8 @@
     <link href="/adminassets/css/main.css" rel="stylesheet" type="text/css" />
     <link href="/node_modules/cropperjs/dist/cropper.min.css" rel="stylesheet" type="text/css">
     <link href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.1/sweetalert2.all.min.js"></script>
+
 
 </head>
 
@@ -192,7 +194,79 @@
             </div>
         </footer>
     </main>
-    <script src="/adminassets/js/vendors/jquery-3.6.0.min.js"></script>
+    <style>
+        /* main.css */
+
+/* Base styles - Desktop */
+body {
+    font-size: 16px;
+}
+
+.navbar-aside {
+    width: 250px;
+}
+
+.main-wrap {
+    margin-left: 250px;
+}
+
+@media (max-width: 1200px) {
+    .navbar-aside {
+        width: 200px;
+    }
+
+    .main-wrap {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar-aside {
+        width: 150px;
+    }
+
+    .main-wrap {
+        margin-left: 150px;
+    }
+
+    .navbar-aside .menu-aside {
+        display: none;
+    }
+
+    .navbar-aside .btn-aside-minimize {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-aside {
+        display: none;
+    }
+
+    .main-wrap {
+        margin-left: 0;
+    }
+
+    .main-header {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+ </style>
+ <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.querySelector('.btn-aside-minimize');
+    const asideMenu = document.querySelector('.navbar-aside');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function () {
+            asideMenu.classList.toggle('open');
+        });
+    }
+});
+ </script>
+ <script src="/adminassets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/adminassets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/adminassets/js/vendors/select2.min.js"></script>
     <script src="/adminassets/js/vendors/perfect-scrollbar.js"></script>

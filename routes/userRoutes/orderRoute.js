@@ -6,6 +6,7 @@ const isAuth = require('../../middleware/isAuth');
 
 order_Route.post('/place-order',isAuth, isUser, orderController.placeOrder)
 order_Route.get('/order-placed/:orderId',isAuth, isUser, orderController. showOrderPlaced);
+order_Route.get('/order-details/:orderId',isAuth, isUser, orderController. showOrderdetails);
 
 module.exports = order_Route
 

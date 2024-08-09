@@ -125,9 +125,7 @@
                                         </tr>
                                     </tbody>
                                     
-                                        <tr>
-                                            <td colspan="2">Your cart is empty.</td>
-                                        </tr>
+                                       
                                     
                                 </table>
                             </div>
@@ -181,7 +179,9 @@
 
                     // Update cart total
                     document.querySelector('.cart_total_amount .font-xl').textContent = result.formattedTotal;
-                    
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, );
                     
                     console.log('Cart updated successfully.');
                 } else {
@@ -194,4 +194,3 @@
     });
 });
 </script>
-    

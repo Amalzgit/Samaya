@@ -62,12 +62,13 @@
                                 <span id="descriptionError" class="error" style="color: red;"></span>
                             </div>
                             <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                <label for="images" class="form-label">Product Image</label>
-                                <input type="file" id="images" multiple name="images" class="form-control">
+                                <label for="images" class="form-label">Product Images</label>
+                                <input type="file" id="images" multiple name="images" class="form-control" accept="image/*">
+                                <input type="hidden" id="selectedFiles" name="selectedFiles">
                                 <span id="imagesError" class="error" style="color: red;"></span>
                                 
                                 <!-- Container for image preview -->
-                                <div id="imagePreviewContainer" class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
+                                <div id="imagePreviewContainer" class="row mt-2">
                                     <!-- Image previews will be added here dynamically -->
                                 </div>
                             </div>
@@ -341,4 +342,92 @@
         });
     });
 </script>
+<script>
 
+
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('images');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const selectedFilesInput = document.getElementById('selectedFiles');
+    let selectedFiles = new DataTransfer();
+
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect(event) {
+        const files = event.target.files;
+        
+        for (let file of files) {
+            if (file.type.startsWith('image/')) {
+                addFileToSelection(file);
+            }
+        }
+        
+        updateFileInput();
+        renderPreviews();
+    }
+
+    function addFileToSelection(file) {
+        // Check if file already exists
+        for (let i = 0; i < selectedFiles.files.length; i++) {
+            if (selectedFiles.files[i].name === file.name) {
+                return; // File already exists, skip it
+            }
+        }
+        selectedFiles.items.add(file);
+    }
+
+    function removeFile(fileName) {
+        for (let i = 0; i < selectedFiles.files.length; i++) {
+            if (selectedFiles.files[i].name === fileName) {
+                selectedFiles.items.remove(i);
+                break;
+            }
+        }
+        updateFileInput();
+        renderPreviews();
+    }
+
+    function updateFileInput() {
+        fileInput.files = selectedFiles.files;
+        selectedFilesInput.value = JSON.stringify(Array.from(selectedFiles.files).map(f => f.name));
+    }
+
+    function renderPreviews() {
+        previewContainer.innerHTML = '';
+        for (let file of selectedFiles.files) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = createPreviewElement(e.target.result, file.name);
+                previewContainer.appendChild(preview);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function createPreviewElement(src, fileName) {
+        const colDiv = document.createElement('div');
+        colDiv.className = 'col-md-3 mb-3';
+        
+        const imgContainer = document.createElement('div');
+        imgContainer.className = 'position-relative';
+        
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'img-thumbnail';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'X';
+        removeBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
+        removeBtn.onclick = () => removeFile(fileName);
+        
+        imgContainer.appendChild(img);
+        imgContainer.appendChild(removeBtn);
+        colDiv.appendChild(imgContainer);
+        
+        return colDiv;
+    }
+});
+
+</script>

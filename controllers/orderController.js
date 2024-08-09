@@ -116,7 +116,7 @@ const showOrderPlaced = async (req,res)=>{
         const order =await Order.findById(orderId)
         .populate('items.product')
         .populate('user','name email')
-console.log("order :" ,order);
+// console.log("order :" ,order);
 
         if(!order){
             return res.status(404).render("error",{message:'Order not foud'});
@@ -127,9 +127,26 @@ console.log("order :" ,order);
         res.status(500).render('error',{message:'An error occurred while fetching Order!!'})
     }
 }
+const showOrderdetails =async(req,res)=>{
+    try {
+        const orderId =req.params.orderId;
+        const order =await Order.findById(orderId)
+        .populate('items.product')
+        .populate('user','name email')
+// console.log("order :" ,order);
 
+        if(!order){
+            return res.status(404).render("error",{message:'Order not foud'});
+        }
+        res.render('order_details',{order ,layout:false})
+    } catch (error) {
+        console.error("Error fetching Order" , error);
+        res.status(500).render('error',{message:'An error occurred while fetching Order!!'})
+    }
+}
 module.exports ={
     placeOrder,
-    showOrderPlaced
+    showOrderPlaced,
+    showOrderdetails
 
 }

@@ -26,7 +26,7 @@ try {
 }
 
 const updateAdmin = async (req, res) => {
-    const { firstName, lastName, email, phone, newPassword, confirmPassword } = req.body;
+    const { firstName, lastName,/* email, phone,*/ newPassword, confirmPassword } = req.body;
 
     try {
         const admin = await User.findById(req.session.user_id);
@@ -37,8 +37,8 @@ const updateAdmin = async (req, res) => {
 
         admin.firstName = firstName || admin.firstName;
         admin.lastName = lastName || admin.lastName;
-        admin.email = email || admin.email;
-        admin.phone = phone || admin.phone;
+        // admin.email = email || admin.email;
+        // admin.phone = phone || admin.phone;
 
         if (newPassword && confirmPassword && newPassword === confirmPassword) {
             admin.password = confirmPassword || admin.password;
