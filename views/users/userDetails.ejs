@@ -60,56 +60,72 @@
                 </div>
                 <div class="card-body">
                   <% if (orders && orders.length > 0) { %>
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Order ID</th>
-                          <th>Date</th>
-                          <th>Items</th>
-                          <th>Total</th>
-                          <th>Status</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% orders.forEach(order => { %>
-                          <tr>
-                            <td>#<%= order._id.toString().slice(-6).toUpperCase() %></td>
-                            <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
-                            <td>
-                              <% order.items.forEach((item, index) => { %>
-                                <%= item.product.name %> (x<%= item.quantity %>)
-                                <%= index < order.items.length - 1 ? ', ' : '' %>
-                              <% }) %>
-                            </td>
-                            <td><%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></td>
-
-                            
-                            <% if (order.status === 'Cancelled') { %>
-                              <td><span class="badge bg-danger">Cancelled</span></td> 
-                            <% } else if (order.status === 'Shipped') { %>
-                              <td><span class="badge bg-info">Shipped</span></td>
-                            <% } else if (order.status === 'Delivered') { %>
-                              <td><span class="badge bg-success">Delivered</span></td>
-                            <% } else if (order.status === 'Processing'){ %>
-                              <td><span class="badge bg-warning">Processing</span></td>
-                            <% } else { %>
-                              <td><span class="badge bg-secondary">Pending</span></td>
-                              <%}%>
-                            <td>
-                              <a href="/order-details/<%= order._id %>" class="btn btn-sm btn-outline-primary">View Details</a>
-                            </td>
-                          </tr>
-                        <% }) %>
-                      </tbody>
-                    </table>
+                    <ul class="list-group">
+                      <% orders.forEach(order => { %>
+                        <li class="list-group-item mb-4 border rounded shadow-sm">
+                          <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                              <h3 class="mb-0">Order #<%= order._id.toString().slice(-6).toUpperCase() %></h3>
+                              <p class="mb-1 text-muted">Date: <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                              <p class="mb-1 text-muted">Total: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></p>
+                              <p class="mb-1">Status: 
+                                <% if (order.status === 'Cancelled') { %>
+                                  <span class="badge bg-danger">Cancelled</span>
+                                <% } else if (order.status === 'Partially Cancelled') { %>
+                                  <span class="badge bg-warning">Partially Cancelled</span>
+                                <% } else if (order.status === 'Shipped') { %>
+                                  <span class="badge bg-info">Shipped</span>
+                                <% } else if (order.status === 'Delivered') { %>
+                                  <span class="badge bg-success">Delivered</span>
+                                <% } else if (order.status === 'Processing') { %>
+                                  <span class="badge bg-warning">Processing</span>
+                                <% } else { %>
+                                  <span class="badge bg-secondary">Pending</span>
+                                <% } %>
+                              </p>
+                            </div>
+                            <a href="/order-details/<%= order._id %>" class="btn btn-sm btn-outline-primary">View Details</a>
+                          </div>
+                          <ul class="list-group mb-3">
+                            <% order.items.forEach(item => { %>
+                              <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                  <h6 class="mb-1"><%= item.product.name %></h6>
+                                  <p class="mb-1">Quantity: <%= item.quantity %></p>
+                                  <p class="mb-1">Price: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.price) %></p>
+                                  <p class="mb-1">Status: 
+                                    <% if (item.status === 'Active' && order.status === 'Delivered') { %>
+                                      <button onclick="requestReturn('<%= order._id %>', '<%= item._id %>')" class="btn btn-sm btn-warning">Request Return</button>
+                                  <% } else if (item.status === 'Return Requested') { %>
+                                      <span class="badge bg-info">Return Requested</span>
+                                  <% } else if (item.status === 'Return Accepted') { %>
+                                      <span class="badge bg-success">Return Accepted</span>
+                                  <% } else if (item.status === 'Return Rejected') { %>
+                                      <span class="badge bg-danger">Return Rejected</span>
+                                  <% } %>
+                                  </p>
+                                </div>
+                                <div>
+                                  <% if (item.status === 'Active') { %>
+                                    <% if (order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Shipped') { %>
+                                      <button class="btn btn-sm btn-danger cancel-item" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
+                                    <% } %>
+                                   
+                                  <% } %>
+                                </div>
+                              </li>
+                            <% }) %>
+                          </ul>
+                        </li>
+                      <% }) %>
+                    </ul>
                   <% } else { %>
                     <p>You haven't placed any orders yet.</p>
                   <% } %>
                 </div>
               </div>
-              </div>
-
+            </div>
+           
             <!-- Address Tab -->
             <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
               <div class="row" id="addresses-container">
@@ -206,28 +222,7 @@
   </section>
 </main>
 
-  <style>
-    h4 {
-      font-family: "Spartan", sans-serif;
-      color: #f3eded;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-    .btn-danger {
-      background-color: #dc3545 !important; /* Red background */
-      border-color: #dc3545 !important;     /* Red border */
-      color: #fff !important;               /* White text */
-    }
-    .list-group-item.active {
-      z-index: 2;
-      color: #fff; /* Text color */
-      background-color: #000; /* Background color */
-      border-color: #000; /* Border color */
-    }
-    .card-header {
-      font-family: "Spartan", sans-serif;
-    }
-  </style>
+  
   <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Toggle password visibility
@@ -367,4 +362,110 @@
 
   });
 
+  </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Cancel item functionality
+    document.querySelectorAll('.cancel-item').forEach(button => {
+      button.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        const itemId = this.getAttribute('data-item-id');
+        if (confirm('Are you sure you want to cancel this item?')) {
+          // Send AJAX request to cancel the item
+          fetch(`/cancel-item/${orderId}/${itemId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Item cancelled successfully');
+                location.reload();
+              } else {
+                alert('Failed to cancel item: ' + data.message);
+              }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+      });
+    });
+  
+  
+  });
+  </script>
+ <script>
+  function requestReturn(orderId, itemId) {
+      Swal.fire({
+          title: 'Return Reason',
+          input: 'select',
+          inputOptions: {
+              'damaged': 'Product damaged',
+              'size_not_fit': 'Size not fit',
+              'defective': 'Product defective',
+              'wrong_item': 'Received wrong item',
+              'not_as_described': 'Not as described',
+              'changed_mind': 'Changed my mind',
+              'other': 'Other'
+          },
+          inputPlaceholder: 'Select a reason',
+          showCancelButton: true,
+          inputValidator: (value) => {
+              return new Promise((resolve) => {
+                  if (value) {
+                      resolve()
+                  } else {
+                      resolve('You need to select a return reason')
+                  }
+              })
+          }
+      }).then((result) => {
+          if (result.isConfirmed) {
+              let reason = result.value;
+              if (reason === 'other') {
+                  Swal.fire({
+                      title: 'Other Reason',
+                      input: 'text',
+                      inputPlaceholder: 'Please specify the reason',
+                      showCancelButton: true,
+                      inputValidator: (value) => {
+                          if (!value) {
+                              return 'You need to write something!'
+                          }
+                      }
+                  }).then((result) => {
+                      if (result.isConfirmed) {
+                          sendReturnRequest(orderId, itemId, result.value);
+                      }
+                  });
+              } else {
+                  sendReturnRequest(orderId, itemId, reason);
+              }
+          }
+      });
+  }
+  
+  function sendReturnRequest(orderId, itemId, reason) {
+      fetch(`/return-item/${orderId}/${itemId}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ reason: reason })
+      })
+      .then(response => response.json())
+      .then(data => {
+          Swal.fire({
+              icon: 'success',
+              title: 'Return Requested',
+              text: data.message,
+          }).then(() => {
+              location.reload();
+          });
+      })
+      .catch(error => {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Error requesting return',
+          });
+          console.error('Error:', error);
+      });
+  }
   </script>

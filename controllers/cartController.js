@@ -6,7 +6,13 @@ const User = require('../models/userModel')
 const loadCart =async(req,res)=>{
  try {
 
-    const Id = req.session.user_id
+    const Id = req.currentUser._id
+    // console.log("req.user :",req.user);
+    // console.log("session id:",req.session.user_id);
+    // console.log("current user :",req.currentUser._id);
+
+
+    
     const cart = await Cart.findOne({user:Id}).populate('items.product');
     
     return res.render('cart',{cart})
@@ -19,7 +25,7 @@ const loadCart =async(req,res)=>{
 const addItemToCart = async(req,res)=>{
     try {
         const { productId , quantity } =req.body;
-        const userId =req.session.user_id
+        const userId =req.currentUser._id
 
         const cart = await Cart.findOne({user:userId});
         const product =await Product.findById(productId);
@@ -63,7 +69,7 @@ const removeItemFromCart =async (req,res)=>{
 
     try {
         const { productId } = req.body;
-        const cart = await Cart.findOne({ user: req.session.user_id });
+        const cart = await Cart.findOne({ user: req.currentUser._id });
         cart.items = cart.items.filter(item => item.product.toString() !== productId);
         cart.total = cart.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
         await cart.save();
@@ -78,7 +84,7 @@ const removeItemFromCart =async (req,res)=>{
 const clearCart = async(req,res)=>{
 
     try {
-        const cart =await Cart.findOne({user:req.session.user_id});
+        const cart =await Cart.findOne({user:req.currentUser._id});
         cart.items = [];
         cart.total = 0;
         await cart.save();
@@ -99,7 +105,7 @@ const updateCart =async (req,res)=>{
         
         // Find the cart for the current user
         const cart = await Cart.findOneAndUpdate(
-            { user: req.session.user_id ,'items.product':productId},
+            { user: req.currentUser._id ,'items.product':productId},
             { $set:{'items.$.quantity':quantity}},
             {new:true}
         ).populate('items.product');
@@ -148,7 +154,7 @@ const Checkout = async (req,res)=>{
   };
   const getCheckout = async (req, res) => {
     try {
-      const userId = req.session.user_id
+      const userId = req.currentUser._id
       const cartData = req.session.CheckoutCart;
       const userAddress = await Address.find({ user :userId });
       const selectedAddress =userAddress.find(address=>address.isDefault ) || userAddress[0]
@@ -178,17 +184,47 @@ const Checkout = async (req,res)=>{
 
 
 const loadAddAddress = async (req, res) => {
-    try {
-      const addresses = await Address.find({ user: req.session.user_id });
-      res.render("addAddress", { layout: false, addresses });
-    } catch (error) {
-      console.error("Error loading add address page:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+  try {
+    const addresses = await Address.find({ user: req.currentUser._id });
+    res.render("checkoutAddAddress", { layout: false, addresses });
+  } catch (error) {
+    console.error("Error loading add address page:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const addAddress = async (req, res) => {
+  const {
+    country,
+    fullName,
+    mobileNumber,
+    pincode,
+    addressLine1,
+    addressLine2,
+    landmark,
+    townCity,
+    state,
+    type,
+    isDefault
+  } = req.body;
+
+  try {
+    const userId = req.currentUser._id;
+    
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is missing" });
     }
-  };
-  
-  const addAddress = async (req, res) => {
-    const {
+
+    const isDefaultBoolean = isDefault === "on";
+
+    if (isDefaultBoolean) {
+      await Address.updateMany(
+        { user: userId, isDefault: true },
+        { isDefault: false }
+      );
+    }
+
+    const newAddress = new Address({
       country,
       fullName,
       mobileNumber,
@@ -199,121 +235,21 @@ const loadAddAddress = async (req, res) => {
       townCity,
       state,
       type,
-      isDefault
-    } = req.body;
-  
-    try {
-      const userId = req.session.user_id;
-      
-      if (!userId) {
-        console.error("User ID is missing in session.");
-        return res.status(400).json({ success: false, message: "User ID is missing" });
-      }
-  
-      const isDefaultBoolean = isDefault === "on";
-  
-      if (isDefaultBoolean) {
-        await Address.updateMany(
-          { user: userId, isDefault: true },
-          { isDefault: false }
-        );
-      }
-  
-      const newAddress = new Address({
-        country,
-        fullName,
-        mobileNumber,
-        pincode,
-        addressLine1,
-        addressLine2,
-        landmark,
-        townCity,
-        state,
-        type,
-        isDefault: isDefaultBoolean,
-        user: userId
-      });
-  
-      await newAddress.save();
-      res.redirect('/checkout')
-    } catch (error) {
-      console.error("Error adding address:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      isDefault: isDefaultBoolean,
+      user: userId
+    });
+
+    const savedAddress = await newAddress.save();
+    if (!savedAddress) {
+      return res.status(500).json({ success: false, message: "Failed to save address" });
     }
-  };
-  
-  const loadEditAddress = async (req, res) => {
-    try {
-      const { addressId } = req.params;
-      const address = await Address.findById(addressId);
-      const user = await User.findById(req.session.user_id);
-  
-      if (!address || !user) {
-        return res.status(404).json({ success: false, message: "Address or user not found" });
-      }
-  
-      res.render('edit-address', { user, address, layout: false });
-    } catch (error) {
-      console.error('Error loading edit address:', error);
-      res.status(500).json({ success: false, message: "Server error" });
-    }
-  };
-  
-  const editAddress = async (req, res) => {
-    const { addressId } = req.params;
-    const {
-      country,
-      fullName,
-      mobileNumber,
-      pincode,
-      addressLine1,
-      addressLine2,
-      landmark,
-      townCity,
-      state,
-      type,
-      isDefault
-    } = req.body;
-  
-    try {
-      const addressToUpdate = await Address.findById(addressId);
-      if (!addressToUpdate) {
-        return res.status(404).json({ success: false, message: "Address not found" });
-      }
-  
-      if (isDefault === 'on') {
-        const currentDefaultAddress = await Address.findOne({ isDefault: true });
-        if (currentDefaultAddress && currentDefaultAddress._id.toString() !== addressId) {
-          await Address.findByIdAndUpdate(currentDefaultAddress._id, { isDefault: false });
-        }
-      }
-  
-      const updateData = {
-        country: country || addressToUpdate.country,
-        fullName: fullName || addressToUpdate.fullName,
-        mobileNumber: mobileNumber || addressToUpdate.mobileNumber,
-        pincode: pincode || addressToUpdate.pincode,
-        addressLine1: addressLine1 || addressToUpdate.addressLine1,
-        addressLine2: addressLine2 || addressToUpdate.addressLine2,
-        landmark: landmark || addressToUpdate.landmark,
-        townCity: townCity || addressToUpdate.townCity,
-        state: state || addressToUpdate.state,
-        type: type || addressToUpdate.type,
-        isDefault: isDefault === "on"
-      };
-  
-      const address = await Address.findByIdAndUpdate(addressId, updateData, { new: true });
-  
-      if (!address) {
-        return res.status(404).json({ success: false, message: "Address not found" });
-      }
-  
-      res.redirect('/checkout')
-    } catch (error) {
-      console.error('Error editing address:', error);
-      res.status(500).json({ success: false, message: "Server error" });
-    }
-  };
+    res.redirect('/checkout-page');
+  } catch (error) {
+    console.error("Error adding address:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 
 
@@ -326,9 +262,6 @@ module.exports = {
     updateCart,
     loadAddAddress,
     addAddress,
-    loadEditAddress,
-    editAddress,
-
   // checkout
   Checkout,
   getCheckout,

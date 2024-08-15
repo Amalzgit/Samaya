@@ -1,9 +1,9 @@
 const isLogedin = async (req, res, next) => {
     try {
-        if (req.session.user_id) {
-            next(); // User is logged in, proceed to the next middleware/controller
+        if (req.session.user_id || req.isAuthenticated() ) {
+            next(); 
         } else {
-           return res.redirect('/'); // User is not logged in, redirect to the home page
+           return res.redirect('/'); 
         }
     } catch (error) {
         console.log(error.message);
@@ -13,10 +13,10 @@ const isLogedin = async (req, res, next) => {
 
 const isLogout = async (req, res, next) => {
     try {
-        if (req.session.user_id) {
-           return res.redirect('/'); // Redirect to home if user is already logged in
+        if (req.session.user_id || req.isAuthenticated() ) {
+           return res.redirect('/'); 
         } else {
-            next(); // User is not logged in, proceed to the next middleware/controller
+            next(); 
         }
     } catch (error) {
         console.log(error.message);

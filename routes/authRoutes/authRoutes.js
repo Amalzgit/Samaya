@@ -10,7 +10,8 @@ const { loginValidater } = require('../../middleware/validator');
 const otp_route = require('./otpRoute');
 const register_route = require('./registerRoute');
 const nocache = require('../../middleware/nocache');
-
+const passport = require('passport');
+require('../../GoogleAuth')
 const auth_route = express();
 
 // Session middleware
@@ -36,7 +37,7 @@ auth_route.set('view engine', 'ejs')
 
 
 const isLoggedIn = (req, res, next) => {
-    if (req.session.user_id) {
+    if (req.session.user_id || req.isAuthenticated()) {
         const isAdmin = req.session.isAdmin;
         if(isAdmin){
             return res.redirect('/admin/adminhome');
@@ -48,10 +49,19 @@ const isLoggedIn = (req, res, next) => {
 }
 // Routes
 auth_route.get('/login', nocache, isLoggedIn, loginValidater, auth.isLogout, loginController.loginLoad);
-auth_route.post('/login',nocache, isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
+auth_route.post('/login', nocache, isLoggedIn, loginValidater,  auth.isLogout, loginController.verifyLogin);
 auth_route.get('/logout', nocache, auth.isLogedin, loginController.Logout);
 auth_route.use(otp_route);
 auth_route.use(register_route);
-// Fallback route for unmatched routes
+
+// google auth
+
+auth_route.get('/auth/google', nocache,isLoggedIn, loginValidater, auth.isLogout, passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+auth_route.get('/auth/google/login', nocache,isLoggedIn, loginValidater, auth.isLogout, passport.authenticate('google', { failureRedirect: '/register' }),
+  (req, res) => {
+    res.redirect('/');
+  }
+);
 
 module.exports = auth_route;

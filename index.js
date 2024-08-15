@@ -8,6 +8,7 @@ const isAuthenticated = require('./middleware/isAuthenticated');
 const config = require('./config/Sessionconfig');
 const app = express();
 const Swal = require ('sweetalert2');
+const passport =require('passport')
 // Database connection
 connectDB();
 
@@ -18,9 +19,14 @@ app.use(session({
     saveUninitialized: true
 }));
 
-//  isAuthenticated middleware
-app.use(isAuthenticated);
+app.use(passport.initialize());
+app.use(passport.session());
 
+// loadUser
+
+//  isAuthenticated middleware
+
+app.use(isAuthenticated);
 // View engine setup
 app.set('view engine', 'ejs');
 
@@ -36,6 +42,10 @@ const auth_route = require('./routes/authRoutes/authRoutes');
 const adminRoute = require('./routes/adminRoutes/adminRoute');
 const isblocked = require('./middleware/isblocked');
 const loggerMiddleware = require('./middleware/loggerMiddleware');
+const loadUser = require('./middleware/loadUser');
+
+
+app.use(loadUser)
 
 
 // Global Middlewares

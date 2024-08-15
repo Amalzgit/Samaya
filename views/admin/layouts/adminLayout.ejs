@@ -18,7 +18,37 @@
     <link href="/node_modules/cropperjs/dist/cropper.min.css" rel="stylesheet" type="text/css">
     <link href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.1/sweetalert2.all.min.js"></script>
-
+    <style>
+        .status-pending {
+            background-color: #fff3cd; /* Light yellow for Pending */
+        }
+    
+        .status-processing {
+            background-color: #cce5ff; /* Light blue for Processing */
+        }
+    
+        .status-shipped {
+            background-color: #d4edda; /* Light green for Shipped */
+        }
+    
+        .status-delivered {
+            background-color: #adf2bb; /* Light cyan for Delivered */
+        }
+    
+        .status-cancelled {
+            background-color: #f8d7da; /* Light red for Cancelled */
+        }
+    
+        .status-dropdown {
+            width: 150px;
+            transition: background-color 0.3s ease;
+        }
+    
+        .status-dropdown:disabled {
+            background-color: #f8f9fa;
+        }
+    </style>
+    
 
 </head>
 

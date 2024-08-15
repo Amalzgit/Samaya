@@ -18,7 +18,7 @@ const userSchema =  new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true
+        // required: true
     },
     password: {
         type: String,
@@ -32,7 +32,8 @@ const userSchema =  new mongoose.Schema({
     isBlocked: {
         type: Boolean,
         default: false
-    }
+    },
+    googleId: { type: String } 
 },
     {timestamps : true}
     

@@ -54,13 +54,21 @@ const verifyLogin = async (req, res) => {
 };
 
 const Logout = async (req, res) => {
-    try {
-        req.session.destroy();
-        return res.redirect('/login');
-    } catch (error) {
-        console.error('Error in logout:', error);
-       return res.redirect('/');
-    }
+    // console.log("logout");
+    
+    req.logout((err) => {
+        if (err) {
+            console.error('Error during logout:', err);
+            return res.status(500).send('Error during logout');
+        }
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session:', err);
+                return res.status(500).send('Error destroying session');
+            }
+            res.redirect('/login'); 
+        });
+    });
 };
 
 module.exports = {

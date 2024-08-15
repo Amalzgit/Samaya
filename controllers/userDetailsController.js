@@ -3,8 +3,10 @@ const Address = require("../models/addressModel");
 const Order =require('../models/orderModel')
 const loadUserDetails = async (req, res) => {
   try {
-    const user = await User.findById(req.session.user_id);
-    const addresses = await Address.find({ user: req.session.user_id });
+    // console.log(req.user);
+    
+    const user = req.currentUser
+    const addresses = await Address.find({ user: req.currentUser._id });
     const orders =await Order.find({user:user })
                              .populate('items.product')
                              .sort({createdAt: -1})
@@ -28,7 +30,7 @@ const updateUser = async (req, res) => {
   const { firstName, lastName, newPassword, confirmPassword } = req.body;
 
   try {
-    const user = await User.findById(req.session.user_id);
+    const user =req.currentUser
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
@@ -52,7 +54,7 @@ const updateUser = async (req, res) => {
 
 const loadAddAddress = async (req, res) => {
   try {
-    const addresses = await Address.find({ user: req.session.user_id });
+    const addresses = await Address.find({ user: req.currentUser._id });
     res.render("addAddress", { layout: false, addresses });
   } catch (error) {
     console.error("Error loading add address page:", error);
@@ -119,7 +121,7 @@ const loadEditAddress = async (req, res) => {
   try {
     const { addressId } = req.params;
     const address = await Address.findById(addressId);
-    const user = await User.findById(req.session.user_id);
+    const user = req.currentUser
 
     if (!address || !user) {
       return res.status(404).json({ success: false, message: "Address or user not found" });

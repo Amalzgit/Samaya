@@ -12,7 +12,7 @@ const cart_Route = require('./cartRoute');
 const isUser = require('../../middleware/isUser');
 const order_Route = require('./orderRoute');
 const wishlistRoute = require('./wishlistRoute');
-// const nocache = require('nocache');
+const passport = require('passport')
 const user_route = express();
 
 
@@ -23,6 +23,8 @@ user_route.use(session({
     saveUninitialized: false,
     cookie: { secure: false }
 }));
+user_route.use(passport.initialize());
+user_route.use(passport.session());
 
 // Static file serving middleware
 user_route.use(express.static(path.join(__dirname, '../public')));

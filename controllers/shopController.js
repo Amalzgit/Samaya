@@ -45,7 +45,6 @@ const loadShop = async (req, res) => {
             { $unwind: '$brand' }
         );
 
-        // Filter out products with deleted categories or inactive brands
         aggregationPipeline.push({
             $match: {
                 'category.deleted': false,
@@ -79,7 +78,7 @@ const loadShop = async (req, res) => {
                     sortStage = { name: -1 };
                     break;
                 default:
-                    sortStage = { featured: -1 };  // Assuming you have a 'featured' field
+                    sortStage = { featured: -1 };  
             }
             aggregationPipeline.push({ $sort: sortStage });
         }

@@ -32,7 +32,6 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  // Specifications
   caseMaterial: {
     type: String,
     required: true
@@ -42,7 +41,6 @@ const productSchema = new mongoose.Schema({
     enum: ['Sapphire', 'Mineral', 'Acrylic'],
     required: true
   },
-  // Design & Aesthetics
   dialColor: {
     type: String
   },
@@ -61,12 +59,11 @@ const productSchema = new mongoose.Schema({
   additionalDesignElements: {
     type: [String]
   },
-  // Additional Features
   powerReserve: {
-    type: String // For mechanical watches
+    type: String 
   },
   warrantyPeriod: {
-    type: String // e.g., "2 years"
+    type: String 
   },
   certifications: {
     type: [String]

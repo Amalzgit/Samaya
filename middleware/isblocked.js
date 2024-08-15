@@ -1,9 +1,9 @@
-const User = require('../models/userModel');
+
 
 
 module.exports= async (req, res, next) => {
-    const userId =  req.session.user_id
-    const user =await User.findById(userId)
+    
+    const user =req.currentUser
     // console.log({user}); 
     if (user && user.isBlocked) {
         req.session.destroy(err => {
