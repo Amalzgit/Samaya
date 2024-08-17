@@ -158,11 +158,13 @@ const Checkout = async (req,res)=>{
       const cartData = req.session.CheckoutCart;
       const userAddress = await Address.find({ user :userId });
       const selectedAddress =userAddress.find(address=>address.isDefault ) || userAddress[0]
-      
+      const user = req.currentUser;
+
   
       res.render('checkout', {
         cart: cartData,
-        addresses: userAddress, 
+        addresses: userAddress,
+        user,
         selectedAddress,
         layout: false
       });

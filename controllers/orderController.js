@@ -4,6 +4,8 @@ const User =require('../models/userModel');
 const Product = require('../models/productModel');
 const addressModel = require('../models/addressModel');
 const { Types } = require('mongoose');
+const {createOrder} =require('../utils/razorpayUtil');
+const { verifyPaymentSignature } = require('../utils/razorpayUtil');
 
 const isValidId = (id) => Types.ObjectId.isValid(id);
 
@@ -75,6 +77,25 @@ const placeOrder = async (req, res) => {
         }
   
         order.totalPrice = totalPrice;
+        if(paymentMethod ==='razorpay'){
+          const razorpayOrder =await createOrder(
+            totalPrice *100,
+            'INR',
+            `order_${Date.now()}`
+          );
+          order.payment.razorpayOrder = razorpayOrder.id;
+          await order.save();
+
+          return res.json({
+            success:true,
+            order:order,
+            razorpayOrder :{
+              id: razorpayOrder.id,
+              amount :razorpayOrder.amount,
+              currency :razorpayOrder.currency
+            }
+          });
+        }else{
         await order.save();
   
         await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
@@ -88,11 +109,36 @@ const placeOrder = async (req, res) => {
         }
   
         res.redirect(`/order-placed/${order._id}`);
+      }
       } catch (error) {
         console.log("Order Placing Error:", error);
         res.status(500).json({ success: false, message: 'An error occurred while placing the order' });
       }
 };
+const verifyRazorpayPayment = async (req,res)=>{
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (verifyPaymentSignature(razorpay_order_id, razorpay_payment_id, razorpay_signature)){
+      const order = await Order.findOne({ 'payment.razorpayOrderId': razorpay_order_id });
+      if (order) {
+        order.payment.status = 'Paid';
+        order.payment.razorpayPaymentId = razorpay_payment_id;
+        await order.save();
+
+        // Clear the cart
+        await Cart.findOneAndUpdate({ user: order.user }, { $set: { items: [] } });
+
+        return res.json({ success: true, message: 'Payment verified successfully' });
+      }
+    }
+
+    return res.status(400).json({ success: false, message: 'Invalid payment verification' });
+  } catch (error) {
+    console.log("Razorpay Verification Error:", error);
+    res.status(500).json({ success: false, message: 'An error occurred while verifying the payment' });
+  }
+}
 
 const showOrderPlaced = async (req,res)=>{
     try {
@@ -114,8 +160,14 @@ const showOrderdetails =async(req,res)=>{
     try {
         const orderId = req.params.orderId;
         const order = await Order.findById(orderId)
-          .populate('items.product')
-          .populate('user', 'name email');
+        .populate({
+          path: 'items.product',
+          populate: {
+            path: 'brand', 
+            select: 'name' 
+          }
+        })
+        .populate('user', 'name email');
   
         if (!order) {
           return res.status(404).render("error", { message: 'Order not found' });
@@ -135,20 +187,37 @@ const cancelOrderItem = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid order or item ID' });
     }
 
-    const order = await Order.findById(orderId);
-    if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+    const result = await Order.findOneAndUpdate(
+      { _id: orderId, 'items._id': itemId, 'items.status': 'Active' },
+      {
+        $set: {
+          'items.$.status': 'Cancelled',
+          'items.$.cancelledAt': new Date()
+        }
+      },
+      { new: true } 
+    );
+
+    if (!result) {
+      return res.status(404).json({ success: false, message: 'Order or item not found, or item already cancelled' });
     }
 
-    order.cancelItem(itemId);
-    await order.save();
+    const item = result.items.id(itemId);
+    await Product.findByIdAndUpdate(
+      item.product,
+      { $inc: { stock: item.quantity } }
+    );
 
-    res.json({ success: true, message: 'Item cancelled successfully' });
+    await result.updateOrderStatus();
+    await result.save();
+
+    res.json({ success: true, message: 'Item cancelled and stock restocked successfully' });
   } catch (error) {
     console.error('Error cancelling order item:', error);
     res.status(500).json({ success: false, message: 'Error cancelling item' });
   }
 }
+
 const returnOrderItem = async (req, res) => {
   const { orderId, itemId } = req.params;
 
@@ -178,6 +247,7 @@ const returnOrderItem = async (req, res) => {
 };
 module.exports ={
     placeOrder,
+    verifyRazorpayPayment ,
     showOrderPlaced,
     showOrderdetails,
     cancelOrderItem,

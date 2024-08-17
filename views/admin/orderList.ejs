@@ -35,12 +35,24 @@
                             <ul>
                                 <% order.items.forEach(item => { %>
                                     <li>
-                                        <%= item.product.name %> (Qty: <%= item.quantity %>)
-                                        - Status: <%= item.status %>
-                                        <% if (item.status === 'Return Requested') { %>
-                                            <button onclick="handleReturn('<%= order._id %>', '<%= item._id %>', 'accept')" class="btn btn-sm btn-success">Accept Return</button>
-                                            <button onclick="handleReturn('<%= order._id %>', '<%= item._id %>', 'reject')" class="btn btn-sm btn-danger">Reject Return</button>
-                                        <% } %>
+                                        <strong><%= item.product.name %></strong> (Qty: <%= item.quantity %>)<br>
+                                        - Status: <%= item.status %><br>
+                                        <div>
+                                            <% if (item.status === 'Return Requested') { %>
+                                                <button onclick="handleReturn('<%= order._id %>', '<%= item._id %>', 'accept')" class="btn btn-sm btn-success">Accept Return</button>
+                                                <button onclick="handleReturn('<%= order._id %>', '<%= item._id %>', 'reject')" class="btn btn-sm btn-danger">Reject Return</button>
+                                            <% } %>
+                                            <% if (item.status === 'Shipped' || item.status === 'Pending') { %>
+                                                <select class="form-control status-dropdown-item" onchange="changeItemStatus('<%= order._id %>', '<%= item._id %>', this.value)">
+                                                    <option value="Pending" <%= item.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                                    <option value="Processing" <%= item.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                                    <option value="Shipped" <%= item.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                    <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                    <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                    <option value="Partially Cancelled" <%= item.status === 'Partially Cancelled' ? 'selected' : '' %>>Partially Cancelled</option>
+                                                </select>
+                                            <% } %>
+                                        </div>
                                     </li>
                                 <% }) %>
                             </ul>
@@ -81,6 +93,34 @@
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Error updating order status',
+            });
+            console.error('Error:', error);
+        });
+    }
+
+    function changeItemStatus(orderId, itemId, status) {
+        fetch(`/admin/update-item-status/${orderId}/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Item Status Updated',
+                text: data.message,
+            }).then(() => {
+                location.reload();
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Error updating item status',
             });
             console.error('Error:', error);
         });
@@ -205,5 +245,3 @@
         });
     });
 </script>
-
-

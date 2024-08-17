@@ -15,11 +15,7 @@ const addressSchema = new Schema({
 });
 
 const orderItemSchema = new Schema({
-  product: {
-    type: Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true
-  },
+  product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true, min: 1 },
@@ -35,11 +31,7 @@ const orderItemSchema = new Schema({
 });
 
 const orderSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   items: [orderItemSchema],
   address: { type: addressSchema, required: true },
   totalPrice: { type: Number, required: true },
@@ -65,6 +57,7 @@ const orderSchema = new Schema({
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
+  
 });
 
 orderSchema.virtual('formattedTotalPrice').get(function() {
@@ -77,7 +70,9 @@ orderSchema.methods.cancelItem = function(itemId) {
     item.status = 'Cancelled';
     item.cancelledAt = new Date();
     this.updateOrderStatus();
+    return true; 
   }
+  return false; 
 };
 
 orderSchema.methods.requestReturnItem = function(itemId) {
@@ -85,6 +80,7 @@ orderSchema.methods.requestReturnItem = function(itemId) {
   if (item && item.status === 'Active') {
     item.status = 'Return Requested';
     item.returnRequestedAt = new Date();
+    return this.save();
   }
 };
 
@@ -94,6 +90,7 @@ orderSchema.methods.processReturnedItem = function(itemId) {
     item.status = 'Returned';
     item.returnedAt = new Date();
     this.updateOrderStatus();
+    return this.save();
   }
 };
 
@@ -116,5 +113,6 @@ orderSchema.methods.updateOrderStatus = function() {
                         this.status === 'Partially Cancelled' || this.status === 'Partially Returned' ? 'Partially Refunded' :
                         this.payment.status;
 };
+
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -8,14 +8,17 @@
             <li class="nav-item" role="presentation">
               <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</a>
             </li>
-            <li class="nav-item" role="presentation">
+            <!-- <li class="nav-item" role="presentation">
               <a class="nav-link" id="forgot-password-tab" data-bs-toggle="tab" href="#forgot-password" role="tab" aria-controls="forgot-password" aria-selected="false">Forgot Password</a>
-            </li>
+            </li> -->
             <li class="nav-item" role="presentation">
               <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">Orders</a>
             </li>
             <li class="nav-item" role="presentation">
               <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">Address</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="false">Wallet</a>
             </li>
             <li class="nav-item" role="presentation">
               <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="false">Account Detail</a>
@@ -94,23 +97,30 @@
                                   <p class="mb-1">Quantity: <%= item.quantity %></p>
                                   <p class="mb-1">Price: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.price) %></p>
                                   <p class="mb-1">Status: 
-                                    <% if (item.status === 'Active' && order.status === 'Delivered') { %>
-                                      <button onclick="requestReturn('<%= order._id %>', '<%= item._id %>')" class="btn btn-sm btn-warning">Request Return</button>
-                                  <% } else if (item.status === 'Return Requested') { %>
+                                    <% if (item.status === 'Active') { %>
+                                      <% if (order.status === 'Delivered') { %>
+                                        <button onclick="requestReturn('<%= order._id %>', '<%= item._id %>')" class="btn btn-sm btn-warning">Request Return</button>
+                                      <% } else { %>
+                                        <span class="badge bg-secondary"><%=item.status%></span>
+                                      <% } %>
+                                    <% } else if (item.status === 'Return Requested') { %>
                                       <span class="badge bg-info">Return Requested</span>
-                                  <% } else if (item.status === 'Return Accepted') { %>
+                                    <% } else if (item.status === 'Return Accepted') { %>
                                       <span class="badge bg-success">Return Accepted</span>
-                                  <% } else if (item.status === 'Return Rejected') { %>
+                                    <% } else if (item.status === 'Return Rejected') { %>
                                       <span class="badge bg-danger">Return Rejected</span>
-                                  <% } %>
+                                    <% } else if (item.status === 'Active') { %>
+                                      <% if (order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Shipped') { %>
+                                        <span class="badge bg-secondary">Active</span>
+                                      <% } %>
+                                    <% } else { %>
+                                      <span class="badge bg-secondary"><%= item.status %></span>
+                                    <% } %>
                                   </p>
                                 </div>
                                 <div>
-                                  <% if (item.status === 'Active') { %>
-                                    <% if (order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Shipped') { %>
-                                      <button class="btn btn-sm btn-danger cancel-item" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
-                                    <% } %>
-                                   
+                                  <% if (item.status === 'Active' && order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Shipped') { %>
+                                    <button class="btn btn-sm btn-danger cancel-item" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
                                   <% } %>
                                 </div>
                               </li>
@@ -125,6 +135,7 @@
                 </div>
               </div>
             </div>
+            
            
             <!-- Address Tab -->
             <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
@@ -170,7 +181,88 @@
                 <i class="fa fa-plus-circle mr-2"></i> Add Address
               </a>
             </div>
+             <!-- Wallet Tab -->
+<div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+      <h4 class="mb-0"><i class="fa fa-wallet mr-2"></i> Your Wallet</h4>
+    </div>
+    <div class="card-body">
+      <h5 class="mb-3">Current Balance: <span id="walletBalance" class="text-success"></span></h5>
+      <h5 class="mb-3">Total Balance (including pending transactions): <span id="walletTotalBalance" class="text-info"></span></h5>
+      <hr>
+      <h6 class="mb-3">Recent Transactions:</h6>
+      <div class="table-responsive">
+        <table class="table table-striped" id="transactionTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Order ID</th>
+            </tr>
+          </thead>
+          <tbody id="transactionList">
+            <!-- Transactions will be populated here dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4">
+        <button class="btn btn-primary btn-sm" id="addFundsBtn" data-bs-toggle="modal" data-bs-target="#addFundsModal">Add Funds</button>
+        <button class="btn btn-secondary btn-sm" id="withdrawFundsBtn" data-bs-toggle="modal" data-bs-target="#withdrawFundsModal">Withdraw Funds</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Add Funds Modal -->
+<div class="modal fade" id="addFundsModal" tabindex="-1" aria-labelledby="addFundsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFundsModalLabel">Add Funds to Wallet</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addFundsForm">
+          <div class="mb-3">
+            <label for="addAmount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="addAmount" required min="1">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="confirmAddFunds">Add Funds</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Withdraw Funds Modal -->
+<div class="modal fade" id="withdrawFundsModal" tabindex="-1" aria-labelledby="withdrawFundsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="withdrawFundsModalLabel">Withdraw Funds from Wallet</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="withdrawFundsForm">
+          <div class="mb-3">
+            <label for="withdrawAmount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="withdrawAmount" required min="1">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="confirmWithdrawFunds">Withdraw Funds</button>
+      </div>
+    </div>
+  </div>
+</div>
             <!-- Account Details Tab -->
             <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
               <div class="card mb-4">
@@ -281,7 +373,8 @@
       .then(result => {
         if (result.success) {
           alert('User details updated successfully!');
-          window.location.reload();
+          window.location.hash = '#account-detail'; // Set hash fragment
+          window.location.reload(); // Reload page
         } else {
           alert('Error updating details: ' + result.message);
         }
@@ -359,9 +452,38 @@
         formMessage.style.color = 'red';
       });
     });
-
   });
 
+  </script>
+
+  <script>
+    const activateTab = (hash) => {
+        const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+        const targetPane = document.querySelector(hash);
+
+        if (tabTrigger && targetPane) {
+            // Remove active classes from all tab links and panes
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                link.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+
+            // Add active class to the selected tab link and pane
+            tabTrigger.classList.add('active');
+            tabTrigger.setAttribute('aria-selected', 'true');
+            targetPane.classList.add('show', 'active');
+        }
+    };
+
+     const hash = window.location.hash;
+    console.log("hash: ",hash);
+    
+    if (hash) {
+        activateTab(hash);
+    }
   </script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -469,3 +591,74 @@
       });
   }
   </script>
+  <script>
+    // Fetch wallet details
+    function fetchWalletDetails() {
+      fetch('/api/wallet/details')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('walletBalance').textContent = data.formattedBalance;
+          document.getElementById('walletTotalBalance').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(data.totalBalance);
+          populateTransactions(data.transactions);
+        })
+        .catch(error => console.error('Error fetching wallet details:', error));
+    }
+    
+    // Populate transactions table
+    function populateTransactions(transactions) {
+      const transactionList = document.getElementById('transactionList');
+      transactionList.innerHTML = '';
+      transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${new Date(transaction.createdAt).toLocaleString()}</td>
+          <td>${transaction.type}</td>
+          <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(transaction.amount)}</td>
+          <td>${transaction.status}</td>
+          <td>${transaction.orderId ? transaction.orderId._id : 'N/A'}</td>
+        `;
+        transactionList.appendChild(row);
+      });
+    }
+    
+    // Add funds
+    document.getElementById('confirmAddFunds').addEventListener('click', function() {
+      const amount = document.getElementById('addAmount').value;
+      fetch('/api/wallet/add-funds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: parseFloat(amount) }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        fetchWalletDetails();
+        $('#addFundsModal').modal('hide');
+      })
+      .catch(error => console.error('Error adding funds:', error));
+    });
+    
+    // Withdraw funds
+    document.getElementById('confirmWithdrawFunds').addEventListener('click', function() {
+      const amount = document.getElementById('withdrawAmount').value;
+      fetch('/api/wallet/withdraw-funds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: parseFloat(amount) }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        fetchWalletDetails();
+        $('#withdrawFundsModal').modal('hide');
+      })
+      .catch(error => console.error('Error withdrawing funds:', error));
+    });
+    
+    // Call fetchWalletDetails when the wallet tab is shown
+    document.getElementById('wallet-tab').addEventListener('shown.bs.tab', fetchWalletDetails);
+    </script>

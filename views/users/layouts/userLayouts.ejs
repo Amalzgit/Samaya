@@ -19,8 +19,51 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.1/sweetalert2.all.min.js"></script>
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @media (max-width: 991px) {
+          .filter-sort-wrapper,
+          .primary-sidebar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+          }
+      
+          .filter-sort-wrapper.active,
+          .primary-sidebar.active {
+            display: block;
+          }
+      
+          .mobile-filter-toggle {
+            display: block;
+            margin-bottom: 15px;
+          }
+      
+          .close-filter-sort {
+            display: block;
+            margin-bottom: 15px;
+          }
+      
+          .product-grid-3 {
+            width: 100%;
+          }
+        }
+      
+        @media (min-width: 992px) {
+          .mobile-filter-toggle,
+          .close-filter-sort {
+            display: none;
+          }
+        }
+     
+      </style>
     <style>
         .icon-size {
             font-size: 1.5rem; 

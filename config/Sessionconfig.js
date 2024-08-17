@@ -1,4 +1,7 @@
-const  sessionSecret  ='dshfshflkjhdlskjahfkiuwreyt9874wyty9q87otw98y598275987'
+if(process.env.NOD_ENV !=='production'){
+    require('dotenv').config();
+}
+const  sessionSecret  = process.env.SESSION_SECRET
 
 module.exports ={
 sessionSecret

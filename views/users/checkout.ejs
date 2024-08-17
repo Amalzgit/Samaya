@@ -154,6 +154,12 @@
                                     Cash on Delivery
                                 </label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" value="razorpay">
+                                <label class="form-check-label" for="razorpay">
+                                    Pay with Razorpay
+                                </label>
+                            </div>
                         </div>
     
                         <!-- Order Total -->
@@ -262,6 +268,111 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-   
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderForm = document.getElementById('orderForm');
+            const paymentMethodInput = document.getElementById('paymentMethod');
+            const placeOrderButton = document.getElementById('placeOrderButton');
+        
+            // Function to handle Razorpay payment
+            function handleRazorpayPayment(orderId, amount, currency) {
+                var options = {
+                    "key": "YOUR_RAZORPAY_KEY_ID", // Replace with your Razorpay Key ID
+                    "amount": amount, // Amount in paise
+                    "currency": currency,
+                    "name": "Your Company Name",
+                    "description": "Purchase Description",
+                    "order_id": orderId,
+                    "handler": function (response) {
+                        // On successful payment
+                        paymentMethodInput.value = 'razorpay';
+                        orderForm.submit();
+                    },
+                    "prefill": {
+                        "name": "<%= user && user.name ? user.name : '' %>",
+                        "email": "<%= user && user.email ? user.email : '' %>",
+                        "contact": "<%= user && user.phone ? user.phone : '' %>"
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            }
+        
+            // Event listener for form submission
+            orderForm.addEventListener('submit', function(e) {
+                const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+                
+                if (selectedPaymentMethod === 'razorpay') {
+                    e.preventDefault();
+                    // Create Razorpay order
+                    fetch('/place-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            amount: '<%= JSON.stringify(cart.totalPrice * 100) %>', 
+                            currency: 'INR'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        handleRazorpayPayment(data.id, data.amount, data.currency);
+                    })
+                    .catch(error => console.error('Error:', error));
+                } else {
+                    // For COD, submit the form normally
+                    paymentMethodInput.value = 'cash-on-delivery';
+                }
+            });
+        });
+        const options = {
+  key: process.env.RAZORPAY_ID_KEY, // Your Razorpay Key ID
+  amount: razorpayOrder.amount,
+  currency: razorpayOrder.currency,
+  name: "Your Company Name",
+  description: "Order Payment",
+  order_id: razorpayOrder.id,
+  handler: function (response) {
+    // Send the payment details to your server for verification
+    fetch('/verify-razorpay-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Payment successful, redirect to order confirmation page
+        window.location.href = `/order-placed/${order._id}`;
+      } else {
+        // Handle payment failure
+        alert('Payment failed. Please try again.');
+      }
+    });
+  },
+  prefill: {
+    name: user.name,
+    email: user.email,
+    contact: user.phone
+  },
+  theme: {
+    color: "#3399cc"
+  }
+};
+const rzp1 = new Razorpay(options);
+rzp1.open();
+        </script>
+        
 </body>
 </html>

@@ -1,6 +1,6 @@
-const User = require("../models/userModel");
 const Address = require("../models/addressModel");
 const Order =require('../models/orderModel')
+const Wallet =require('../models/walletModel');
 const loadUserDetails = async (req, res) => {
   try {
     // console.log(req.user);
@@ -10,6 +10,7 @@ const loadUserDetails = async (req, res) => {
     const orders =await Order.find({user:user })
                              .populate('items.product')
                              .sort({createdAt: -1})
+    const wallet =await Wallet.findOne({user:user._id}).populate('transactions.orderId');
 
     // console.log("orders",orders);
     
@@ -17,9 +18,12 @@ const loadUserDetails = async (req, res) => {
       orders,
       user,
       addresses,
+      wallet,
       successMessage: "",
       errorMessage: "",
     });
+    // res.json(wallet);
+    // res.json(wallet.transactions);
   } catch (error) {
     console.error("Error loading user details:", error);
     res.status(500).json({ success: false, message: "An error occurred while loading user details" });

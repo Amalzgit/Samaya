@@ -9,7 +9,6 @@
 <body>
     <div class="container mt-5">
         <div class="jumbotron text-center">
-            
             <p>Order ID: <%= order._id %></p>
             <p><strong>Order Status:</strong> <%= order.status %></p>
         </div>
@@ -25,8 +24,13 @@
                         <ul class="list-group list-group-flush">
                             <% order.items.forEach(item => { %>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <%= item.product.name %>
-                                    <span class="badge badge-primary badge-pill">Qty: <%= item.quantity %></span>
+                                    <img src="/products/<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
+                                    <div>
+                                        <h6 class="mb-1"><%= item.product.name %></h6>
+                                        <p class="mb-1">Brand: <%= item.product.brand.name %></p>
+                                        <p class="mb-1">Status: <%= item.status %></p>
+                                        <span class="badge badge-primary badge-pill">Qty: <%= item.quantity %></span>
+                                    </div>
                                 </li>
                             <% }); %>
                         </ul>
@@ -39,7 +43,6 @@
                         Shipping Address
                     </div>
                     <div class="card-body">
-                       
                         <p><strong><%= order.address.fullName %></strong></p>
                         <p><%= order.address.addressLine1 %></p>
                         <% if (order.address.addressLine2) { %>
@@ -58,7 +61,7 @@
                     </div>
                     <div class="card-body">
                         <p><strong>Payment Method:</strong> <%= order.payment.method %></p>
-                        <!-- <p><strong>Payment Status:</strong> <%= order.payment.status %></p> -->
+                        <p><strong>Payment Status:</strong> <%= order.payment.status %></p>
                     </div>
                 </div>
 
