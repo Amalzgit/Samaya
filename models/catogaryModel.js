@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
 
-const categorySchema = new mongoose.Schema({
+const categorySchema = new Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true, 
+        minlength: 3, 
+        maxlength: 100 
     },
     deleted: {
         type: Boolean,
@@ -13,9 +17,12 @@ const categorySchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
-    },
-}, {timestamps: true});
+        maxlength: 500 
+    }
+}, { timestamps: true });
 
+categorySchema.index({ name: 1 });
 
-module.exports =  mongoose.model('Category', categorySchema);
+const Category = model('Category', categorySchema);
 
+module.exports = Category

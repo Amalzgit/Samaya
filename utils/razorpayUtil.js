@@ -1,30 +1,28 @@
-
-    require('dotenv').config();
+require('dotenv').config();
 
 const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 const razorpay = new Razorpay({
-    key_id : process.env.RAZORPAY_ID_KEY,
-    key_secret : process.env.RAZORPAY_SECRET_KEY
+  key_id: process.env.RAZORPAY_ID_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY
 });
 
-
 const createOrder = async (amount, currency = 'INR', receipt) => {
-
-try {
+  try {
     const options = {
-        amount: parseInt(amount),
-        currency,
-        receipt,
-        payment_capture: 1
-      };
-      return await razorpay.orders.create(options);
-} catch (error) {
+      amount: parseInt(amount),
+      currency,
+      receipt,
+      payment_capture: 1
+    };
+    return await razorpay.orders.create(options);
+  } catch (error) {
     console.error('Error creating Razorpay order:', error);
     throw error;
-}
-
+  }
 };
+
 
 
 const verifyPaymentSignature =(orderId ,paymentId,signature) =>{

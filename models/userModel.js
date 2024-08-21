@@ -14,30 +14,34 @@ const userSchema =  new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true // Ensures email addresses are unique
+        unique: true
     },
     phone: {
         type: String,
-        // required: true
     },
     password: {
         type: String,
         required: true
     },
-    
     isAdmin: {
         type: Boolean,
-        default: false 
+        default: false
     },
     isBlocked: {
         type: Boolean,
         default: false
     },
-    googleId: { type: String } 
-},
-    {timestamps : true}
-    
+    googleId: {
+        type: String
+    },
+    usedCoupons: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon'
+    }]
+}, { timestamps: true }
 );
+
+
 
 userSchema.pre('save', async function(next) {
     const user = this;
@@ -54,4 +58,5 @@ userSchema.pre('save', async function(next) {
     }
 });
 
-module.exports = mongoose.model('User',userSchema)
+const User = mongoose.model('User',userSchema);
+module.exports  = User

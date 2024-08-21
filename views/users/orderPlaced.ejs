@@ -34,13 +34,12 @@
                         <p class="mt-3">Total Amount: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></p>
                     </div>
                 </div>
-
+        
                 <div class="card mb-4">
                     <div class="card-header">
                         Shipping Address
                     </div>
                     <div class="card-body">
-                       
                         <p><strong><%= order.address.fullName %></strong></p>
                         <p><%= order.address.addressLine1 %></p>
                         <% if (order.address.addressLine2) { %>
@@ -62,7 +61,7 @@
                         <p><strong>Payment Status:</strong> <%= order.payment.status %></p>
                     </div>
                 </div>
-
+        
                 <div class="card mb-4">
                     <div class="card-header">
                         Order Summary

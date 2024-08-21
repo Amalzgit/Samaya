@@ -3,16 +3,18 @@ const Order =require('../models/orderModel')
 const Wallet =require('../models/walletModel');
 const loadUserDetails = async (req, res) => {
   try {
-    // console.log(req.user);
     
     const user = req.currentUser
-    const addresses = await Address.find({ user: req.currentUser._id });
-    const orders =await Order.find({user:user })
-                             .populate('items.product')
-                             .sort({createdAt: -1})
-    const wallet =await Wallet.findOne({user:user._id}).populate('transactions.orderId');
 
-    // console.log("orders",orders);
+    const [addresses, orders, wallet] = await Promise.all([
+      Address.find({ user: req.currentUser._id }),
+      Order.find({user:user })
+            .populate('items.product')     
+            .sort({createdAt: -1}),
+      Wallet.findOne({user:user._id}).populate('transactions.orderId')
+    ])
+    
+
     
     res.render("userDetails", {
       orders,
@@ -22,8 +24,6 @@ const loadUserDetails = async (req, res) => {
       successMessage: "",
       errorMessage: "",
     });
-    // res.json(wallet);
-    // res.json(wallet.transactions);
   } catch (error) {
     console.error("Error loading user details:", error);
     res.status(500).json({ success: false, message: "An error occurred while loading user details" });
@@ -43,12 +43,11 @@ const updateUser = async (req, res) => {
     user.lastName = lastName || user.lastName;
 
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
-      // Hash the password before saving (implement hashing)
-      user.password = newPassword;
+      user.password = confirmPassword;
     }
 
     await user.save();
-    req.session.user = user; // Update session with new user data
+    req.currentUser = user; // Update session with new user data
     res.json({ success: true });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -155,17 +154,19 @@ const editAddress = async (req, res) => {
   } = req.body;
 
   try {
-    const addressToUpdate = await Address.findById(addressId);
+    cconst [addressToUpdate, currentDefaultAddress] = await Promise.all([
+      Address.findById(addressId),
+      Address.findOne({ isDefault: true })
+    ]);
+
     if (!addressToUpdate) {
       return res.status(404).json({ success: false, message: "Address not found" });
     }
 
-    if (isDefault === 'on') {
-      const currentDefaultAddress = await Address.findOne({ isDefault: true });
-      if (currentDefaultAddress && currentDefaultAddress._id.toString() !== addressId) {
-        await Address.findByIdAndUpdate(currentDefaultAddress._id, { isDefault: false });
-      }
+    if (isDefault === 'on' && currentDefaultAddress && currentDefaultAddress._id.toString() !== addressId) {
+      await Address.findByIdAndUpdate(currentDefaultAddress._id, { isDefault: false });
     }
+
 
     const updateData = {
       country: country || addressToUpdate.country,
@@ -210,6 +211,33 @@ const deleteAddress = async (req, res) => {
   }
 };
 
+const getWalletDetails = async (req, res) => {
+  try {
+    const userId = req.currentUser._id;
+    console.log(userId);
+    
+    const wallet = await Wallet.findOne({ user: userId });
+
+    if (!wallet) {
+
+      wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
+      await wallet.save();
+    }
+
+    // const totalBalance = wallet.calculateTotalBalance();
+    // console.log(totalBalance ,"=> total balance");
+    
+
+    res.json({
+      formattedBalance: wallet.getFormattedBalance(),
+      totalBalance: wallet.balance,
+      transactions: wallet.transactions
+    });
+  } catch (error) {
+    console.error('Error fetching wallet details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 module.exports = {
@@ -220,5 +248,5 @@ module.exports = {
   loadEditAddress,
   editAddress,
   deleteAddress,
-
+  getWalletDetails
 };

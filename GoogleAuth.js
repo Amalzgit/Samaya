@@ -1,7 +1,8 @@
+require('dotenv').config();
+
 const passport = require("passport");
 const User = require("./models/userModel");
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
-require('dotenv').config();
 
 
 //authentication using google
@@ -29,12 +30,12 @@ async (request, accessToken, refreshToken, profile, cb) => {
           lastName: lastName,
           email: profile.email,
           googleId: profile.id,
-          password: profile.id // You might want to remove this if not needed
+          password: profile.id 
         });
 
         await user.save();
       } else {
-        // If user exists with the same email but different Google ID, update the Google ID
+        
         user.googleId = profile.id;
         await user.save();
       }
@@ -69,3 +70,4 @@ passport.deserializeUser(async (id, done) => {
   }
 
 })
+module.exports =passport

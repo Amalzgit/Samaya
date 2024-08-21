@@ -10,25 +10,19 @@ const loadproductList = async (req, res) => {
     try {
         let filter = {};
         
-        if (category) {
-            const categoryDoc = await Category.findOne({ name: category, deleted: false });
-            if (categoryDoc) {
-                filter.category = categoryDoc._id;
-            }
-        }
+        const [categoryDoc, brandDoc, categories, brands] = await Promise.all([
+            category ? Category.findOne({ name: category, deleted: false }) : null,
+            brand ? Brand.findOne({ name: brand, isActive: true }) : null,
+            Category.find({ deleted: false }),
+            Brand.find({ isActive: true })
+        ]);
 
-        if (brand) {
-            const brandDoc = await Brand.findOne({ name: brand, isActive: true });
-            if (brandDoc) {
-                filter.brand = brandDoc._id;
-            }
-        }
+        if (categoryDoc) filter.category = categoryDoc._id;
+        if (brandDoc) filter.brand = brandDoc._id;
 
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
         const products = await Product.find(filter).populate('category').populate('brand');
        
-        return res.render('product-list', { products, categories, brands, successMessage: '', errorMessage: '' });
+         return res.render('product-list', { products, categories, brands, successMessage: '', errorMessage: '' });
     } catch (error) {
         console.error('Error loading product list:', error);
         return res.render('product-list', { successMessage: '', errorMessage: 'An error occurred' });
@@ -37,8 +31,10 @@ const loadproductList = async (req, res) => {
 
 const loadAddproduct = async (req, res) => {
     try {
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
+        const [categories, brands] = await Promise.all([
+            Category.find({ deleted: false }),
+            Brand.find({ isActive: true })
+        ]);
         return res.render('add-products', { categories, brands, successMessage: '', errorMessage: '' });
     } catch (error) {
         console.error('Error loading add product page:', error);
@@ -47,8 +43,10 @@ const loadAddproduct = async (req, res) => {
 };
 
 const addproduct = async (req, res) => {
-    const categories = await Category.find({ deleted: false });
-    const brands = await Brand.find({ isActive: true });
+    const [categories, brands] = await Promise.all([
+        Category.find({ deleted: false }),
+        Brand.find({ isActive: true })
+    ]);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -86,6 +84,7 @@ const addproduct = async (req, res) => {
         if (!brandDoc) {
             return res.render('add-products', { categories, brands, successMessage: '', errorMessage: "Invalid brand" });
         }
+        // console.log("brand doc :",brandDoc);
         
         const newProduct = new Product({
             name,
@@ -94,7 +93,7 @@ const addproduct = async (req, res) => {
             images,
             category,
             stock,
-            brand: brandDoc._id, // Use ObjectId of the brand
+            brand: brandDoc._id, 
             caseMaterial,
             crystalType,
             dialColor,
@@ -119,9 +118,11 @@ const addproduct = async (req, res) => {
   
 const loadEditProduct = async (req, res) => {
     try {
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
-        const product = await Product.findById(req.params.productId);
+        const [categories, brands, product] = await Promise.all([
+            Category.find({ deleted: false }),
+            Brand.find({ isActive: true }),
+            Product.findById(req.params.productId)
+        ]);
         if (!product) {
             return res.render('product-edit', {
                 product: null,
@@ -172,70 +173,57 @@ const productEdit = async (req, res) => {
     const images = req.files ? req.files.map(file => file.filename) : [];
 
     try {
-        const product = await Product.findById(req.params.productId).populate('category').populate('brand');
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
+        const [product, categories, brands, brandDoc] = await Promise.all([
+            Product.findById(req.params.productId).populate('category').populate('brand'),
+            Category.find({ deleted: false }),
+            Brand.find({ isActive: true }),
+            Brand.findOne({ name: brand })
+        ]);
 
         if (!product) {
             return res.render('product-edit', {
-                categories,
-                brands,
-                product: null,
-                successMessage: '',
-                errorMessage: 'Product not found'
+                categories, brands, product: null,
+                successMessage: '', errorMessage: 'Product not found'
             });
         }
 
-        const brandDoc = await Brand.findOne({ name: brand });
         if (!brandDoc) {
             return res.render('product-edit', {
-                categories,
-                brands,
-                product,
-                successMessage: '',
-                errorMessage: 'Invalid brand'
+                categories, brands, product,
+                successMessage: '', errorMessage: 'Invalid brand'
             });
         }
 
-        // const formattedPrice = new Intl.NumberFormat('en-IN', {
-        //     style: 'currency',
-        //     currency: 'INR'
-        // }).format(price);
-
-        product.name = name || product.name;
-        product.price = price || product.price;
-        product.description = description || product.description;
-        product.category = category || product.category;
-        product.brand = brandDoc._id || product.brand; 
-        product.stock = stock || product.stock;
-        product.caseMaterial = caseMaterial || product.caseMaterial;
-        product.crystalType = crystalType || product.crystalType;
-        product.dialColor = dialColor || product.dialColor;
-        product.hourMarkers = hourMarkers || product.hourMarkers;
-        product.handType = handType || product.handType;
-        product.bezelType = bezelType || product.bezelType;
-        product.caseShape = caseShape || product.caseShape;
-        product.additionalDesignElements = additionalDesignElements || product.additionalDesignElements;
-        product.powerReserve = powerReserve || product.powerReserve;
-        product.warrantyPeriod = warrantyPeriod || product.warrantyPeriod;
-        product.certifications = certifications || product.certifications;
-        product.images = images.length > 0 ? images : product.images; 
+        Object.assign(product, {
+            name: name || product.name,
+            price: price || product.price,
+            description: description || product.description,
+            category: category || product.category,
+            brand: brandDoc._id,
+            stock: stock || product.stock,
+            caseMaterial: caseMaterial || product.caseMaterial,
+            crystalType: crystalType || product.crystalType,
+            dialColor: dialColor || product.dialColor,
+            hourMarkers: hourMarkers || product.hourMarkers,
+            handType: handType || product.handType,
+            bezelType: bezelType || product.bezelType,
+            caseShape: caseShape || product.caseShape,
+            additionalDesignElements: additionalDesignElements || product.additionalDesignElements,
+            powerReserve: powerReserve || product.powerReserve,
+            warrantyPeriod: warrantyPeriod || product.warrantyPeriod,
+            certifications: certifications || product.certifications,
+            images: images.length > 0 ? images : product.images
+        });
 
         await product.save();
 
         return res.redirect('/admin/product-list');
+
     } catch (error) {
         console.error('Error editing product:', error);
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
-        const product = await Product.findById(req.params.productId).populate('category').populate('brand');
-
         return res.render('product-edit', {
-            categories,
-            brands,
-            product,
-            successMessage: '',
-            errorMessage: 'Error editing product'
+            categories: [], brands: [], product: null,
+            successMessage: '', errorMessage: 'Error editing product'
         });
     }
 };
@@ -245,11 +233,8 @@ const productEdit = async (req, res) => {
 const deleteProduct = async (req,res)=>{
     try {
         const productId =req.params.productId;
-        const product =await Product.findById(productId).populate('category');
-        product.deleted =true;
-        await product.save();
-
-        return res.redirect('/admin/product-list')
+        await Product.findByIdAndUpdate(productId, { deleted: true });
+        return res.redirect('/admin/product-list');
     } catch (error) {
         console.log(error);
         return res.redirect('/admin/product-list')
@@ -261,11 +246,7 @@ const deleteProduct = async (req,res)=>{
 const restoreProduct = async (req, res) => {
     try {
         const productId = req.params.productId;
-        const product = await Product.findById(productId).populate('category');
-
-        product.deleted = false;
-        await product.save();
-
+        await Product.findByIdAndUpdate(productId, { deleted: false });
         return res.redirect('/admin/product-list');
         
     } catch (error) {

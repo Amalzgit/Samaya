@@ -1,6 +1,6 @@
 const Order =require ('../../models/orderModel')
 const Product =require('../../models/productModel')
-
+const Wallet =require('../../models/walletModel')
 
 const getOrderList = async (req,res)=>{
     const orders = await Order.find().populate("user")
@@ -70,48 +70,67 @@ const handleReturnRequest = async (req, res) => {
     const { action } = req.body;
     
     try {
-      // Fetch the order and populate product details
-      const order = await Order.findById(orderId).populate('items.product');
+      const order = await Order.findOne({
+        _id: orderId,
+        'items._id': itemId,
+        'items.status': 'Return Requested'
+      }).populate('items.product');
+  
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
   
-      // Find the item within the order
       const item = order.items.id(itemId);
       if (!item) {
         return res.status(404).json({ message: 'Item not found in order' });
       }
   
-      // Ensure that the item has a pending return request
       if (item.status !== 'Return Requested') {
         return res.status(400).json({ message: 'This item does not have a pending return request' });
       }
   
-      // Handle acceptance of the return request
       if (action === 'accept') {
-        // Update stock only if return is accepted
-        const product = await Product.findById(item.product._id);
-        if (product) {
-          product.stock += item.quantity;
-          await product.save();
-        }
-        
-        // Update the item's status to 'Return Accepted'
+        const refundAmount = item.price * item.quantity; 
         item.status = 'Return Accepted';
-        
-      } else if (action === 'reject') {
-        // Update the item's status to 'Return Rejected'
-        item.status = 'Return Rejected';
-        
-      } else {
-        return res.status(400).json({ message: 'Invalid action specified' });
-      }
-  
-      // Save the updated order
-      await order.save();
-  
-      res.json({ message: `Return request ${action}ed successfully`, orderStatus: order.status });
-    } catch (error) {
+
+        const [product, wallet] = await Promise.all([
+            Product.findByIdAndUpdate(item.product._id, { $inc: { stock: item.quantity } }, { new: true }),
+            Wallet.findOne({ user: order.user._id })
+          ]);
+    
+          if (!wallet) {
+            await Wallet.create({
+              user: order.user._id,
+              balance: refundAmount,
+              transactions: [{
+                amount: refundAmount,
+                type: 'credit',
+                status: 'completed',
+                orderId: order._id,
+                description: `Refund for returned item in order ${order._id}`
+              }]
+            });
+          } else {
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+              amount: refundAmount,
+              type: 'credit',
+              status: 'completed',
+              orderId: order._id,
+              description: `Refund for returned item in order ${order._id}`
+            });
+            await wallet.save();
+          }
+        } else if (action === 'reject') {
+          item.status = 'Return Rejected';
+        } else {
+          return res.status(400).json({ message: 'Invalid action specified' });
+        }
+    
+        await order.save();
+    
+        res.json({ message: `Return request ${action}ed successfully`, orderStatus: order.status });
+    }catch (error) {
       console.error('Error handling return request:', error);
       res.status(500).json({ message: 'An error occurred while processing the return request.' });
     }

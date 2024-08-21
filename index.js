@@ -9,6 +9,7 @@ const config = require('./config/Sessionconfig');
 const app = express();
 const Swal = require ('sweetalert2');
 const passport =require('passport')
+const flash =require('connect-flash')
 // Database connection
 connectDB();
 
@@ -25,6 +26,7 @@ app.use(passport.session());
 // loadUser
 
 //  isAuthenticated middleware
+app.use(flash());
 
 app.use(isAuthenticated);
 // View engine setup
@@ -43,7 +45,6 @@ const adminRoute = require('./routes/adminRoutes/adminRoute');
 const isblocked = require('./middleware/isblocked');
 const loggerMiddleware = require('./middleware/loggerMiddleware');
 const loadUser = require('./middleware/loadUser');
-
 
 app.use(loadUser)
 

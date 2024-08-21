@@ -1,7 +1,7 @@
 const Wishlist = require('../models/wishListModel');
-const User = require('../models/userModel');
-const Product = require('../models/productModel');
-
+// const User = require('../models/userModel');
+// const Product = require('../models/productModel');
+ 
 const addToWishList = async (req, res) => {
    try {
     const { productId } = req.body;
@@ -20,8 +20,8 @@ const addToWishList = async (req, res) => {
     wishlist.products.push(productId);
 
     await wishlist.save();
-     res.render('WishList');
-    // res.status(200).json({ success: true, message: 'Product added to wishlist.' });
+    // console.log('Wishlist:', wishlist);
+     res.render('WishList',{wishlist});
   } catch (error) {
     console.log("wishlist adding error:", error);
     res.status(500).json({ success: false, message: 'Server error: unable to add to wishlist.' });
@@ -38,10 +38,10 @@ const removeWishlistItem = async (req, res) => {
           { $pull: { products: productId } }
         );
     
-        res.redirect('/wishlist');/*?message=Product%20removed%20from%20wishlist*/
+        res.redirect('/wishlist');
       } catch (error) {
         console.log("wishlist removing error:", error);
-        res.redirect('/wishlist');/*??error=Server%20error:%20removing%20from%20wishlist*/
+        res.redirect('/wishlist');
       } 
 };
 

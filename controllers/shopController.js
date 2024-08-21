@@ -3,88 +3,58 @@ const Category = require('../models/catogaryModel');
 const Brand = require('../models/BrandModel');
 
 const loadShop = async (req, res) => {
-    const { category, brand, sort, search } = req.query;
 
     try {
-        const categories = await Category.find({ deleted: false });
-        const brands = await Brand.find({ isActive: true });
+    const { category, brand, sort, search } = req.query;
+       
+        const [categories , brands ,categoryDoc ,brandDoc] = await Promise.all([
+            Category.find({ deleted: false }),
+            Brand.find({ isActive: true }),
+            category ? Category.findOne({ name: category, deleted: false }) : null,
+            brand ? Brand.findOne({ name: brand, isActive: true }) : null
+        ]);
 
-        const aggregationPipeline = [];
+        if (category && !categoryDoc) {
+            return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Category not found or deleted' });
+        }
+        if (brand && !brandDoc) {
+            return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Brand not found or inactive' });
+        }
 
         // Match stage
         const matchStage = { deleted: false };
-        if (category) {
-            const categoryDoc = await Category.findOne({ name: category, deleted: false });
-            if (categoryDoc) {
-                matchStage.category = categoryDoc._id;
-            } else {
-                return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Category not found or deleted' });
-            }
-        }
-        if (brand) {
-            const brandDoc = await Brand.findOne({ name: brand, isActive: true });
-            if (brandDoc) {
-                matchStage.brand = brandDoc._id;
-            } else {
-                return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Brand not found or inactive' });
-            }
-        }
+        if (categoryDoc) matchStage.category = categoryDoc._id;
+        if (brandDoc) matchStage.brand = brandDoc._id;
         if (search) {
             matchStage.$or = [
                 { name: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } }
             ];
         }
-        aggregationPipeline.push({ $match: matchStage });
-
-        // Lookup stages
-        aggregationPipeline.push(
+        const aggregationPipeline = [
+            { $match: matchStage },
             { $lookup: { from: 'categories', localField: 'category', foreignField: '_id', as: 'category' } },
             { $unwind: '$category' },
             { $lookup: { from: 'brands', localField: 'brand', foreignField: '_id', as: 'brand' } },
-            { $unwind: '$brand' }
-        );
-
-        aggregationPipeline.push({
-            $match: {
-                'category.deleted': false,
-                'brand.isActive': true
-            }
-        });
+            { $unwind: '$brand' },
+            { $match: { 'category.deleted': false, 'brand.isActive': true } }
+        ];
 
         // Sorting stage
-        if (sort) {
-            let sortStage = {};
-            switch (sort) {
-                case 'popularity':
-                    sortStage = { totalSales: -1 };
-                    break;
-                case 'price_asc':
-                    sortStage = { price: 1 };
-                    break;
-                case 'price_desc':
-                    sortStage = { price: -1 };
-                    break;
-                case 'rating':
-                    sortStage = { averageRating: -1 };
-                    break;
-                case 'newest':
-                    sortStage = { createdAt: -1 };
-                    break;
-                case 'name_asc':
-                    sortStage = { name: 1 };
-                    break;
-                case 'name_desc':
-                    sortStage = { name: -1 };
-                    break;
-                default:
-                    sortStage = { featured: -1 };  
-            }
-            aggregationPipeline.push({ $sort: sortStage });
-        }
+        const sortStages = {
+            popularity: { totalSales: -1 },
+            price_asc: { price: 1 },
+            price_desc: { price: -1 },
+            rating: { averageRating: -1 },
+            newest: { createdAt: -1 },
+            name_asc: { name: 1 },
+            name_desc: { name: -1 },
+            default: { featured: -1 }
+        };
+        aggregationPipeline.push({ $sort: sortStages[sort] || sortStages.default });
 
+        // Execute aggregation pipeline
         const products = await Product.aggregate(aggregationPipeline);
-
         res.render('shop', { 
             products, 
             categories, 

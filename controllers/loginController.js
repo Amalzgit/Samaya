@@ -16,7 +16,7 @@ const verifyLogin = async (req, res) => {
         const { email, password } = req.body;
 
         const errors = validationResult(req);
-        // console.log(errors);
+        console.log(errors);
         
         if (!errors.isEmpty()) {
            return res.render('userLogin', {  successMessage:'',errorMessage:errors.array()});

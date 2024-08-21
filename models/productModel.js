@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     trim: true
   },
   price: {
-    type: Number, // Change this to Number
+    type: Number, 
     required: true
   },
   description: {
@@ -85,4 +85,5 @@ productSchema.virtual('formattedPrice').get(function () {
   }).format(this.price);
 });
 productSchema.index({ name: 'text', description: 'text' });
-module.exports = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema);
+module.exports = Product

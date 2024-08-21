@@ -88,6 +88,7 @@
                             <div class="total-amount">
                                 <div class="left">
                                     <div class="coupon">
+                                        <a href="#" data-toggle="modal" data-target="#couponsModal" class="btn btn-outline-dark btn-sm mb-3">Available Coupons</a>
                                         <form action="/cart/apply-coupon" method="POST">
                                             <div class="form-row row justify-content-center">
                                                 <div class="form-group col-lg-6">
@@ -141,19 +142,64 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="couponsModal" tabindex="-1" role="dialog" aria-labelledby="couponsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponsModalLabel">Available Coupons</h5>
+                <a href="#" class="text-decoration-none" data-bs-dismiss="modal" aria-label="Close" style="color: white; font-size: 1.5rem;">
+                    &times;
+                </a>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <% coupons.forEach(coupon => { %>
+                        <li>
+                            <h3><%= coupon.code %></h3> - 
+                                <%= coupon.discount %>% Discount - 
+                                ₹<%= coupon.minAmount.toLocaleString('en-IN') %> - 
+                                ₹<%= coupon.maxAmount.toLocaleString('en-IN') %>
+                            (Expires: <%= new Date(coupon.expiryDate).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                            }) %>)
+                        </li>
+                    <hr>
+                    <% }); %>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.quantity-btn').forEach(button => {
         button.addEventListener('click', async (event) => {
             const action = event.target.closest('button').dataset.action;
             const productId = event.target.closest('button').dataset.productId;
             const inputElement = document.querySelector(`#quantity_${productId}`);
             let quantity = parseInt(inputElement.value, 10);
+            const maxQuantity = parseInt(inputElement.max, 10);
 
             if (action === 'increase') {
-                quantity = Math.min(quantity + 1, parseInt(inputElement.max, 10));
+                if (quantity >= maxQuantity) {
+                    // Show SweetAlert if the quantity limit is reached
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Quantity Limit Reached',
+                        text: `You can only purchase up to ${maxQuantity} of this item.`,
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                quantity++;
             } else if (action === 'decrease') {
-                quantity = Math.max(quantity - 1, 1);
+                if (quantity <= 1) return; // Prevent quantity from going below 1
+                quantity--;
             }
 
             inputElement.value = quantity;
@@ -179,9 +225,9 @@
 
                     // Update cart total
                     document.querySelector('.cart_total_amount .font-xl').textContent = result.formattedTotal;
-                    setTimeout(() => {
-                        window.location.reload()
-                    }, );
+                    // setTimeout(() => {
+                        window.location.reload();
+                    // }, 1000);
                     
                     console.log('Cart updated successfully.');
                 } else {
@@ -193,4 +239,10 @@
         });
     });
 });
+   
+
 </script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>

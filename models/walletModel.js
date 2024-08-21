@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Define the Transaction Schema as an embedded schema within Wallet
+
 const TransactionSchema = new Schema({
     amount: { 
         type: Number, 
@@ -15,7 +15,7 @@ const TransactionSchema = new Schema({
     status: { 
         type: String, 
         enum: ['pending', 'completed', 'failed'], 
-        default: 'pending' // Ensure this is a valid string value and not another type
+        default: 'pending' 
     },
     orderId: { 
         type: Schema.Types.ObjectId, 
@@ -43,25 +43,21 @@ const WalletSchema = new Schema({
     timestamps: true
 });
 
-// Virtual to calculate the total balance
-WalletSchema.virtual('totalBalance').get(function() {
+WalletSchema.methods.calculateTotalBalance = function() {
     let total = this.balance;
     this.transactions.forEach(transaction => {
-        if (transaction.type === 'credit') {
-            total += transaction.amount;
-        } else if (transaction.type === 'debit') {
-            total -= transaction.amount;
-        }
+      if (transaction.type === 'credit') {
+        total += transaction.amount;
+      } else if (transaction.type === 'debit') {
+        total -= transaction.amount;
+      }
     });
     return total;
-});
-
-WalletSchema.virtual('formattedBalance').get(function() {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR'
-    }).format(this.totalBalance);
-});
+  };
+  
+  WalletSchema.methods.getFormattedBalance = function() {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(this.calculateTotalBalance());
+  };
 
 WalletSchema.set('toJSON', { virtuals: true });
 WalletSchema.set('toObject', { virtuals: true });

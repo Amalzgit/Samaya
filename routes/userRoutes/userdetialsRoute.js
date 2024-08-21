@@ -14,6 +14,8 @@ userdetials_route.post('/add-address',isAuth,isUser, userDetails.addAddress);
 userdetials_route.get('/edit-address/:addressId',isAuth, isUser, userDetails.loadEditAddress);
 userdetials_route.post('/edit-address/:addressId',isAuth,isUser, userDetails.editAddress);
 userdetials_route.delete('/address/delete/:addressId',isAuth,isUser, userDetails.deleteAddress);
+userdetials_route.get('/wallet/details',isAuth, isUser, userDetails.getWalletDetails);
+
 
 
 

@@ -1,5 +1,5 @@
 const mongoose= require("mongoose");
-// const  schema  = require("./catogaryModel");
+
 
 const Schema =mongoose;
 
@@ -32,4 +32,6 @@ const reviewSchema = new mongoose.Schema({
 
 },{Timestamp:true})
 
-module.exports =mongoose.model("Review",reviewSchema)
+const Review = mongoose.model("Review",reviewSchema);
+
+module.exports = Review

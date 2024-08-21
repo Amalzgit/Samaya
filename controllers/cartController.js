@@ -1,21 +1,18 @@
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
 const Address = require('../models/addressModel'); 
-const User = require('../models/userModel')
+const Coupon = require('../models/CouponModel')
 
 const loadCart =async(req,res)=>{
  try {
 
     const Id = req.currentUser._id
-    // console.log("req.user :",req.user);
-    // console.log("session id:",req.session.user_id);
-    // console.log("current user :",req.currentUser._id);
 
-
-    
-    const cart = await Cart.findOne({user:Id}).populate('items.product');
-    
-    return res.render('cart',{cart})
+    const [cart, coupons] = await Promise.all([
+      Cart.findOne({user: Id}).populate('items.product'),
+      Coupon.find()
+    ]);
+    return res.render('cart',{cart,coupons})
  } catch (error) {
     console.log("cart loading error :",error);
     res.status(500).json({ message: 'Error finidng cart', error });
@@ -27,9 +24,10 @@ const addItemToCart = async(req,res)=>{
         const { productId , quantity } =req.body;
         const userId =req.currentUser._id
 
-        const cart = await Cart.findOne({user:userId});
-        const product =await Product.findById(productId);
-
+        const [cart, product] = await Promise.all([
+          Cart.findOne({user: userId}),
+          Product.findById(productId)
+        ]);
 
         if(!product){
             return res.status(404).json({ message: 'Product not found' })
@@ -139,12 +137,9 @@ const updateCart =async (req,res)=>{
 const Checkout = async (req,res)=>{
     try {
       const cartData =JSON.parse(req.body.cartData);
-      
-      
+
       req.session.CheckoutCart =cartData
   
-      
-      
       res.redirect('/checkout-page');
     } catch (error) {
       console.log("checkout error:",error);
@@ -156,9 +151,11 @@ const Checkout = async (req,res)=>{
     try {
       const userId = req.currentUser._id
       const cartData = req.session.CheckoutCart;
-      const userAddress = await Address.find({ user :userId });
+      const [userAddress, user] = await Promise.all([
+        Address.find({ user: userId }),
+        req.currentUser
+      ]);
       const selectedAddress =userAddress.find(address=>address.isDefault ) || userAddress[0]
-      const user = req.currentUser;
 
   
       res.render('checkout', {

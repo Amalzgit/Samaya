@@ -4,7 +4,8 @@ const Brand =require('../models/BrandModel')
 
 const loadHome = async (req, res) => {
     try {
-        const products = await Product.find({ deleted: false })
+         const [products, user, brands] =await Promise.all([
+            Product.find({ deleted: false })
             .populate({
                 path: 'category',
                 match: { deleted: false }  
@@ -13,17 +14,13 @@ const loadHome = async (req, res) => {
                 path: 'brand',
                 match: { isActive: true }  
             })
-            .exec();
+            .exec(),
+            User.findById(req.session.user_id),
+            Brand.find({ isActive: true })
+         ])
 
-        // Filter out products where the category is null or brand is null 
-        const filteredProducts = products.filter(product => product.category && product.brand);
-
-        const user = await User.findById(req.session.user_id);
-
-        // Fetch active brands
-        const brands = await Brand.find({ isActive: true });
-        return res.render('userHome', {
-            
+         const filteredProducts = products.filter(product => product.category && product.brand);
+         return res.render('userHome', {
             user,
             products: filteredProducts,
             brands,

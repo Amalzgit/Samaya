@@ -1,8 +1,5 @@
 const User =require('../../models/userModel')
 
-
-
-
 const loadAdminProfile =async (req,res)=>{
     try {
         const admin = await User.findById(req.session.user_id); 

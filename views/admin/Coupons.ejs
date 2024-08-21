@@ -1,0 +1,150 @@
+<section class="content-main">
+    <div class="content-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="content-title card-title">Coupons</h2>
+            <p>Manage your store's coupons</p>
+        </div>
+        <div>
+            <a href="/admin/create-coupon" class="btn btn-primary">
+                <i class="text-muted material-icons md-post_add"></i>Add New Coupon
+            </a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="">
+                   <input type="text" id="search-input" placeholder="Search..." class="form-control">
+                </div>
+            </div>
+        </header>
+        
+        <div class="card-body">
+            <div class="row gx-3 gy-4">
+                <% coupons.forEach(coupon => { %>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                    <figure class="card border-1 shadow-sm d-flex flex-column">
+                        <div class="card-header bg-white text-center flex-grow-1">
+                            <h6 class="card-title m-0"><%= coupon.code %></h6>
+                        </div>
+                        <figcaption class="card-body text-center d-flex flex-column justify-content-between">
+                            <p class="card-text mt-2">Discount: <%= coupon.discount %>%</p>
+                            <p class="card-text">Expiry Date: <%= new Date(coupon.expiryDate).toLocaleDateString() %></p>
+                            <p class="card-text">Min Amount: <%= coupon.minAmount %></p>
+                            <p class="card-text">Max Amount: <%= coupon.maxAmount %></p>
+                            <div class="d-flex justify-content-center mt-3">
+                                <a href="/admin/edit-coupon/<%= coupon._id %>" class="text-warning me-2" title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <% if (coupon.isActive === false) { %>
+                                <a href="/admin/restore/<%= coupon._id %>" class="text-success me-2" title="Restore">
+                                    <i class="fa-solid fa-undo"></i>
+                                </a>
+                                <% } else { %>
+                                <a href="#" 
+                                   class="text-secondary me-2 delete-btn" 
+                                   data-url="/admin/delete/<%= coupon._id %>" 
+                                   title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                                <% } %>
+                                <a href="#" 
+                                   class="text-danger me-2 remove-btn" 
+                                   data-url="/admin/remove-coupon/<%= coupon._id %>" 
+                                   title="Permanently Remove">
+                                    <i class="fa-solid fa-trash-alt"></i>
+                                 </a>
+                            </div>
+                        </figcaption>
+                    </figure>
+                </div> 
+                <% }); %>
+            </div>
+        </div> 
+    </div> 
+</section> 
+
+<style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background: #fff;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-body {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+    .card img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+    .card-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .card-text {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .card-body .d-flex {
+        margin-top: auto;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const removeButtons = document.querySelectorAll('.remove-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); 
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action will delete the coupon.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                });
+
+                if (result.isConfirmed) {
+                    window.location.href = button.getAttribute('data-url'); 
+                }
+            });
+        });
+
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); 
+
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action will permanently remove the coupon.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (result.isConfirmed) {
+                    window.location.href = button.getAttribute('data-url'); 
+                }
+            });
+        });
+    });
+</script>

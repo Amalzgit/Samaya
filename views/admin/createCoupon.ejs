@@ -1,0 +1,169 @@
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Create Coupon</h2>
+            <p>Add a new coupon to your store</p>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+        </header> 
+        <div class="card-body">
+            <form action="/admin/create-coupon" method="POST" id="createCouponForm">
+                <% if (successMessage) { %>
+                    <div class="alert alert-success">
+                        <%= successMessage %>
+                    </div>
+                <% } %>
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger">
+                        <%= errorMessage %>
+                    </div>
+                <% } %>
+                <div class="row gx-3 mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Coupon Code</label>
+                        <input type="text" name="code" class="form-control" id="couponCode">
+                        <span id="couponCodeError" class="error" style="color: red;"></span>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Discount (%)</label>
+                        <input type="number" name="discount" class="form-control" id="discountAmount">
+                        <span id="discountError" class="error" style="color: red;"></span>
+                    </div>
+                </div> 
+                <div class="row gx-3 mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Expiry Date</label>
+                        <input type="date" name="expiryDate" class="form-control" id="expiryDate">
+                        <span id="expiryDateError" class="error" style="color: red;"></span>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Minimum Amount</label>
+                        <input type="number" name="minAmount" class="form-control" id="minAmount">
+                        <span id="minAmountError" class="error" style="color: red;"></span>
+                    </div>
+                </div> 
+                <div class="row gx-3 mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Maximum Amount</label>
+                        <input type="number" name="maxAmount" class="form-control" id="maxAmount">
+                        <span id="maxAmountError" class="error" style="color: red;"></span>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Active</label>
+                        <select name="isActive" class="form-control" id="isActive">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                        <span id="isActiveError" class="error" style="color: red;"></span>
+                    </div>
+                </div> 
+                <div class="row gx-3 mb-3">
+                    <div class="col-lg-12 text-end">
+                        <button type="submit" class="btn btn-primary">Create Coupon</button>
+                    </div>
+                </div> 
+            </form>
+        </div> 
+    </div> 
+</section> 
+
+<style>
+    .error {
+        color: red;
+        font-size: 0.875em;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const couponCodeInput = document.getElementById('couponCode');
+        const discountInput = document.getElementById('discountAmount');
+        const expiryDateInput = document.getElementById('expiryDate');
+        const minAmountInput = document.getElementById('minAmount');
+        const maxAmountInput = document.getElementById('maxAmount');
+        const isActiveSelect = document.getElementById('isActive');
+
+        const couponCodeError = document.getElementById('couponCodeError');
+        const discountError = document.getElementById('discountError');
+        const expiryDateError = document.getElementById('expiryDateError');
+        const minAmountError = document.getElementById('minAmountError');
+        const maxAmountError = document.getElementById('maxAmountError');
+        const isActiveError = document.getElementById('isActiveError');
+
+        const validateCouponCode = () => {
+            if (couponCodeInput.value.trim() === '') {
+                couponCodeError.textContent = '* Coupon Code is required';
+                return false;
+            } else {
+                couponCodeError.textContent = '';
+                return true;
+            }
+        };
+
+        const validateDiscount = () => {
+            if (discountInput.value <= 0) {
+                discountError.textContent = '* Discount Amount must be greater than zero';
+                return false;
+            } else {
+                discountError.textContent = '';
+                return true;
+            }
+        };
+
+        const validateExpiryDate = () => {
+            if (new Date(expiryDateInput.value) < new Date()) {
+                expiryDateError.textContent = '* Expiry Date must be a future date';
+                return false;
+            } else {
+                expiryDateError.textContent = '';
+                return true;
+            }
+        };
+
+        const validateMinAmount = () => {
+            if (minAmountInput.value < 0) {
+                minAmountError.textContent = '* Minimum Amount cannot be negative';
+                return false;
+            } else {
+                minAmountError.textContent = '';
+                return true;
+            }
+        };
+
+        const validateMaxAmount = () => {
+            if (maxAmountInput.value < minAmountInput.value) {
+                maxAmountError.textContent = '* Maximum Amount must be greater than Minimum Amount';
+                return false;
+            } else {
+                maxAmountError.textContent = '';
+                return true;
+            }
+        };
+
+        const validateIsActive = () => {
+            if (isActiveSelect.value === '') {
+                isActiveError.textContent = '* Please select if the coupon is active';
+                return false;
+            } else {
+                isActiveError.textContent = '';
+                return true;
+            }
+        };
+
+        couponCodeInput.addEventListener('input', validateCouponCode);
+        discountInput.addEventListener('input', validateDiscount);
+        expiryDateInput.addEventListener('input', validateExpiryDate);
+        minAmountInput.addEventListener('input', validateMinAmount);
+        maxAmountInput.addEventListener('input', validateMaxAmount);
+        isActiveSelect.addEventListener('change', validateIsActive);
+
+        const form = document.getElementById('createCouponForm');
+        form.addEventListener('submit', (event) => {
+            if (!validateCouponCode() || !validateDiscount() || !validateExpiryDate() || !validateMinAmount() || !validateMaxAmount() || !validateIsActive()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>

@@ -17,7 +17,11 @@
             <tbody>
                 <% wishlist.products.forEach(product => { %>
                     <tr>
-                        <td><img src="products/<%= product.images[0] %>" alt="<%= product.name %>" class="img-fluid"></td>
+                        <td>  <% if (product.images && product.images.length > 0) { %>
+                            <img src="products/<%= product.images[0] %>" alt="<%= product.name %>" class="img-fluid">
+                        <% } else { %>
+                            <img src="path/to/default-image.jpg" alt="Default Image" class="img-fluid">
+                        <% } %></td>
                         <td><%= product.name %></td>
                         <td><%= product.formattedPrice %></td>
                         <td>

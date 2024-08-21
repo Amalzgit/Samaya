@@ -8,7 +8,7 @@ const loginValidater = validate = [
         .normalizeEmail()
     ,
     body('password').notEmpty().withMessage('password is required')
-        .isLength({ min: 6 }).withMessage('password must be at least 6 letters')
+        .isLength({ min: 4 }).withMessage('password must be at least 4 letters')
 ]
 
 const registrationValidator = [

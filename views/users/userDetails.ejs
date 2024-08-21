@@ -59,7 +59,9 @@
             <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
               <div class="card mb-4">
                 <div class="card-header bg-dark text-white">
-                  <h4 class="mb-0"><i class="fa fa-shopping-cart mr-2"></i> Your Orders</h4>
+                  <h4 class="mb-0" style="color: white;">
+                    <i class="fa fa-shopping-cart mr-2" style="color: aliceblue;"></i> Your Orders
+                  </h4>
                 </div>
                 <div class="card-body">
                   <% if (orders && orders.length > 0) { %>
@@ -144,7 +146,7 @@
                   <div class="col-lg-6">
                     <div class="card mb-4 <%= address.isDefault ? 'border-primary' : '' %>">
                       <div class="card-header bg-dark text-white">
-                        <h4 class="mb-0">
+                        <h4 class="mb-0" style="color: white;">
                           <%= address.type %> Address
                           <% if (address.isDefault) { %>
                             <span class="badge bg-success ms-2">Default</span>
@@ -182,92 +184,45 @@
               </a>
             </div>
              <!-- Wallet Tab -->
-<div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
-  <div class="card mb-4">
-    <div class="card-header bg-dark text-white">
-      <h4 class="mb-0"><i class="fa fa-wallet mr-2"></i> Your Wallet</h4>
-    </div>
-    <div class="card-body">
-      <h5 class="mb-3">Current Balance: <span id="walletBalance" class="text-success"></span></h5>
-      <h5 class="mb-3">Total Balance (including pending transactions): <span id="walletTotalBalance" class="text-info"></span></h5>
-      <hr>
-      <h6 class="mb-3">Recent Transactions:</h6>
-      <div class="table-responsive">
-        <table class="table table-striped" id="transactionTable">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Order ID</th>
-            </tr>
-          </thead>
-          <tbody id="transactionList">
-            <!-- Transactions will be populated here dynamically -->
-          </tbody>
-        </table>
-      </div>
-      <div class="mt-4">
-        <button class="btn btn-primary btn-sm" id="addFundsBtn" data-bs-toggle="modal" data-bs-target="#addFundsModal">Add Funds</button>
-        <button class="btn btn-secondary btn-sm" id="withdrawFundsBtn" data-bs-toggle="modal" data-bs-target="#withdrawFundsModal">Withdraw Funds</button>
-      </div>
-    </div>
-  </div>
-</div>
+             <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+              <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                  <h4 class="mb-0" style="color: white;">
+                    <i class="fa fa-wallet mr-2"></i> Your Wallet
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <h2 class="mb-3">Current Balance: <span id="walletBalance" class="text-success"></span></h2>
+                  <h5 class="mb-3">Total Balance (including pending transactions): <span id="walletTotalBalance" class="text-info"></span></h5>
+                  <hr>
+                  <h6 class="mb-3">Recent Transactions:</h6>
+                  <div class="table-responsive">
+                    <table class="table table-striped" id="transactionTable">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Type</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+                          <th>Order ID</th>
+                        </tr>
+                      </thead>
+                      <tbody id="transactionList">
 
-<!-- Add Funds Modal -->
-<div class="modal fade" id="addFundsModal" tabindex="-1" aria-labelledby="addFundsModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addFundsModalLabel">Add Funds to Wallet</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="addFundsForm">
-          <div class="mb-3">
-            <label for="addAmount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="addAmount" required min="1">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="confirmAddFunds">Add Funds</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Withdraw Funds Modal -->
-<div class="modal fade" id="withdrawFundsModal" tabindex="-1" aria-labelledby="withdrawFundsModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="withdrawFundsModalLabel">Withdraw Funds from Wallet</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="withdrawFundsForm">
-          <div class="mb-3">
-            <label for="withdrawAmount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="withdrawAmount" required min="1">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="confirmWithdrawFunds">Withdraw Funds</button>
-      </div>
-    </div>
-  </div>
-</div>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- Account Details Tab -->
             <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
               <div class="card mb-4">
                 <div class="card-header bg-dark text-white">
-                  <h4 class="mb-0"><i class="fa fa-user mr-2"></i> Edit Account Details</h4>
+                  <h4 class="mb-0" style="color: white;">
+                    <i class="fa fa-user mr-2"></i> Edit Account Details
+                  </h4>
+                  
                 </div>
                 <div class="card-body">
                   <form id="update-user-form">
@@ -455,7 +410,6 @@
   });
 
   </script>
-
   <script>
     const activateTab = (hash) => {
         const tabTrigger = document.querySelector(`a[href="${hash}"]`);
@@ -591,20 +545,37 @@
       });
   }
   </script>
-  <script>
-    // Fetch wallet details
-    function fetchWalletDetails() {
-      fetch('/api/wallet/details')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('walletBalance').textContent = data.formattedBalance;
-          document.getElementById('walletTotalBalance').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(data.totalBalance);
-          populateTransactions(data.transactions);
-        })
-        .catch(error => console.error('Error fetching wallet details:', error));
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch wallet details
+    async function fetchWalletDetails() {
+      try {
+        const response = await fetch('/wallet/details');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        // console.log('Wallet data:', data); // Debugging line
+
+        // Use the directly available values
+        const balance = data.formattedBalance || '₹0.00';
+        const totalBalance = data.totalBalance || 0;
+
+        // Format and display the balances
+        document.getElementById('walletBalance').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalBalance);
+        document.getElementById('walletTotalBalance').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalBalance);
+
+        // Populate transactions table
+        populateTransactions(data.transactions);
+      } catch (error) {
+        console.error('Error fetching wallet details:', error);
+        // Optionally display an error message to the user
+        document.getElementById('walletBalance').textContent = 'Error fetching data';
+        document.getElementById('walletTotalBalance').textContent = 'Error fetching data';
+      }
     }
-    
-    // Populate transactions table
+
+    // Function to populate transactions table
     function populateTransactions(transactions) {
       const transactionList = document.getElementById('transactionList');
       transactionList.innerHTML = '';
@@ -612,53 +583,22 @@
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${new Date(transaction.createdAt).toLocaleString()}</td>
-          <td>${transaction.type}</td>
+          <td>${transaction.type === 'credit' ? 'Credit' : 'Debit'}</td>
           <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(transaction.amount)}</td>
           <td>${transaction.status}</td>
-          <td>${transaction.orderId ? transaction.orderId._id : 'N/A'}</td>
+          <td>${transaction.orderId ? transaction.orderId : 'N/A'}</td>
         `;
         transactionList.appendChild(row);
       });
     }
-    
-    // Add funds
-    document.getElementById('confirmAddFunds').addEventListener('click', function() {
-      const amount = document.getElementById('addAmount').value;
-      fetch('/api/wallet/add-funds', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: parseFloat(amount) }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-        fetchWalletDetails();
-        $('#addFundsModal').modal('hide');
-      })
-      .catch(error => console.error('Error adding funds:', error));
-    });
-    
-    // Withdraw funds
-    document.getElementById('confirmWithdrawFunds').addEventListener('click', function() {
-      const amount = document.getElementById('withdrawAmount').value;
-      fetch('/api/wallet/withdraw-funds', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: parseFloat(amount) }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-        fetchWalletDetails();
-        $('#withdrawFundsModal').modal('hide');
-      })
-      .catch(error => console.error('Error withdrawing funds:', error));
-    });
-    
-    // Call fetchWalletDetails when the wallet tab is shown
-    document.getElementById('wallet-tab').addEventListener('shown.bs.tab', fetchWalletDetails);
-    </script>
+
+    // Fetch wallet details when the wallet tab is shown
+    const walletTab = document.getElementById('wallet-tab');
+    if (walletTab) {
+      walletTab.addEventListener('shown.bs.tab', fetchWalletDetails);
+    }
+
+    // Call fetchWalletDetails on page load to initialize
+    fetchWalletDetails();
+  });
+</script>

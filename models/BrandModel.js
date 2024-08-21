@@ -22,4 +22,5 @@ const brandSchema =new mongoose.Schema({
 
 }, {timestamps: true})
 
-module.exports =  mongoose.model('Brand',brandSchema );
+const Brand =  mongoose.model('Brand',brandSchema );
+module.exports = Brand

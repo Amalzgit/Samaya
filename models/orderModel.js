@@ -43,7 +43,7 @@ const orderSchema = new Schema({
   payment: {
     method: {
       type: String,
-      enum: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'UPI'],
+      enum: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'UPI','Wallet', 'razorpay'],
       required: true
     },
     status: {
@@ -51,6 +51,7 @@ const orderSchema = new Schema({
       enum: ['Pending', 'Completed', 'Failed', 'Refunded', 'Partially Refunded'],
       default: 'Pending'
     },
+    razorpayID: {type: String},
     transactionId: { type: String }
   }
 }, {
@@ -115,4 +116,5 @@ orderSchema.methods.updateOrderStatus = function() {
 };
 
 
-module.exports = mongoose.model('Order', orderSchema);
+ const Order= mongoose.model('Order', orderSchema);
+ module.exports = Order
