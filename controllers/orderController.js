@@ -19,7 +19,7 @@ const placeOrder = async (req, res) => {
     // console.log(addressId, "=> address id");
     // console.log(userId, "=> userId");
 
-    const [user, cart, address] = await  Promise.all([
+    const [user, cart, address] = await Promise.all([
       User.findById(userId),
       Cart.findOne({ user: userId }).populate("items.product"),
       addressModel.findById(addressId),
@@ -82,56 +82,75 @@ const placeOrder = async (req, res) => {
     });
     await Promise.all(productUpdates);
     order.totalPrice = totalPrice;
-console.log(totalPrice,"=>Total Price");
+    // console.log(totalPrice,"=>Total Price");
 
     if (paymentMethod === "Cash on Delivery") {
       await Promise.all([
         order.save(),
         Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } }),
-        ...productUpdates
+        ...productUpdates,
       ]);
       // res.json({ success: true, message: 'Order placed successfully' });
       return res.redirect(`/order-placed/${order.id}`);
-
     }
     if (paymentMethod === "Wallet") {
       const wallet = await Wallet.findOne({ user: userId });
-      if (!wallet || wallet.balance < totalPrice) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Insufficient balance" });
+      if (!wallet) {
+        throw new Error("Wallet not found");
       }
 
-      wallet.balance -= totalPrice;
-      // console.log(wallet.balance);
-      
+      if (wallet.balance < totalPrice) {
+        throw new Error("Insufficient wallet balance");
+      }
+
       await Promise.all([
-        wallet.save(),
+        Wallet.findOneAndUpdate(
+          { user: userId },
+          {
+            $inc: { balance: -totalPrice },
+            $push: {
+              transactions: {
+                amount: totalPrice,
+                type: "debit",
+                status: "completed",
+                description: `Payment for order ${order._id}`,
+                orderId: order._id,
+              },
+            },
+          },
+          { new: true }
+        ),
         order.save(),
-        Cart.findOneAndUpdate({user:userId},{$set:{items:[]}}),
-        ...productUpdates
+        Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } }),
       ]);
-      // res.json({ success: true, message: 'Order placed successfully' });
-      return res.redirect(`/order-placed/${order.id}`);
+
+      return res.redirect(`/order-placed/${order._id}`);
     }
-    if (paymentMethod === 'razorpay') {
-      const razorpayOrder = await createOrder(totalPrice*100 , 'INR', `order_${Date.now()}`);
+
+    if (paymentMethod === "razorpay") {
+      const razorpayOrder = await createOrder(
+        totalPrice * 100,
+        "INR",
+        `order_${Date.now()}`
+      );
       order.payment.razorpayID = razorpayOrder.id;
       await order.save();
 
       return res.json({
-          success: true,
-          order: order,
-          razorpayOrder: {
-              id: razorpayOrder.id,
-              amount: razorpayOrder.amount,
-              currency: razorpayOrder.currency,
-          },
+        success: true,
+        order: order,
+        razorpayOrder: {
+          id: razorpayOrder.id,
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+        },
       });
-  }
+    }
 
-  return res.status(400).json({ success: false, message: 'Invalid payment method' });
-} catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid payment method" });
+  } catch (error) {
     console.log("Order Placing Error:", error);
     res.status(500).json({
       success: false,
@@ -193,17 +212,24 @@ const showOrderPlaced = async (req, res) => {
     const order = await Order.findById(orderId)
       .populate("items.product")
       .populate("user", "name email");
-      // console.log(orderId,"=>order id");
-      // console.log(order,"=>order");
+    // console.log(orderId,"=>order id");
+    // console.log(order,"=>order");
 
     if (!order) {
-      return res.status(404).render("orderPlaced", { message: "Order not found", layout: false });
+      return res
+        .status(404)
+        .render("orderPlaced", { message: "Order not found", layout: false });
     }
 
     res.render("orderPlaced", { order, layout: false });
   } catch (error) {
     console.error("Error fetching Order:", error);
-    res.status(500).render("error", { message: "An error occurred while fetching the order.", layout: false });
+    res
+      .status(500)
+      .render("error", {
+        message: "An error occurred while fetching the order.",
+        layout: false,
+      });
   }
 };
 const showOrderdetails = async (req, res) => {
@@ -230,18 +256,18 @@ const showOrderdetails = async (req, res) => {
       .render("error", { message: "An error occurred while fetching Order!!" });
   }
 };
-
 const cancelOrderItem = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
 
+    // console.log("orderid:",orderId ,"itemid",itemId);
+    
     if (!isValidId(orderId) || !isValidId(itemId)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid order or item ID" });
+      return res.status(400).json({ success: false, message: "Invalid order or item ID" });
     }
 
-    const result = await Order.findOneAndUpdate(
+    // Find and update the order
+    const order = await Order.findOneAndUpdate(
       { _id: orderId, "items._id": itemId, "items.status": "Active" },
       {
         $set: {
@@ -252,20 +278,46 @@ const cancelOrderItem = async (req, res) => {
       { new: true }
     );
 
-    if (!result) {
+    if (!order) {
       return res.status(404).json({
         success: false,
         message: "Order or item not found, or item already cancelled",
       });
     }
 
-    const item = result.items.id(itemId);
-    await Product.findByIdAndUpdate(item.product, {
-      $inc: { stock: item.quantity },
-    });
+    const item = order.items.id(itemId);
 
-    await result.updateOrderStatus();
-    await result.save();
+    if (order.payment.method === 'Wallet' || order.payment.method === 'razorpay') {
+      // Calculate refund amount
+      const refundAmount = item.price * item.quantity;
+
+      // Update the wallet balance and record the transaction
+      await Wallet.findOneAndUpdate(
+        { user: order.user },
+        {
+          $inc: { balance: refundAmount },
+          $push: {
+            transactions: {
+              amount: refundAmount,
+              type: 'credit',
+              status: 'completed',
+              description: `Refund for cancelled item ${item.name}`, // Ensure item name is available
+              orderId: order._id
+            }
+          }
+        },
+        { new: true }
+      );
+    }
+
+    // Update the product stock and order status
+    const functions = [
+      Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity } }),
+      order.updateOrderStatus(),
+      order.save()
+    ];
+
+    await Promise.all(functions);
 
     res.json({
       success: true,
@@ -276,6 +328,7 @@ const cancelOrderItem = async (req, res) => {
     res.status(500).json({ success: false, message: "Error cancelling item" });
   }
 };
+
 
 const returnOrderItem = async (req, res) => {
   const { orderId, itemId } = req.params;

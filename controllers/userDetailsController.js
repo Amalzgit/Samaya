@@ -214,22 +214,18 @@ const deleteAddress = async (req, res) => {
 const getWalletDetails = async (req, res) => {
   try {
     const userId = req.currentUser._id;
-    console.log(userId);
-    
-    const wallet = await Wallet.findOne({ user: userId });
+
+    let wallet = await Wallet.findOne({ user: userId });
 
     if (!wallet) {
-
       wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
       await wallet.save();
     }
 
-    // const totalBalance = wallet.calculateTotalBalance();
-    // console.log(totalBalance ,"=> total balance");
-    
+    const totalBalance = wallet.calculateTotalBalance();
 
     res.json({
-      formattedBalance: wallet.getFormattedBalance(),
+      formattedBalance: totalBalance,
       totalBalance: wallet.balance,
       transactions: wallet.transactions
     });
