@@ -1,71 +1,82 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
+const session = require("express-session");
+const passport = require("passport");
+const flash = require("connect-flash");
+const cron = require("node-cron");
 
-const express = require('express');
-const connectDB = require('./config/databaseConfig');
-const bodyParser = require('body-parser');
-const path = require('path');
-const session = require('express-session');
-const isAuthenticated = require('./middleware/isAuthenticated');
-const config = require('./config/Sessionconfig');
+// Import custom modules
+const connectDB = require("./config/databaseConfig");
+const config = require("./config/Sessionconfig");
+const isAuthenticated = require("./middleware/isAuthenticated");
+const isblocked = require("./middleware/isblocked");
+const loggerMiddleware = require("./middleware/loggerMiddleware");
+const loadUser = require("./middleware/loadUser");
+const { updateOfferStatuses } = require("./utils/offertime");
+
+// Routes
+const userRoute = require("./routes/userRoutes/userRoute");
+const authRoute = require("./routes/authRoutes/authRoutes");
+const adminRoute = require("./routes/adminRoutes/adminRoute");
+
+// Initialize Express app
 const app = express();
-const Swal = require ('sweetalert2');
-const passport =require('passport')
-const flash =require('connect-flash')
-// Database connection
+
+// Connect to database
 connectDB();
 
-// sessions
-app.use(session({
-    secret:config.sessionSecret,
-    resave: false,
-    saveUninitialized: true
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// loadUser
-
-//  isAuthenticated middleware
-app.use(flash());
-
-app.use(isAuthenticated);
-// View engine setup
-app.set('view engine', 'ejs');
-
-// Middleware
+// Middleware setup
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "uploads")));
 
-// Routes Paths
-const userRoute = require('./routes/userRoutes/userRoute');
-const auth_route = require('./routes/authRoutes/authRoutes');
-const adminRoute = require('./routes/adminRoutes/adminRoute');
-const isblocked = require('./middleware/isblocked');
-const loggerMiddleware = require('./middleware/loggerMiddleware');
-const loadUser = require('./middleware/loadUser');
+// Session management
+app.use(
+  session({
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-app.use(loadUser)
+// Initialize Passport and flash
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
+// Custom middlewares
+app.use(loadUser);
+app.use(loggerMiddleware);
+app.use(isblocked);
+app.use(isAuthenticated);
 
-// Global Middlewares
-app.use(loggerMiddleware)
-app.use(isblocked)
+// View engine setup
+app.set("view engine", "ejs");
 
 // Blocked Routes
+app.get("/blocked", (req, res) => {
+    res.render("blocked");
+  });
 
-app.get('/blocked',(req,res)=>{
-res.render('blocked')
-})
 // Routes
-app.use('/', userRoute);     
-app.use('/', auth_route);
-app.use('/admin', adminRoute);
+app.use("/", userRoute);
+app.use("/", authRoute);
+app.use("/admin", adminRoute);
+
+
+
+// Cron jobs
+cron.schedule('* * * * * *', (now) => {
+  if (now.getSeconds() === 0) {
+    updateOfferStatuses();
+  }
+});
 
 // Server setup
-const host = 'localhost';
+const host = "localhost";
 const port = process.env.PORT || 3000;
 app.listen(port, host, () => {
-    console.log(`Server is running at http://${host}:${port}`);
+  console.log(`Server is running at http://${host}:${port}`);
 });

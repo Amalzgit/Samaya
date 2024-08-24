@@ -2,6 +2,7 @@ const express= require('express');
 const cartController = require('../../controllers/cartController');
 const isAuth = require('../../middleware/isAuth');
 const isUser = require('../../middleware/isUser');
+const nocache =require('../../middleware/nocache');
 const cart_Route = express.Router()
 
 
@@ -14,12 +15,14 @@ cart_Route.post('/cart/update',isAuth,isUser, cartController. updateCart);
 cart_Route.get('/checkout-add-address', isUser, cartController.loadAddAddress);
 cart_Route.post('/checkout-add-address', isUser, cartController.addAddress);
 
+cart_Route.post('/cart/apply-coupon', isAuth , isUser ,cartController.applyCoupon)
+cart_Route.post('/cart/remove-coupon',isAuth, isUser,cartController.removeCoupon )
 
 // checkout
 
-cart_Route.post('/checkout',isAuth, isUser, cartController.Checkout);
-cart_Route.get ('/checkout-page',isAuth, isUser , cartController.getCheckout);
-cart_Route.post('/update-selected-address', isAuth,isUser,cartController.changeAddress);
+cart_Route.post('/checkout',nocache , isAuth, isUser, cartController.Checkout);
+cart_Route.get ('/checkout-page',nocache, isAuth, isUser , cartController.getCheckout);
+cart_Route.post('/update-selected-address',nocache , isAuth,isUser,cartController.changeAddress);
 
 
 module.exports =cart_Route

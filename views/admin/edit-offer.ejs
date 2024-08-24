@@ -1,0 +1,132 @@
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Edit Offer</h2>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+
+                    <% if (successMessage) { %>
+                    <div class="alert alert-success">
+                        <%= successMessage %>
+                    </div>
+                    <% } %>
+
+                    <% if (errorMessage) { %>
+                    <div class="alert alert-danger">
+                        <%= errorMessage.msg %>
+                    </div>
+                    <% } %>
+
+                    <form id="offerForm" action="/admin/editOffer/<%= offer._id %>" method="post">
+                        <div class="mb-4">
+                            <label for="productId" class="form-label">Product</label>
+                            <select name="productId" class="form-select" id="productId">
+                                <option value="">Select a product</option>
+                                <% products.forEach(product => { %>
+                                <option value="<%= product._id %>" <%= offer.productId._id.toString() === product._id.toString() ? 'selected' : '' %>>
+                                    <%= product.name %>
+                                </option>
+                                <% }) %>
+                            </select>
+                            
+                            <span id="productIdError" class="error" style="color: red;"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label for="discount" class="form-label">Discount (%)</label>
+                            <input type="number" placeholder="Enter discount percentage" name="discount" class="form-control" id="discount" min="0" max="100" value="<%= offer.discount %>">
+                            <span id="discountError" class="error" style="color: red;"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" name="startDate" class="form-control" id="startDate" value="<%= offer.startDate.toISOString().split('T')[0] %>">
+                            <span id="startDateError" class="error" style="color: red;"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" name="endDate" class="form-control" id="endDate" value="<%= offer.endDate.toISOString().split('T')[0] %>">
+                            <span id="endDateError" class="error" style="color: red;"></span>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Update Offer</button>
+                        </div>
+                    </form>
+                </div>
+            </div> 
+        </div> 
+    </div> 
+</section> 
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const productIdInput = document.getElementById('productId');
+        const discountInput = document.getElementById('discount');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        const productIdError = document.getElementById('productIdError');
+        const discountError = document.getElementById('discountError');
+        const startDateError = document.getElementById('startDateError');
+        const endDateError = document.getElementById('endDateError');
+
+        const validateProductId = () => {
+            if (productIdInput.value.trim() === '') {
+                productIdError.textContent = '* Product selection required';
+                return false;
+            } else {
+                productIdError.textContent = '';
+                return true;
+            }
+        }
+
+        const validateDiscount = () => {
+            const discount = discountInput.value.trim();
+            if (discount === '' || isNaN(discount) || discount < 0 || discount > 100) {
+                discountError.textContent = '* Valid discount percentage required (0-100)';
+                return false;
+            } else {
+                discountError.textContent = '';
+                return true;
+            }
+        }
+
+        const validateStartDate = () => {
+            if (startDateInput.value.trim() === '') {
+                startDateError.textContent = '* Start date required';
+                return false;
+            } else {
+                startDateError.textContent = '';
+                return true;
+            }
+        }
+
+        const validateEndDate = () => {
+            if (endDateInput.value.trim() === '') {
+                endDateError.textContent = '* End date required';
+                return false;
+            } else if (new Date(endDateInput.value) <= new Date(startDateInput.value)) {
+                endDateError.textContent = '* End date must be after start date';
+                return false;
+            } else {
+                endDateError.textContent = '';
+                return true;
+            }
+        }
+
+        productIdInput.addEventListener('change', validateProductId);
+        discountInput.addEventListener('input', validateDiscount);
+        startDateInput.addEventListener('input', validateStartDate);
+        endDateInput.addEventListener('input', validateEndDate);
+
+        const form = document.getElementById('offerForm');
+
+        form.addEventListener('submit', (event) => {
+            if (!validateProductId() || !validateDiscount() || !validateStartDate() || !validateEndDate()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>

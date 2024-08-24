@@ -112,7 +112,7 @@
                   <td>Cart Subtotal</td>
                   <td>
                     <span class="font-lg fw-900 text-brand"
-                      ><%= cart.formattedPrice %></span
+                      ><%= cart.formattedTotalPrice %></span
                     >
                   </td>
                 </tr>
@@ -120,12 +120,16 @@
                   <td>Shipping</td>
                   <td><i class="fa fa-gift me-1"></i> Free Shipping</td>
                 </tr>
+                <tr>
+                  <td>Discount</td>
+                  <td><i class="fa fa-gift me-1"></i> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountAmount) %></td>
+                </tr>
                 <tr class="border-top">
                   <td>Total</td>
                   <td>
                     <strong>
                       <span class="font-xl fw-900 text-brand"
-                        ><%= cart.formattedPrice %></span
+                        ><%= cart.formattedDiscountedTotal %></span
                       >
                     </strong>
                   </td>
@@ -241,7 +245,7 @@
                 <input
                   type="hidden"
                   name="totalPrice"
-                  value="<%= cart.totalPrice.toFixed(2) %>"
+                  value="<%= cart?.formattedDiscountedTotal   || 'N/A' %>"
                 />
 
                 <% cart.items.forEach(item => { %>

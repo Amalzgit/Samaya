@@ -413,3 +413,170 @@ const [user,cart, address] = await new Promise.all([
       res.status(500).json({ success: false, message: 'An error occurred while placing the order' });
     }
 }; -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Certainly! I can help you adapt these CRUD controller methods for the ProductOffer model. Here is a set of CRUD controllers based on the ProductOffer schema you provided:
+
+javascript
+Copy code
+const { validationResult } = require('express-validator');
+const ProductOffer = require('../../models/ProductOffer'); // Adjust the path as needed
+const Product = require('../../models/Product'); // Assuming you have a Product model to reference
+
+// View all product offers
+const viewOffers = async (req, res) => {
+    try {
+        const offers = await ProductOffer.find().populate('productId');
+        return res.render('Offers', { offers });
+    } catch (error) {
+        console.error('Error fetching offers:', error);
+        return res.render('Offers', { offers: [], errorMessage: "An error occurred while fetching offers." });
+    }
+};
+
+// Load add offer page
+const loadAddOffer = async (req, res) => {
+    try {
+        const products = await Product.find();
+        return res.render('createOffer', { products, successMessage: '', errorMessage: '' });
+    } catch (error) {
+        console.error('Error loading add offer page:', error);
+        return res.render('Offers', { successMessage: '', errorMessage: "An error occurred while rendering add offer page." });
+    }
+};
+
+// Add a new offer
+const addOffer = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        const products = await Product.find();
+        return res.render('createOffer', { products, successMessage: '', errorMessage: errors.array()[0].msg });
+    }
+
+    const { productId, discount, startDate, endDate } = req.body;
+
+    try {
+        const newOffer = new ProductOffer({
+            productId,
+            discount,
+            startDate,
+            endDate,
+        });
+        await newOffer.save();
+        return res.redirect('/admin/Offers');
+    } catch (error) {
+        console.error('Error adding offer:', error);
+        const products = await Product.find();
+        return res.render('createOffer', { products, successMessage: '', errorMessage: "An error occurred while creating the offer." });
+    }
+};
+
+// Load edit offer page
+const loadEditOffer = async (req, res) => {
+    try {
+        const offer = await ProductOffer.findById(req.params.offerId).populate('productId');
+        if (!offer) {
+            return res.redirect('/admin/Offers');
+        }
+        const products = await Product.find();
+        return res.render('edit-offer', { offer, products, successMessage: '', errorMessage: '' });
+    } catch (error) {
+        console.error('Error loading edit offer page:', error);
+        return res.render('Offers', { successMessage: '', errorMessage: "An error occurred while rendering edit offer page." });
+    }
+};
+
+// Edit an existing offer
+const editOffer = async (req, res) => {
+    try {
+        const { productId, discount, startDate, endDate, isActive } = req.body;
+        const offerId = req.params.offerId;
+
+        if (!productId || discount == null || !startDate || !endDate) {
+            return res.redirect('/admin/Offers');
+        }
+
+        await ProductOffer.findByIdAndUpdate(offerId, {
+            productId,
+            discount,
+            startDate,
+            endDate,
+            isActive: isActive === 'on',
+        });
+        return res.redirect('/admin/Offers');
+    } catch (error) {
+        console.error('Error editing offer:', error);
+        const products = await Product.find();
+        return res.render('edit-offer', { offer: req.body, products, successMessage: '', errorMessage: 'An error occurred while updating the offer.' });
+    }
+};
+
+// Delete an offer (soft delete)
+const deleteOffer = async (req, res) => {
+    try {
+        const offerId = req.params.offerId;
+        const offer = await ProductOffer.findById(offerId);
+        if (offer) {
+            offer.isActive = false;
+            await offer.save();
+        }
+        return res.redirect('/admin/Offers');
+    } catch (error) {
+        console.error('Error deleting offer:', error);
+        return res.redirect('/admin/Offers');
+    }
+};
+
+// Restore an offer (soft delete reversal)
+const restoreOffer = async (req, res) => {
+    try {
+        const offerId = req.params.offerId;
+        const offer = await ProductOffer.findById(offerId);
+        if (offer) {
+            offer.isActive = true;
+            await offer.save();
+        }
+        return res.redirect('/admin/Offers');
+    } catch (error) {
+        console.error('Error restoring offer:', error);
+        return res.redirect('/admin/Offers');
+    }
+};
+
+// Permanently remove an offer
+const removeOffer = async (req, res) => {
+    try {
+        const offerId = req.params.offerId;
+        await ProductOffer.findByIdAndDelete(offerId);
+        return res.redirect('/admin/Offers');
+    } catch (error) {
+        console.error('Error removing offer:', error);
+        return res.redirect('/admin/Offers');
+    }
+};
+
+module.exports = {
+    viewOffers,
+    loadAddOffer,
+    addOffer,
+    loadEditOffer,
+    editOffer,
+    deleteOffer,
+    restoreOffer,
+    removeOffer
+}; -->
+
+/activate-offer/66c97f2407da1d19d22f2291
+http://localhost:3000/admin/delete-offer/66c97f2407da1d19d22f2291

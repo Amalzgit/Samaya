@@ -13,6 +13,7 @@ const review_route = require('./reviewRoute');
 const isAdmin = require('../../middleware/isAdmin');
 const adminOrder = require('./adminOrderRoute');
 const couponRoute = require('./adminCouponRoute');
+const offerRoute = require('./offerRoute');
 
 
 const admin_route = express();
@@ -47,6 +48,8 @@ admin_route.use(adminBrand_route)
 admin_route.use(review_route)
 admin_route.use(adminOrder)
 admin_route.use(couponRoute)
+admin_route.use(offerRoute)
+
 // Fallback route for unmatched routes
 
 module.exports = admin_route;

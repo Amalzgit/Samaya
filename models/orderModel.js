@@ -22,7 +22,7 @@ const orderItemSchema = new Schema({
   totalPrice: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['Active', 'Cancelled', 'Return Requested', 'Return Accepted', 'Return Rejected', 'Returned'],
+     enum: ['Active', 'Cancelled', 'Return Requested', 'Return Accepted', 'Return Rejected', 'Returned'],
     default: 'Active'
   },
   cancelledAt: { type: Date },
@@ -43,7 +43,7 @@ const orderSchema = new Schema({
   payment: {
     method: {
       type: String,
-      enum: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'UPI','Wallet', 'razorpay'],
+      enum: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'Wallet', 'razorpay'],
       required: true
     },
     status: {
