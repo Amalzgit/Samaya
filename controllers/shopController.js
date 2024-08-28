@@ -1,6 +1,7 @@
 const Product = require('../models/productModel');
 const Category = require('../models/catogaryModel');
 const Brand = require('../models/BrandModel');
+const { calculateOfferDiscount, calculatefinalPrice } = require('../utils/offerCalculator');
 
 const loadShop = async (req, res) => {
 
@@ -54,7 +55,29 @@ const loadShop = async (req, res) => {
         aggregationPipeline.push({ $sort: sortStages[sort] || sortStages.default });
 
         // Execute aggregation pipeline
-        const products = await Product.aggregate(aggregationPipeline);
+        let products = await Product.aggregate(aggregationPipeline);
+
+
+        products = await Promise.all(products.map(async (product) => {
+            const discount = await calculateOfferDiscount(product._id);
+            if (discount) {
+                const offerPrice = calculatefinalPrice(product.price, discount);
+                return {
+                    ...product,
+                    originalPrice: product.price,
+                    price: offerPrice,
+                    hasOffer: true,
+                    discountPercentage: discount
+                };
+            }
+            
+            return {
+                ...product,
+                hasOffer: false
+            };
+        }));
+        
+
         res.render('shop', { 
             products, 
             categories, 

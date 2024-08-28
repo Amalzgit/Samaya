@@ -7,7 +7,7 @@ const transactionSchema = new Schema({
   amount: { type: Number, required: true },
   description: { type: String, required: true },
   order: { type: Schema.Types.ObjectId, ref: 'Order' },
-  paymentMethod: { type: String, enum: ['Cash on Delivery', 'Credit Card', 'Debit Card','Wallet', 'razorpay'], required: true },
+  paymentMethod: { type: String, enum: ['Cash on Delivery', 'Credit Card', 'Debit Card','Wallet', 'razorpay'] },
   paymentId: { type: String, default: null }, 
   transactionNumber: { type: String, unique: true, required: true }, 
 }, {

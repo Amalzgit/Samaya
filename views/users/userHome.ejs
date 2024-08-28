@@ -52,55 +52,75 @@
             
               <div class="row">
                 <% for(let product of products) { %>
-
-
                   <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
                     <div class="product-cart-wrap">
-                      <div class="product-img-action-wrap">
-                        <div class="product-img product-img-zoom">
-                          <a href="/product/<%= product._id %>">
-                            <img
-                              class="default-img img-fluid"
-                              src="/products/<%= product.images[0] %>"
-                              alt=""
-                            />
-                            <img
-                              class="hover-img img-fluid"
-                              src="/products/<%= product.images[1] %>"
-                              alt=""
-                            />
-                          </a>
+                        <!-- Offer Sale Banner -->
+                        <% if (product.hasOffer) { %>
+                            <div class="offer-banner"><%= product.discountPercentage %>% OFF</div>
+                        <% } %>
+                
+                        <div class="product-img-action-wrap">
+                            <div class="product-img product-img-zoom">
+                                <a href="/product/<%= product._id %>">
+                                    <img
+                                        class="default-img img-fluid"
+                                        src="/products/<%= product.images[0] %>"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="hover-img img-fluid"
+                                        src="/products/<%= product.images[1] %>"
+                                        alt=""
+                                    />
+                                </a>
+                            </div>
                         </div>
-                      </div>
-                      <div class="product-content-wrap">
-                        <div class="product-category">
-                          <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
+                        <div class="product-content-wrap">
+                            <div class="product-category">
+                                <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
+                            </div>
+                            <h2>
+                                <a href="/product/<%= product._id %>"><%= product.name %></a>
+                            </h2>
+                            <div class="rating-result" title="90%">
+                                <span>
+                                    <span>90%</span>
+                                </span>
+                            </div>
+                            <%
+                                const currencyFormatter = new Intl.NumberFormat('en-IN', {
+                                    style: 'currency',
+                                    currency: 'INR',
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            %>
+                
+                            <% if (product.hasOffer) { %>
+                                <div class="price-info">
+                                    <span class="original-price"><%= currencyFormatter.format(product.originalPrice) %></span>
+                                    <span class="offer-price"><%= currencyFormatter.format(product.price) %></span>
+                                    <span class="discount-percentage"><%= product.discountPercentage %>% OFF</span>
+                                </div>
+                            <% } else { %>
+                                <div class="price-info">
+                                    <span class="current-price"><%= currencyFormatter.format(product.price) %></span>
+                                </div>
+                            <% } %>
+                
+                            <div class="product-action-1 show">
+                                <a
+                                    aria-label="Add To Wishlist"
+                                    class="action-btn hover-up wishlist-icon"
+                                    href="#"
+                                    onclick="addToWishlist('<%= product._id %>', this)"
+                                >
+                                    <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
+                                </a>
+                            </div>
                         </div>
-                        <h2>
-                          <a href="/product/<%= product._id %>"><%= product.name %></a>
-                        </h2>
-                        <div class="rating-result" title="90%">
-                          <span>
-                            <span>90%</span>
-                          </span>
-                        </div>
-                        <div class="product-price">
-                          <span>Price :<%= product.formattedPrice %></span>
-                        </div>
-                        <div class="product-action-1 show">
-                          <a
-                              aria-label="Add To Wishlist"
-                              class="action-btn hover-up wishlist-icon"
-                              
-                              onclick="addToWishlist('<%= product._id %>', this)"
-                          >
-                              <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
-                          </a>
-                      </div>
-                      </div>
                     </div>
-                  </div>
-                  
+                </div>
                 <% } %>
               </div>
             </div>

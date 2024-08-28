@@ -26,7 +26,10 @@
                                             <a href="/product/<%= item.product?._id %>"><%= item.product?.name %></a>
                                         </td>
                                         <td class="price">
-                                            <span><%= item.product?.formattedPrice %></span>
+                                            <div class="price-container">
+                                                <span class="original-price">₹<%= item.product?.originalPrice %></span>
+                                                <span class="current-price">₹<%= item.product?.price %></span>
+                                            </div>
                                         </td>
                                         <td class="text-center" data-title="Quantity">
                                             <div class="quantity-adjustment d-flex align-items-center justify-content-center">
@@ -41,7 +44,7 @@
                                         </td>
                                         <td class="text-right">
                                             <% 
-                                                const pricePerUnit = parseFloat(item.product?.formattedPrice?.replace(/[^0-9.-]+/g, '')) || 0;
+                                                const pricePerUnit = parseFloat(item.product?.price) || 0;
                                                 const subtotal = pricePerUnit * (item.quantity || 0);
                                                 const formattedSubtotal = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(subtotal);
                                             %>
@@ -62,8 +65,8 @@
                                     <td colspan="6" class="text-end">
                                         <% if (cart.appliedCoupon) { %>
                                             <div class="alert alert-info">
-                                                <strong>Coupon Applied:</strong> <%= cart.appliedCoupon.code %> <br>
-                                                <strong>Discount:</strong> <%= cart.appliedCoupon.discount %>% <br>
+                                                <strong>Coupon Applied</strong> <br>
+                                                <strong>Discount:</strong> <%= cart.discount %>% <br>
                                                 <strong>Discount Amount:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountAmount) %> <br>
                                                 <strong>Final Total:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountedTotal) %> <br>
                                             </div>
@@ -149,10 +152,10 @@
                                         <tr>
                                             <td class="cart_total_label">Cart Subtotal</td>
                                             <td class="cart_total_amount">
-                                                <span class="font-lg fw-400 text-brand"><%= cart?.formattedTotalPrice || 'N/A' %></span>
+                                                <span class="font-lg fw-400 text-brand"><%= cart?.formattedTotalPrice || '0' %></span>
                                             </td>
                                         </tr>
-                                        <% if (cart.appliedCoupon) { %>
+                                        <% if (cart?.appliedCoupon) { %>
                                             <tr>
                                                 <td class="cart_total_label">Discount Amount</td>
                                                 <td class="cart_total_amount">
@@ -172,7 +175,7 @@
                                                 <td class="cart_total_label">Total</td>
                                                 <td class="cart_total_amount">
                                                     <strong>
-                                                        <span class="font-xl fw-400 text-brand" id="totalPrice"><%= cart?.formattedTotalPrice   || 'N/A' %></span>
+                                                        <span class="font-xl fw-400 text-brand" id="totalPrice"><%= cart?.formattedTotalPrice   || '0' %></span>
                                                     </strong>
                                                 </td>
                                             </tr>
@@ -180,12 +183,14 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <form action="/checkout" method="POST">
-                                <input type="hidden" name="cartData" value="<%= JSON.stringify(cart) %>" />
-                                <button type="submit" class="btn btn-dark btn-sm">
-                                    <i class="fa fa-box mr-1"></i> Proceed To Checkout
-                                </button>
-                            </form>
+                            <% if (cart && cart.items && cart.items.length > 0) { %>
+                                <form action="/checkout" method="POST">
+                                    <input type="hidden" name="cartData" value="<%= JSON.stringify(cart) %>" />
+                                    <button type="submit" class="btn btn-dark btn-sm">
+                                        <i class="fa fa-box mr-1"></i> Proceed To Checkout
+                                    </button>
+                                </form>
+                            <% } %>
                         </div>
                     </div>
                 </div>

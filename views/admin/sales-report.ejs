@@ -1,0 +1,119 @@
+
+<div class="container">
+    <h1>Sales Report</h1>
+
+    <!-- Filter Form -->
+    <form action="/admin/sales-report" method="get" class="mb-4">
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate %>">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" value="<%= endDate %>">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="timeFrame">Time Frame</label>
+                    <select class="form-control" id="timeFrame" name="timeFrame">
+                        <option value="">Select Time Frame</option>
+                        <option value="daily" <%= timeFrame === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%= timeFrame === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%= timeFrame === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- Sales Report Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User ID</th>
+                <th>Total Price</th>
+                <th>Discount</th>
+                <th>Created At</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% 
+                const formatINR = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                orders.forEach(order => { 
+                %>
+                    <tr>
+                        <td><%= order._id %></td>
+                        <td><%= order.user %></td>
+                        <td><%= formatINR.format(order.totalPrice) %></td>
+                        <td><%= formatINR.format(order.discount || 0) %></td>
+                        <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                        <td>
+                            <% order.items.forEach(item => { %>
+                                <div><%= item.name %> (<%= formatINR.format(item.price) %> x <%= item.quantity %>)</div>
+                            <% }); %>
+                        </td>
+                    </tr>
+                <% }) %>
+        </tbody>
+    </table>
+
+    <form action="#" method="post" class="mb-4">
+        <input type="hidden" name="startDate" value="<%= startDate %>">
+        <input type="hidden" name="endDate" value="<%= endDate %>">
+        <div class="form-group">
+            <label>Select Format</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="pdf" name="format" value="pdf">
+                <label class="form-check-label" for="pdf">PDF</label>
+            </div>
+        </div>
+        <button type="button" id="downloadPDF" class="btn btn-success">Download Report</button>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const { jsPDF } = window.jspdf;
+
+    function generatePDF() {
+        const doc = new jsPDF();
+
+        // Set font size to be smaller
+        doc.setFontSize(10);
+
+        // Add title with adjusted position
+        doc.text('Sales Report', 14, 10);
+
+        // Adjust autoTable options for better fitting
+        doc.autoTable({
+            html: 'table',
+            startY: 20,
+            theme: 'striped',
+            headStyles: { fillColor: [74, 137, 220] },
+            margin: { top: 10 }, // Adjust margin to fit more content
+            styles: { fontSize: 8 }, // Reduce font size in the table
+            columnStyles: { text: { fontSize: 8 } } // Optional: Adjust column text size
+        });
+
+        // Save the PDF with adjusted page size to ensure content fits
+        doc.save('sales-report.pdf');
+    }
+
+    document.getElementById('downloadPDF').addEventListener('click', generatePDF);
+});
+
+</script>

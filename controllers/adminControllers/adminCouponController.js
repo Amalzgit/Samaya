@@ -3,8 +3,8 @@ const Coupon = require('../../models/CouponModel');
 const getCreateCoupon = async (req,res)=>{
     try {
         res.render('createCoupon', {
-            successMessage: '',
-            errorMessage: ''
+            successMessage: null,
+            errorMessage: null
         });
     } catch (error) {
         console.log('error  create coupon page :',error)

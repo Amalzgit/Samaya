@@ -371,7 +371,53 @@
               padding: 10px;
               border-radius: 5px;
           }
-      
+          .product-cart-wrap {
+    position: relative; /* Ensure positioning context for the offer banner */
+}
+
+.offer-banner {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #e74c3c; /* Red background for visibility */
+    color: #fff; /* White text color */
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    z-index: 10; /* Ensure it stays on top of other content */
+}
+
+.price-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Space between price elements */
+}
+
+.original-price {
+    font-size: 14px;
+    color: #888; /* Light gray color for the original price */
+    text-decoration: line-through; /* Strike-through effect */
+}
+
+.offer-price {
+    font-size: 18px;
+    color: #e74c3c; /* Red color to highlight the offer price */
+    font-weight: bold;
+}
+
+.discount-percentage {
+    font-size: 14px;
+    color: #27ae60; /* Green color for the discount percentage */
+    font-weight: bold;
+}
+
+.current-price {
+    font-size: 18px;
+    color: #333; /* Dark color for the regular price */
+    font-weight: bold;
+}
+
     
           .brand-belt {
       display: flex;

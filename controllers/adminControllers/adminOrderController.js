@@ -1,6 +1,7 @@
 const Order = require("../../models/orderModel");
 const Product = require("../../models/productModel");
 const Wallet = require("../../models/walletModel");
+const { storeTransaction } = require("../../utils/transactionUtil");
 
 const getOrderList = async (req, res) => {
   const orders = await Order.find().populate("user");
@@ -155,14 +156,15 @@ const handleAcceptReturn = async (order, item) => {
       orderId: order._id,
       description: `Refund for returned item in order ${order._id}`,
     });
-    await Promise.all([ wallet.save(),
+    await Promise.all([ 
+      wallet.save(),
       storeTransaction({
-        userId: req.currentUser._id,
+        userId: order.user,
         type: "DEBIT",
-        amount: totalPrice,
+        amount: refundAmount,
         description: `Payment for order ${order._id}`,
         orderId: order._id,
-        paymentMethod: paymentMethod,
+        paymentMethod:order.payment.method,
         transactionNumber:
           "TXN-" +
           Date.now() +

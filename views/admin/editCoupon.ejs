@@ -77,93 +77,121 @@
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const couponCodeInput = document.getElementById('couponCode');
-        const discountInput = document.getElementById('discountAmount');
-        const expiryDateInput = document.getElementById('expiryDate');
-        const minAmountInput = document.getElementById('minAmount');
-        const maxAmountInput = document.getElementById('maxAmount');
-        const isActiveSelect = document.getElementById('isActive');
+  document.addEventListener("DOMContentLoaded", () => {
+    const couponCodeInput = document.getElementById('couponCode');
+    const discountInput = document.getElementById('discountAmount');
+    const expiryDateInput = document.getElementById('expiryDate');
+    const minAmountInput = document.getElementById('minAmount');
+    const maxAmountInput = document.getElementById('maxAmount');
+    const isActiveSelect = document.getElementById('isActive');
 
-        const couponCodeError = document.getElementById('couponCodeError');
-        const discountError = document.getElementById('discountError');
-        const expiryDateError = document.getElementById('expiryDateError');
-        const minAmountError = document.getElementById('minAmountError');
-        const maxAmountError = document.getElementById('maxAmountError');
-        const isActiveError = document.getElementById('isActiveError');
+    const couponCodeError = document.getElementById('couponCodeError');
+    const discountError = document.getElementById('discountError');
+    const expiryDateError = document.getElementById('expiryDateError');
+    const minAmountError = document.getElementById('minAmountError');
+    const maxAmountError = document.getElementById('maxAmountError');
+    const isActiveError = document.getElementById('isActiveError');
 
-        const validateCouponCode = () => {
-            if (couponCodeInput.value.trim() === '') {
-                couponCodeError.textContent = '* Coupon Code is required';
-                return false;
-            } else {
-                couponCodeError.textContent = '';
-                return true;
-            }
-        };
+    const validateCouponCode = () => {
+        const code = couponCodeInput.value.trim();
+        if (code === '') {
+            couponCodeError.textContent = '* Coupon Code is required';
+            return false;
+        } else if (!/^[A-Za-z0-9]+$/.test(code)) {
+            couponCodeError.textContent = '* Coupon Code should only contain letters and numbers';
+            return false;
+        } else {
+            couponCodeError.textContent = '';
+            return true;
+        }
+    };
 
-        const validateDiscount = () => {
-            if (discountInput.value <= 0) {
-                discountError.textContent = '* Discount Amount must be greater than zero';
-                return false;
-            } else {
-                discountError.textContent = '';
-                return true;
-            }
-        };
+    const validateDiscount = () => {
+        const discount = parseFloat(discountInput.value);
+        if (isNaN(discount) || discount <= 0) {
+            discountError.textContent = '* Discount must be a positive number';
+            return false;
+        } else if (discount > 100) {
+            discountError.textContent = '* Discount cannot exceed 100%';
+            return false;
+        } else {
+            discountError.textContent = '';
+            return true;
+        }
+    };
 
-        const validateExpiryDate = () => {
-            if (new Date(expiryDateInput.value) < new Date()) {
-                expiryDateError.textContent = '* Expiry Date must be a future date';
-                return false;
-            } else {
-                expiryDateError.textContent = '';
-                return true;
-            }
-        };
+    const validateExpiryDate = () => {
+        if (expiryDateInput.value === '') {
+            expiryDateError.textContent = '* Expiry Date is required';
+            return false;
+        }
+        const expiryDate = new Date(expiryDateInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (expiryDate < today) {
+            expiryDateError.textContent = '* Expiry Date must be today or a future date';
+            return false;
+        } else {
+            expiryDateError.textContent = '';
+            return true;
+        }
+    };
 
-        const validateMinAmount = () => {
-            if (minAmountInput.value < 0) {
-                minAmountError.textContent = '* Minimum Amount cannot be negative';
-                return false;
-            } else {
-                minAmountError.textContent = '';
-                return true;
-            }
-        };
+    const validateMinAmount = () => {
+        const minAmount = parseFloat(minAmountInput.value);
+        if (isNaN(minAmount) || minAmount < 0) {
+            minAmountError.textContent = '* Minimum Amount must be a non-negative number';
+            return false;
+        } else {
+            minAmountError.textContent = '';
+            return true;
+        }
+    };
 
-        const validateMaxAmount = () => {
-            if (maxAmountInput.value < minAmountInput.value) {
-                maxAmountError.textContent = '* Maximum Amount must be greater than Minimum Amount';
-                return false;
-            } else {
-                maxAmountError.textContent = '';
-                return true;
-            }
-        };
+    const validateMaxAmount = () => {
+        const minAmount = parseFloat(minAmountInput.value);
+        const maxAmount = parseFloat(maxAmountInput.value);
+        if (isNaN(maxAmount) || maxAmount <= 0) {
+            maxAmountError.textContent = '* Maximum Amount must be a positive number';
+            return false;
+        } else if (maxAmount <= minAmount) {
+            maxAmountError.textContent = '* Maximum Amount must be greater than Minimum Amount';
+            return false;
+        } else {
+            maxAmountError.textContent = '';
+            return true;
+        }
+    };
 
-        const validateIsActive = () => {
-            if (isActiveSelect.value === '') {
-                isActiveError.textContent = '* Please select if the coupon is active';
-                return false;
-            } else {
-                isActiveError.textContent = '';
-                return true;
-            }
-        };
+    const validateIsActive = () => {
+        if (isActiveSelect.value === '') {
+            isActiveError.textContent = '* Please select if the coupon is active';
+            return false;
+        } else {
+            isActiveError.textContent = '';
+            return true;
+        }
+    };
 
-        couponCodeInput.addEventListener('input', validateCouponCode);
-        discountInput.addEventListener('input', validateDiscount);
-        expiryDateInput.addEventListener('input', validateExpiryDate);
-        minAmountInput.addEventListener('input', validateMinAmount);
-        maxAmountInput.addEventListener('input', validateMaxAmount);
-        isActiveSelect.addEventListener('change', validateIsActive);
-
-        const form = document.getElementById('editCouponForm');
-        form.addEventListener('submit', (event) => {
-            if (!validateCouponCode() || !validateDiscount() || !validateExpiryDate() || !validateMinAmount() || !validateMaxAmount() || !validateIsActive()) {
-                event.preventDefault();
+    [couponCodeInput, discountInput, expiryDateInput, minAmountInput, maxAmountInput, isActiveSelect].forEach(input => {
+        input.addEventListener('input', () => {
+            switch(input.id) {
+                case 'couponCode': validateCouponCode(); break;
+                case 'discountAmount': validateDiscount(); break;
+                case 'expiryDate': validateExpiryDate(); break;
+                case 'minAmount': validateMinAmount(); break;
+                case 'maxAmount': validateMaxAmount(); break;
+                case 'isActive': validateIsActive(); break;
             }
         });
     });
+
+    const form = document.getElementById('editCouponForm');
+    form.addEventListener('submit', (event) => {
+        if (![validateCouponCode(), validateDiscount(), validateExpiryDate(), 
+             validateMinAmount(), validateMaxAmount(), validateIsActive()].every(Boolean)) {
+            event.preventDefault();
+        }
+    });
+});
 </script>

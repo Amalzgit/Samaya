@@ -11,9 +11,9 @@ const productSchema = new mongoose.Schema({
     type: Number, 
     required: true
   },
-  offerprice: {
-    type: Number, 
-    // required: true
+  hasActiveOffer: {
+    type: Boolean,
+    default: false
   },
   description: {
     type: String,

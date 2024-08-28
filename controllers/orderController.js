@@ -8,6 +8,8 @@ const { Types } = require("mongoose");
 const { createOrder } = require("../utils/razorpayUtil");
 const { verifyPaymentSignature } = require("../utils/razorpayUtil");
 const { storeTransaction } = require("../utils/transactionUtil");
+const { formatCurrency } = require("../utils/currencyFormatter");
+const { calculateOfferDiscount, calculatefinalPrice } = require("../utils/offerCalculator");
 
 const isValidId = (id) => Types.ObjectId.isValid(id);
 
@@ -15,25 +17,65 @@ const placeOrder = async (req, res) => {
   try {
     const { addressId, paymentMethod } = req.body;
     const userId = req.currentUser._id;
+    const cartData = await Cart.findOne({ user: userId }).populate("items.product");
+    // console.log(cartData, "====>cart data ");
 
-    const [user, cart, address] = await Promise.all([
+    const items = await Promise.all(
+      cartData.items.map(async (item) => {
+        const discount = await calculateOfferDiscount(item.product._id);
+        if (discount) {
+          const offerPrice = calculatefinalPrice(item.product.price, discount);
+          return {
+            ...item.toObject(),
+            product: {
+              ...item.product.toObject(),
+              originalPrice: item.product.price,
+              price: offerPrice,
+              hasOffer: true,
+              discountPercentage: discount,
+            },
+          };
+        }
+        return {
+          ...item.toObject(),
+          product: {
+            ...item.product.toObject(),
+            hasOffer: false,
+          },
+        };
+      })
+    );
+
+    // Calculate the total price before discount
+    let totalPrice = items.reduce((accumulator, item) => {
+      return accumulator + item.product.price * item.quantity;
+    }, 0);
+
+    // Calculate the discount amount and discounted total
+    const discountAmount = (totalPrice * cartData.discount) / 100;
+    const discountedTotal = totalPrice - discountAmount;
+
+    const formattedTotalPrice = formatCurrency(totalPrice);
+    const formattedDiscountedTotal = formatCurrency(discountedTotal);
+    const formattedDiscountAmount = formatCurrency(discountAmount);
+
+    const [user, address] = await Promise.all([
       User.findById(userId),
-      Cart.findOne({ user: userId }).populate("items.product"),
       addressModel.findById(addressId),
     ]);
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: { usedCoupons: cart.appliedCoupon._id }
-  });
-    if (!user)
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    if (!cart || cart.items.length === 0)
-      return res.status(400).json({ success: false, message: "Cart is empty" });
-    if (!address)
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid address" });
+
+    if (!user || !address) {
+      return res.status(404).json({ 
+        success: false, 
+        message: user ? "Invalid address" : "User not found" 
+      });
+    }
+
+    await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { usedCoupons: cartData.appliedCoupon } },
+      { new: true }
+    );
 
     const order = new Order({
       user: userId,
@@ -53,76 +95,72 @@ const placeOrder = async (req, res) => {
         method: paymentMethod,
         status: "Pending",
       },
-      items: [],
+      items: items.map((item) => ({
+        product: item.product._id,
+        name: item.product.name,
+        price: parseFloat(item.product.price),
+        quantity: parseInt(item.quantity),
+        totalPrice: item.product.price * item.quantity,
+      })),
+      totalPrice: parseFloat(discountedTotal), // Set to discountedTotal
+      discount: parseFloat(discountAmount),
     });
 
-    let totalPrice = 0;
-    const productUpdates = cart.items.map(async (cartItem) => {
-      const product = await Product.findById(cartItem.product._id);
-      if (!product) {
-        throw new Error(`Product ${cartItem.product.name} not found`);
-      }
-      if (product.quantity < cartItem.quantity) {
+    const productUpdates = order.items.map(async (orderItem) => {
+      const product = await Product.findById(orderItem.product);
+      if (!product) throw new Error(`Product ${orderItem.name} not found`);
+      if (product.stock < orderItem.quantity)
         throw new Error(`Insufficient stock for ${product.name}`);
-      }
-      const orderItem = {
-        product: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: cartItem.quantity,
-        totalPrice: product.price * cartItem.quantity,
-      };
-      order.items.push(orderItem);
-      totalPrice += orderItem.totalPrice;
-      product.stock -= cartItem.quantity;
-
-      await product.save();
+      product.stock -= orderItem.quantity;
+      return product.save();
     });
+
     await Promise.all(productUpdates);
-    order.totalPrice = totalPrice;
-    // console.log(totalPrice,"=>Total Price");
+
+    let responseData = { 
+      success: true, 
+      order: order,
+      totalPrice: formattedTotalPrice,
+      discountedTotal: formattedDiscountedTotal,
+      discountAmount: formattedDiscountAmount,
+    };
 
     if (paymentMethod === "Cash on Delivery") {
-      await Promise.all([
+      const result = await Promise.all([
         order.save(),
-        ...productUpdates,
-        Cart.findOneAndUpdate({ user: userId }, { $set: { items: [],appliedCoupon:null } }),
+        Cart.findOneAndUpdate(
+          { user: userId },
+          { $set: { items: [], appliedCoupon: null, discount: 0 } }
+        ),
         storeTransaction({
-          userId: req.currentUser._id,
+          userId: userId,
           type: "CREDIT",
-          amount: totalPrice,
+          amount: order.totalPrice,
           description: `Payment for order ${order._id}`,
           orderId: order._id,
           paymentMethod: paymentMethod,
-          transactionNumber:
-            "TXN-" +
-            Date.now() +
-            Math.floor(Math.random() * 1000)
-              .toString()
-              .padStart(3, "0"),
+          transactionNumber: `TXN-${Date.now()}${Math.floor(
+            Math.random() * 1000
+          )
+            .toString()
+            .padStart(3, "0")}`,
         }),
       ]);
-      // res.json({ success: true, message: 'Order placed successfully' });
-      return res.redirect(`/order-placed/${order.id}`);
-    }
-    if (paymentMethod === "Wallet") {
+      responseData.order = result[0];
+    } else if (paymentMethod === "Wallet") {
       const wallet = await Wallet.findOne({ user: userId });
-      if (!wallet) {
-        throw new Error("Wallet not found");
-      }
-
-      if (wallet.balance < totalPrice) {
+      if (!wallet) throw new Error("Wallet not found");
+      if (wallet.balance < discountedTotal)
         throw new Error("Insufficient wallet balance");
-      }
 
-      await Promise.all([
+      const result = await Promise.all([
         Wallet.findOneAndUpdate(
           { user: userId },
           {
-            $inc: { balance: -totalPrice },
+            $inc: { balance: -discountedTotal },
             $push: {
               transactions: {
-                amount: totalPrice,
+                amount: discountedTotal,
                 type: "debit",
                 status: "completed",
                 description: `Payment for order ${order._id}`,
@@ -133,61 +171,58 @@ const placeOrder = async (req, res) => {
           { new: true }
         ),
         order.save(),
-        Cart.findOneAndUpdate({ user: userId }, { $set: { items: [],appliedCoupon:null } }),
+        Cart.findOneAndUpdate(
+          { user: userId },
+          { $set: { items: [], appliedCoupon: null, discount: 0 } }
+        ),
         storeTransaction({
-          userId: req.currentUser._id,
+          userId: userId,
           type: "CREDIT",
-          amount: totalPrice,
+          amount: order.totalPrice,
           description: `Payment for order ${order._id}`,
           orderId: order._id,
           paymentMethod: paymentMethod,
-          transactionNumber:
-            "TXN-" +
-            Date.now() +
-            Math.floor(Math.random() * 1000)
-              .toString()
-              .padStart(3, "0"),
+          transactionNumber: `TXN-${Date.now()}${Math.floor(
+            Math.random() * 1000
+          )
+            .toString()
+            .padStart(3, "0")}`,
         }),
       ]);
-
-      return res.redirect(`/order-placed/${order._id}`);
-    }
-
-    if (paymentMethod === "razorpay") {
+      responseData.order = result[1];
+      
+    } else if (paymentMethod === "razorpay") {
       const razorpayOrder = await createOrder(
-        totalPrice * 100,
+        discountedTotal * 100,
         "INR",
         `order_${Date.now()}`
       );
       order.payment.razorpayID = razorpayOrder.id;
       await order.save();
-     
-      return res.json({
-        success: true,
-        order: order,
-        razorpayOrder: {
-          id: razorpayOrder.id,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
-        },
-      });
+      responseData.razorpayOrder = {
+        id: razorpayOrder.id,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+      };
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid payment method" });
     }
 
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid payment method" });
+    res.status(200).json(responseData);
   } catch (error) {
     console.log("Order Placing Error:", error);
     res.status(500).json({
       success: false,
-      message: "An error occurred while placing the order",
+      message: error.message || "An error occurred while placing the order",
     });
   }
 };
+
 const verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    
+    // Verify the payment signature
     const isVerified = verifyPaymentSignature(
       razorpay_order_id,
       razorpay_payment_id,
@@ -195,23 +230,26 @@ const verifyRazorpayPayment = async (req, res) => {
     );
 
     if (isVerified) {
+      // Find the order using the Razorpay order ID
       const order = await Order.findOne({
         "payment.razorpayID": razorpay_order_id,
       });
-      // console.log(order);
 
       if (order) {
+        // Update the payment status to "Completed"
         order.payment.status = "Completed";
-        // order.payment.razorpayPaymentId = razorpay_payment_id;
+        order.payment.razorpayPaymentId = razorpay_payment_id;
+
+        // Save the order and handle post-payment actions
         await Promise.all([
           order.save(),
           storeTransaction({
             userId: req.currentUser._id,
             type: "CREDIT",
-            amount: totalPrice,
+            amount: order.totalPrice, // Use the totalPrice from the order
             description: `Payment for order ${order._id}`,
             orderId: order._id,
-            paymentMethod: paymentMethod,
+            paymentMethod: order.payment.method,
             transactionNumber:
               "TXN-" +
               Date.now() +
@@ -220,14 +258,22 @@ const verifyRazorpayPayment = async (req, res) => {
                 .padStart(3, "0"),
           }),
 
-          Cart.findOneAndUpdate({ user: order.user }, { $set: { items: [],appliedCoupon:null  } }),
+          Cart.findOneAndUpdate(
+            { user: order.user },
+            { $set: { items: [], appliedCoupon: null, discount: 0 } }
+          ),
         ]);
 
         return res.json({
           success: true,
           message: "Payment verified successfully",
-          orderId: order.id,
+          orderId: order._id,
         });
+      } else {
+        console.log("Order not found");
+        return res
+          .status(404)
+          .json({ success: false, message: "Order not found" });
       }
     }
 
@@ -243,6 +289,7 @@ const verifyRazorpayPayment = async (req, res) => {
     });
   }
 };
+
 const showOrderPlaced = async (req, res) => {
   try {
     const orderId = req.params.orderId;
@@ -360,18 +407,17 @@ const cancelOrderItem = async (req, res) => {
       storeTransaction({
         userId: req.currentUser._id,
         type: "DEBIT",
-        amount: item.price * item.quantity
-        ,
+        amount: item.price * item.quantity,
         description: `Payment for order ${order._id}`,
         orderId: order._id,
-        paymentMethod: paymentMethod,
+        paymentMethod: order.payment.method,
         transactionNumber:
           "TXN-" +
           Date.now() +
           Math.floor(Math.random() * 1000)
             .toString()
             .padStart(3, "0"),
-      })
+      }),
     ];
 
     await Promise.all(functions);

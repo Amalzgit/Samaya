@@ -13,6 +13,13 @@
 
     <section class="mt-50 mb-50">
         <div class="container">
+            <!-- Sale Banner -->
+            <% if (product.hasOffer) { %>
+                <div class="offer-sale-banner">
+                    <p>Offer Sale - Save <%= product.discountPercentage %>%!</p>
+                </div>
+            <% } %>
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="product-detail accordion-detail">
@@ -50,9 +57,22 @@
                                     </div>
                                     <div class="clearfix product-price-cover">
                                         <div class="product-price primary-color float-left">
-                                            <ins><span class="text-brand">Price: <%= product.formattedPrice %></span></ins>
-                                            <ins><span class="old-price font-md ml-15"></span></ins>
-                                            <span class="save-price font-md color3 ml-15">25% Off</span>
+                                            <%
+                                            const currencyFormatter = new Intl.NumberFormat('en-IN', {
+                                              style: 'currency',
+                                              currency: 'INR',
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2
+                                            });
+                                          %>
+                      
+                                          <% if (product.hasOffer) { %>
+                                            <p class="original-price">Original Price: <%= currencyFormatter.format(product.originalPrice) %></p>
+                                            <p class="offer-price">Offer Price: <%= currencyFormatter.format(product.price) %></p>
+                                            <p class="discount-percentage">Discount: <%= product.discountPercentage %>%</p>
+                                          <% } else { %>
+                                            <p>Price: <%= currencyFormatter.format(product.price) %></p>
+                                          <% } %>
                                         </div>
                                     </div>
                                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -225,14 +245,15 @@
                                                 <% } %>
                                             </a>
                                         </div>
-                                        <div class="product-action-1">
+                                        <div class="product-action-1 show">
                                             <a
-                                              aria-label="Add To Wishlist"
-                                              class="action-btn hover-up"
-                                              href="#"
-                                              onclick="addToWishlist('<%= product._id %>')"
-                                              ><i class="fi-rs-heart"></i
-                                            ></a>
+                                                aria-label="Add To Wishlist"
+                                                class="action-btn hover-up wishlist-icon"
+                                                href="#"
+                                                onclick="addToWishlist('<%= relatedProduct._id %>', this)"
+                                            >
+                                                <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
+                                            </a>
                                         </div>
                                         
                                     </div>
@@ -244,10 +265,22 @@
                                             <span></span>
                                         </div>
                                         <div class="product-price">
-                                            <span>$<%= relatedProduct.formattedPrice %></span>
-                                            <% if (relatedProduct.oldPrice) { %>
-                                                <span class="old-price">$<%= relatedProduct.oldPrice %></span>
-                                            <% } %>
+                                            <%
+                                            const currencyFormatter = new Intl.NumberFormat('en-IN', {
+                                              style: 'currency',
+                                              currency: 'INR',
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2
+                                            });
+                                          %>
+                      
+                                          <% if (relatedProduct.hasOffer) { %>
+                                            <p class="original-price">Original Price: <%= currencyFormatter.format(relatedProduct.originalPrice) %></p>
+                                            <p class="offer-price">Offer Price: <%= currencyFormatter.format(relatedProduct.price) %></p>
+                                            <p class="discount-percentage">Discount: <%= relatedProduct.discountPercentage %>%</p>
+                                          <% } else { %>
+                                            <p>Price: <%= currencyFormatter.format(relatedProduct.price) %></p>
+                                          <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -260,7 +293,40 @@
     </section>
 </main>
 
+
 <style>
+    .offer-sale-banner {
+        background-color: #ff4d4d; /* Bright red for attention */
+        color: white;
+        text-align: center;
+        padding: 10px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .product-price {
+        position: relative;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #999; /* Grey color for the struck-through text */
+    }
+
+    .offer-price {
+        color: #e74c3c; /* Red color for the offer price */
+        font-size: 1.5em; /* Larger font size for emphasis */
+        font-weight: bold;
+    }
+
+    .discount-percentage {
+        color: #e74c3c; /* Red color to match the offer price */
+        font-weight: bold;
+    }
+
+    .alert {
+        margin-top: 20px;
+    }
     .out-of-stock {
     font-weight: bold;
 }
@@ -274,7 +340,35 @@
 }
 
 </style>
-
+<script>
+    async function addToWishlist(productId, element) {
+      try {
+        const response = await fetch('/wishlist/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify({ productId }),
+          credentials: 'same-origin',
+        });
+    
+        const result = await response.json();
+    
+        if (result.success) {
+          // Update the icon to indicate the product is in the wishlist
+          const icon = element.querySelector('i');
+          icon.classList.remove('fa-heart');
+          icon.classList.add('fa-heart-solid');
+          // alert('Product added to wishlist.');
+        } else {
+          alert(result.message || 'Something went wrong!');
+        }
+      } catch (error) {
+        // alert('Server error: Unable to add to wishlist.');
+      }
+    }
+    </script> 
 <script>
     // Wait for the whole page to load
     window.addEventListener('load', function () {

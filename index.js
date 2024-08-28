@@ -4,7 +4,7 @@ const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
-const cron = require("node-cron");
+// const cron = require("node-cron");
 
 // Import custom modules
 const connectDB = require("./config/databaseConfig");
@@ -13,7 +13,7 @@ const isAuthenticated = require("./middleware/isAuthenticated");
 const isblocked = require("./middleware/isblocked");
 const loggerMiddleware = require("./middleware/loggerMiddleware");
 const loadUser = require("./middleware/loadUser");
-const { updateOfferStatuses } = require("./utils/offertime");
+// const { updateOfferStatuses } = require("./utils/offertime");
 
 // Routes
 const userRoute = require("./routes/userRoutes/userRoute");
@@ -68,11 +68,11 @@ app.use("/admin", adminRoute);
 
 
 // Cron jobs
-cron.schedule('* * * * * *', (now) => {
-  if (now.getSeconds() === 0) {
-    updateOfferStatuses();
-  }
-});
+// cron.schedule('* * * * * *', (now) => {
+//   if (now.getSeconds() === 0) {
+//     updateOfferStatuses();
+//   }
+// });
 
 // Server setup
 const host = "localhost";

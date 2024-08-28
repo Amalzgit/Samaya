@@ -40,7 +40,9 @@ admin_route.set('view engine', 'ejs')
 
 
 // Routes
-admin_route.get('/adminhome', nocache,isAdmin, adminController.loadAdminHome);
+admin_route.get('/adminhome', nocache, isAdmin, adminController.getDashboardData);
+admin_route.get('/sales-report', nocache, isAdmin, adminController.getSalesReport);
+
 admin_route.use(adminProductRoute);
 admin_route.use(admin_categoryRoute);
 admin_route.use(adminProfileRoute)

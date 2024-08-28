@@ -81,7 +81,7 @@
           <div class="order-summary mb-4">
             <h4>Order Summary</h4>
             <table class="table table-borderless">
-              <% if (cart && cart.items.length > 0) { %>
+              <% if (cart && cart?.items?.length > 0) { %>
               <tbody>
                 <% cart.items.forEach(item => { %>
                 <tr>
@@ -122,7 +122,11 @@
                 </tr>
                 <tr>
                   <td>Discount</td>
-                  <td><i class="fa fa-gift me-1"></i> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountAmount) %></td>
+                  <td>
+                    <i class="fa fa-gift me-1"></i> <%= new
+                    Intl.NumberFormat('en-IN', { style: 'currency', currency:
+                    'INR' }).format(cart.discountAmount) %>
+                  </td>
                 </tr>
                 <tr class="border-top">
                   <td>Total</td>
@@ -225,11 +229,12 @@
               <!-- Order Total -->
               <div class="mb-4">
                 <h5>
-                  Order Total: <strong><%= cart.formattedPrice %></strong>
+                  Order Total: <strong><%= cart.formattedDiscountedTotal %></strong>
                 </h5>
               </div>
 
               <!-- Place Order Form -->
+
               <form id="orderForm" method="POST" action="/place-order">
                 <input
                   type="hidden"
@@ -244,8 +249,13 @@
                 />
                 <input
                   type="hidden"
+                  name="discount"
+                  value="<%= cart.discountAmount %>"
+                />
+                <input
+                  type="hidden"
                   name="totalPrice"
-                  value="<%= cart?.formattedDiscountedTotal   || 'N/A' %>"
+                  value="<%= cart.formattedDiscountedTotal %>"
                 />
 
                 <% cart.items.forEach(item => { %>
@@ -267,7 +277,7 @@
                 <input
                   type="hidden"
                   name="items[<%= item.product._id %>][totalPrice]"
-                  value="<%= (item.quantity * item.product.price).toFixed(2) %>"
+                  value="<%= (item.quantity * item.product.price)-cart.discountAmount.toFixed(2) %>"
                 />
                 <% }); %>
 
@@ -359,166 +369,150 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const addressItems = document.querySelectorAll(".address-item");
-          const selectedAddressDiv = document.getElementById("selectedAddress");
-          const selectedAddressIdInput =
-            document.getElementById("selectedAddressId");
-
-          addressItems.forEach((item) => {
-            item.addEventListener("click", () => {
-              const addressId = item.getAttribute("data-address-id");
-              const addressDetails =
-                item.querySelector(".address-details").innerHTML;
-
-              selectedAddressDiv.innerHTML = addressDetails;
-              selectedAddressIdInput.value = addressId;
-
-              addressItems.forEach((i) => i.classList.remove("selected-address"));
-              item.classList.add("selected-address");
-
-              // Send the selected address ID to the server
-              fetch("/update-selected-address", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ addressId }),
-              });
-
-              $("#addressModal").modal("hide");
-            });
-          });
-
-          const orderForm = document.getElementById("orderForm");
-          const paymentMethodInput = document.getElementById("paymentMethod");
-          console.log(orderForm);
-
-          // Function to handle Razorpay payment
-          function handleRazorpayPayment(orderId, amount) {
-            var options = {
-              key: "rzp_test_8fMVTnRz3vyIWo",
-              amount: amount ,
-              currency: "INR",
-              name: "Samaya Times",
-              description: "Purchase Description",
-              order_id: orderId,
-              handler: function (response) {
-                // Send the payment details to your server for verification
-                fetch("/verify-razorpay-payment", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_signature: response.razorpay_signature,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.success) {
-                      // Payment verified successfully
-                      window.location.href = `/order-placed/${data.orderId}`;
-                    } else {
-                      // Handle payment failure
-                      alert("Payment verification failed. Please try again.");
-                    }
-                  })
-                  .catch((error) => console.error("Error:", error));
-              },
-              prefill: {
-                name: "<%= user && user.name ? user.name : '' %>",
-                email: "<%= user && user.email ? user.email : '' %>",
-                contact: "<%= user && user.phone ? user.phone : '' %>",
-              },
-              theme: {
-                color: "#3399cc",
-              },
-            };
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
-          }
-          orderForm.addEventListener("submit", function (e) {
-                 e.preventDefault();
-
-      const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-      const addressId = document.getElementById("selectedAddressId").value;
-
-      // Update the hidden input field with the selected payment method
-      document.querySelector('input[name="paymentMethod"][type="hidden"]').value = selectedPaymentMethod;
-
-      if (selectedPaymentMethod === "razorpay") {
-          // Create Razorpay order
-          fetch("/place-order", {
+      document.addEventListener("DOMContentLoaded", function () {
+        const addressItems = document.querySelectorAll(".address-item");
+        const selectedAddressDiv = document.getElementById("selectedAddress");
+        const selectedAddressIdInput = document.getElementById("selectedAddressId");
+    
+        addressItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            const addressId = item.getAttribute("data-address-id");
+            const addressDetails = item.querySelector(".address-details").innerHTML;
+    
+            selectedAddressDiv.innerHTML = addressDetails;
+            selectedAddressIdInput.value = addressId;
+    
+            addressItems.forEach((i) => i.classList.remove("selected-address"));
+            item.classList.add("selected-address");
+    
+            // Send the selected address ID to the server
+            fetch("/update-selected-address", {
               method: "POST",
               headers: {
-                  "Content-Type": "application/json",
+                "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                  addressId: addressId,
-                  paymentMethod: "razorpay",
-              }),
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  handleRazorpayPayment(data.razorpayOrder.id, data.razorpayOrder.amount, data.razorpayOrder.currency);
-              } else {
-                  alert("Failed to create Razorpay order. Please try again.");
+              body: JSON.stringify({ addressId }),
+            }).catch((error) => console.error("Error updating address:", error));
+    
+            $("#addressModal").modal("hide");
+          });
+        });
+    
+        const orderForm = document.getElementById("orderForm");
+    
+        orderForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+    
+          const selectedPaymentMethod = document.querySelector(
+            'input[name="paymentMethod"]:checked'
+          )?.value;
+          const addressId = document.getElementById("selectedAddressId").value;
+    
+          if (!selectedPaymentMethod || !addressId) {
+            alert("Please select a payment method and address.");
+            return;
+          }
+    
+          // Collect all form data
+          const formData = new FormData(orderForm);
+          const orderData = {
+            addressId: addressId,
+            paymentMethod: selectedPaymentMethod,
+            items: [],
+            discount: formData.get("discount"),
+            totalPrice: formData.get("totalPrice"),
+          };
+    
+          // Collect item data
+          document.querySelectorAll('input[name^="items["]').forEach((input) => {
+            const match = input.name.match(/items\[([^\]]+)\]\[([^\]]+)\]/);
+            if (match) {
+              const [, productId, field] = match;
+              let item = orderData.items.find((item) => item.productId === productId);
+              if (!item) {
+                item = { productId };
+                orderData.items.push(item);
               }
+              item[field] = input.value;
+            }
+          });
+    
+          // Send order data to server
+          fetch("/place-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
           })
-          .catch(error => console.error("Error:", error));
-      } else {
-          // Handle other payment methods
-          e.target.submit(); // Submit the form for other payment methods
-      }
-          // Event listener for form submission
-          orderForm.addEventListener("submit", function (e) {
-            // e.preventDefault();
-
-            const selectedPaymentMethod = document.querySelector(
-              'input[name="paymentMethod"]:checked'
-            ).value;
-            const addressId = document.getElementById("selectedAddressId").value;
-
-            // Update the hidden input field with the selected payment method
-            document.querySelector(
-              'input[name="paymentMethod"][type="hidden"]'
-            ).value = selectedPaymentMethod;
-
-            if (selectedPaymentMethod === "razorpay") {
-              // e.preventDefault();
-
-              // Create Razorpay order
-              fetch("/place-order", {
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                if (selectedPaymentMethod === "razorpay") {
+                  handleRazorpayPayment(data.razorpayOrder.id, data.razorpayOrder.amount);
+                } else {
+                  window.location.href = `/order-placed/${data.order._id}`;
+                }
+              } else {
+                alert(data.message || "Failed to place order. Please try again.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error placing order:", error);
+              alert("An error occurred. Please try again.");
+            });
+        });
+    
+        // Function to handle Razorpay payment
+        function handleRazorpayPayment(orderId, amount) {
+          const options = {
+            key: "rzp_test_8fMVTnRz3vyIWo", // Update with your key
+            amount: amount,
+            currency: "INR",
+            name: "Samaya Times",
+            description: "Purchase Description",
+            order_id: orderId,
+            handler: function (response) {
+              // Send the payment details to your server for verification
+              fetch("/verify-razorpay-payment", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  addressId: addressId, // Ensure addressId is available
-                  paymentMethod: "razorpay",
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
                 }),
               })
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.success) {
-                    handleRazorpayPayment(
-                      data.razorpayOrder.id,
-                      data.razorpayOrder.amount
-                    );
+                    // Payment verified successfully
+                    window.location.href = `/order-placed/${data.orderId}`;
                   } else {
-                    alert("Failed to create Razorpay order. Please try again.");
+                    // Handle payment failure
+                    alert("Payment verification failed. Please try again.");
                   }
                 })
-                .catch((error) => console.error("Error:", error));
-            }
-          });
-        });
-      })
+                .catch((error) => console.error("Error verifying payment:", error));
+            },
+            prefill: {
+              name: "<%= user && user.name ? user.name : '' %>",
+              email: "<%= user && user.email ? user.email : '' %>",
+              contact: "<%= user && user.phone ? user.phone : '' %>",
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+          const rzp1 = new Razorpay(options);
+          rzp1.open();
+        }
+      });
     </script>
+    
   </body>
 </html>
