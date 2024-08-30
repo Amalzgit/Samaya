@@ -407,7 +407,7 @@ const cancelOrderItem = async (req, res) => {
       storeTransaction({
         userId: req.currentUser._id,
         type: "DEBIT",
-        amount: item.price * item.quantity,
+        amount:refundAmount,
         description: `Payment for order ${order._id}`,
         orderId: order._id,
         paymentMethod: order.payment.method,

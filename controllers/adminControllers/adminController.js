@@ -1,25 +1,36 @@
 const Order = require('../../models/orderModel');
 const Transaction = require('../../models/transactions');
 const Category = require('../../models/catogaryModel');
-const { jsPDF } = require("jspdf");
 const getDashboardData = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const endDateObj = endDate ? new Date(endDate) : new Date();
     const startDateObj = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Last 30 days
 
+    if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+      return res.status(400).send('Invalid date format');
+    }
+
     const query = {
       createdAt: { $gte: startDateObj, $lte: endDateObj },
-      status: { $ne: 'Cancelled' }
+      "items.status": { $ne: 'Cancelled' }
     };
 
     // Total Revenue and Total Orders
     const totals = await Order.aggregate([
       { $match: query },
       {
+        $unwind: "$items"
+      },
+      {
+        $match: {
+          "items.status": { $ne: 'Cancelled' }
+        }
+      },
+      {
         $group: {
           _id: null,
-          totalRevenue: { $sum: "$totalPrice" },
+          totalRevenue: { $sum: "$items.totalPrice" },
           totalOrders: { $sum: 1 }
         }
       }
@@ -31,6 +42,11 @@ const getDashboardData = async (req, res) => {
     const bestSellingProducts = await Order.aggregate([
       { $match: query },
       { $unwind: "$items" },
+      {
+        $match: {
+          "items.status": { $ne: 'Cancelled' }
+        }
+      },
       {
         $group: {
           _id: "$items.product",
@@ -66,6 +82,11 @@ const getDashboardData = async (req, res) => {
       { $match: query },
       { $unwind: "$items" },
       {
+        $match: {
+          "items.status": { $ne: 'Cancelled' }
+        }
+      },
+      {
         $lookup: {
           from: 'products',
           localField: 'items.product',
@@ -91,6 +112,11 @@ const getDashboardData = async (req, res) => {
     const topProducts = await Order.aggregate([
       { $match: query },
       { $unwind: "$items" },
+      {
+        $match: {
+          "items.status": { $ne: 'Cancelled' }
+        }
+      },
       {
         $group: {
           _id: "$items.product",
@@ -126,13 +152,69 @@ const getDashboardData = async (req, res) => {
       .populate('user', 'name email')
       .populate('order', 'orderNumber totalPrice');
 
+    // Daily Revenue Data
+    const dailyRevenue = await Order.aggregate([
+      { $match: query },
+      { $unwind: "$items" },
+      {
+        $match: {
+          "items.status": { $ne: 'Cancelled' }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          revenue: { $sum: "$items.totalPrice" },
+          orders: { $sum: 1 },
+          cancelled: { $sum: { $cond: [{ $eq: ["$items.status", "Cancelled"] }, 1, 0] } },
+          delivered: { $sum: { $cond: [{ $eq: ["$items.status", "Delivered"] }, 1, 0] } }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    const dailyData = dailyRevenue.map(day => ({
+      date: day._id,
+      revenue: day.revenue,
+      orders: day.orders,
+      cancelledRate: (day.cancelled / day.orders) * 100 || 0,
+      deliveredRate: (day.delivered / day.orders) * 100 || 0
+    }));
+    const chartData = {
+      labels: dailyData.map(day => day.date),
+      datasets: [
+        {
+          label: 'Revenue',
+          data: dailyData.map(day => day.revenue),
+          borderColor: 'rgba(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192)',
+          borderWidth: 1
+        },
+        // {
+        //   label: 'Cancelled Orders Rate (%)',
+        //   data: dailyData.map(day => day.cancelledRate),
+        //   borderColor: 'rgba(255, 99, 132 )',
+        //   backgroundColor: 'rgba(255, 99, 132 )',
+        //   borderWidth: 1
+        // },
+        // {
+        //   label: 'Delivered Orders Rate (%)',
+        //   data: dailyData.map(day => day.deliveredRate),
+        //   borderColor: 'rgba(54, 162, 235)',
+        //   backgroundColor: 'rgba(54, 162, 235)',
+        //   borderWidth: 1
+        // }
+      ]
+    };
+
     res.render('dashboard', {
       totalRevenue: totalData.totalRevenue,
       totalOrders: totalData.totalOrders,
       bestSellingProduct,
       bestSellingCategory,
       topProducts,
-      latestTransactions
+      latestTransactions,
+      chartData: JSON.stringify(chartData)
     });
   } catch (error) {
     console.error('Error generating dashboard data:', error);
@@ -140,38 +222,57 @@ const getDashboardData = async (req, res) => {
   }
 };
 
+
 const getSalesReport = async (req, res) => {
   try {
     const { startDate, endDate, timeFrame } = req.query;
-    const endDateObj = endDate ? new Date(endDate) : new Date();
-    const startDateObj = startDate ? new Date(startDate) : new Date();
 
-    // Adjust the start and end date based on the time frame if necessary
-    if (timeFrame === "daily") {
-      startDateObj.setHours(0, 0, 0, 0);
-      endDateObj.setHours(23, 59, 59, 999);
-    } else if (timeFrame === "weekly") {
-      startDateObj.setDate(startDateObj.getDate() - startDateObj.getDay()); // Start of the week
-      endDateObj.setDate(endDateObj.getDate() - endDateObj.getDay() + 6); // End of the week
-    } else if (timeFrame === "monthly") {
-      startDateObj.setDate(1); // Start of the month
-      endDateObj.setMonth(endDateObj.getMonth() + 1); // Move to the next month
-      endDateObj.setDate(0); // End of the previous month
+const endDateObj = endDate ? new Date(endDate) : new Date();
+let startDateObj = startDate ? new Date(startDate) : new Date();
+
+endDateObj.setHours(23, 59, 59, 999);
+startDateObj.setHours(0, 0, 0, 0);
+
+console.log("Original start date:",startDate);
+console.log("Original end date:", endDate)
+switch (timeFrame) {
+  case "daily":
+      break;
+      case "weekly":
+        startDateObj = new Date(endDateObj);
+        startDateObj.setDate(endDateObj.getDate() - endDateObj.getDay());
+        startDateObj.setHours(0, 0, 0, 0);
+        break;
+      case "monthly":
+        startDateObj = new Date(endDateObj.getFullYear(), endDateObj.getMonth(), 1);
+        break;
+      case "yearly":
+        startDateObj = new Date(endDateObj.getFullYear(), 0, 1);
+        break;
+      default:
+        startDateObj = new Date(endDateObj);
+        startDateObj.setDate(endDateObj.getDate() - 30);
+        break;
     }
+    
+    console.log("Adjusted start date:", startDateObj.toISOString());
+    console.log("Adjusted end date:", endDateObj.toISOString());
 
     const query = {
       createdAt: { $gte: startDateObj, $lte: endDateObj },
-      status: { $ne: "Cancelled" } // Exclude cancelled orders
+      status: { $ne: "Cancelled" } 
     };
 
     const orders = await Order.find(query).populate("items.product");
-
-    // Render sales report page with timeFrame included
+    const totalOrderCount = orders.length;
+    const totalBillAmount = orders.reduce((sum, order) => sum + order.totalPrice, 0);
     res.render("sales-report", {
+      totalOrderCount,
+      totalBillAmount,
       orders,
       startDate: startDateObj.toISOString().split("T")[0],
       endDate: endDateObj.toISOString().split("T")[0],
-      timeFrame: timeFrame || '' // Ensure timeFrame is passed to the view
+      timeFrame: timeFrame || '' 
     });
   } catch (error) {
     console.error('Error fetching sales report:', error);

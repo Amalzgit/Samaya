@@ -56,21 +56,23 @@
             <div class="col-md-12 mb-3">
               <label for="productImage" class="form-label">Product Images <i class="fa fa-image"></i></label>
               <div id="imagePreviewContainer" class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2 mb-2">
-                <% if (product.images && product.images.length > 0) { %>
-                  <% product.images.forEach((image, index) => { %>
-                    <div class="col">
-                      <div class="position-relative">
-                        <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
-                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="removeExistingImage('<%= image %>', this)">X</button>
-                      </div>
-                    </div>
-                  <% }); %>
-                <% } %>
+                  <% if (product.images && product.images.length > 0) { %>
+                      <% product.images.forEach((image, index) => { %>
+                          <div class="col">
+                              <div class="position-relative">
+                                  <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
+                                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="removeExistingImage('<%= image %>', this)">X</button>
+                              </div>
+                          </div>
+                      <% }); %>
+                  <% } %>
               </div>
-              <input type="file" id="productImage" multiple name="newImages" class="form-control">
+              <input type="file" id="productImage" name="newImages" class="form-control" accept="image/*">
               <input type="hidden" id="removedImages" name="removedImages">
+              <input type="hidden" id="croppedImages" name="croppedImages">
               <span id="imagesError" class="error text-danger"></span>
-            </div>
+          </div>
+
 
           <!-- New fields added here -->
           <div class="row mb-3">
@@ -152,9 +154,23 @@
       </div>
     </div>
   </section>
-
-
-
+  <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="imageCropper" src="" alt="Image for cropping" style="width: 100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="cropButton" class="btn btn-primary">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
   <script>
       document.addEventListener("DOMContentLoaded", () => {
         // Get references to form elements
@@ -295,114 +311,167 @@
       });
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.getElementById('productImage');
   const previewContainer = document.getElementById('imagePreviewContainer');
   const removedImagesInput = document.getElementById('removedImages');
   const imagesError = document.getElementById('imagesError');
+  const cropperModal = document.getElementById('cropperModal');
+  const cropperModalInstance = new bootstrap.Modal(cropperModal);
+  const cropperImage = document.getElementById('imageCropper');
+  const cropButton = document.getElementById('cropButton');
   let removedImages = [];
+  let cropper;
 
   fileInput.addEventListener('change', handleFileSelect);
 
   function handleFileSelect(event) {
-    const files = event.target.files;
-    
-    for (let file of files) {
-      if (file.type.startsWith('image/')) {
-        addImagePreview(file);
+      const files = event.target.files;
+
+      for (let file of files) {
+          if (file.type.startsWith('image/')) {
+              showCropperModal(file);
+          } else {
+              imagesError.textContent = '* Invalid file type. Only image files are allowed';
+          }
       }
-    }
-    
-    validateImages();
   }
 
-  function addImagePreview(file) {
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      const preview = createPreviewElement(e.target.result, file.name);
+  function showCropperModal(file) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+          cropperImage.src = e.target.result;
+
+          if (cropper) {
+              cropper.destroy();
+          }
+
+          cropper = new Cropper(cropperImage, {
+              aspectRatio: 1,
+              viewMode: 1,
+              autoCropArea: 1
+          });
+
+          cropperModalInstance.show();
+      };
+
+      reader.readAsDataURL(file);
+  }
+
+  cropButton.addEventListener('click', () => {
+      if (cropper) {
+          const canvas = cropper.getCroppedCanvas({
+              width: 500,
+              height: 500
+          });
+
+          canvas.toBlob(blob => {
+              const url = URL.createObjectURL(blob);
+              addImagePreview(url, blob);
+              cropper.destroy();
+              cropperModalInstance.hide();
+          });
+      }
+  });
+
+  function addImagePreview(src, blob) {
+      const preview = createPreviewElement(src, blob);
       previewContainer.appendChild(preview);
-    };
-    
-    reader.readAsDataURL(file);
+      validateImages();
   }
 
-  function createPreviewElement(src, fileName) {
-    const colDiv = document.createElement('div');
-    colDiv.className = 'col';
-    
-    const imgContainer = document.createElement('div');
-    imgContainer.className = 'position-relative';
-    
-    const img = document.createElement('img');
-    img.src = src;
-    img.className = 'img-thumbnail';
-    img.style.width = '100%';
-    img.style.height = 'auto';
-    
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'X';
-    removeBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
-    removeBtn.onclick = () => removeNewImage(fileName, colDiv);
-    
-    imgContainer.appendChild(img);
-    imgContainer.appendChild(removeBtn);
-    colDiv.appendChild(imgContainer);
-    
-    return colDiv;
+  function createPreviewElement(src, blob) {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'col';
+
+      const imgContainer = document.createElement('div');
+      imgContainer.className = 'position-relative';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'img-thumbnail';
+      img.style.width = '100%';
+      img.style.height = 'auto';
+
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'X';
+      removeBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
+      removeBtn.onclick = () => removeNewImage(colDiv, blob);
+
+      imgContainer.appendChild(img);
+      imgContainer.appendChild(removeBtn);
+      colDiv.appendChild(imgContainer);
+
+      return colDiv;
   }
 
-  function removeNewImage(fileName, element) {
-    element.remove();
-    validateImages();
+  function removeNewImage(element, blob) {
+      element.remove();
+      validateImages();
   }
 
   function removeExistingImage(imageName, button) {
-    removedImages.push(imageName);
-    removedImagesInput.value = JSON.stringify(removedImages);
-    button.closest('.col').remove();
-    validateImages();
+      removedImages.push(imageName);
+      removedImagesInput.value = JSON.stringify(removedImages);
+      button.closest('.col').remove();
+      validateImages();
   }
 
   window.removeExistingImage = removeExistingImage;
 
   function validateImages() {
-    const existingImages = previewContainer.querySelectorAll('img').length;
-    const newImages = fileInput.files.length;
-    const totalImages = existingImages + newImages;
+      const existingImages = previewContainer.querySelectorAll('img').length;
+      const newImages = fileInput.files.length;
+      const totalImages = existingImages + newImages;
 
-    if (totalImages < 3) {
-      imagesError.textContent = '* Min 3 Images are required';
-      return false;
-    }
-
-    const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    for (let i = 0; i < fileInput.files.length; i++) {
-      const file = fileInput.files[i];
-
-      if (!allowedExtensions.exec(file.name)) {
-        imagesError.textContent = '* Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed';
-        return false;
+      if (totalImages < 3) {
+          imagesError.textContent = '* Min 3 Images are required';
+          return false;
       }
 
-      if (file.size > maxSize) {
-        imagesError.textContent = `* File size should be less than 5MB. ${file.name} is too large`;
-        return false;
-      }
-    }
+      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
-    imagesError.textContent = '';
-    return true;
+      for (let i = 0; i < fileInput.files.length; i++) {
+          const file = fileInput.files[i];
+
+          if (!allowedExtensions.exec(file.name)) {
+              imagesError.textContent = '* Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed';
+              return false;
+          }
+
+          if (file.size > maxSize) {
+              imagesError.textContent = `* File size should be less than 5MB. ${file.name} is too large`;
+              return false;
+          }
+      }
+
+      imagesError.textContent = '';
+      return true;
   }
 
-  // Add this to your existing form validation
   const form = document.getElementById('editProductForm');
   form.addEventListener('submit', (event) => {
-    if (!validateImages()) {
-      event.preventDefault();
-    }
+      if (!validateImages()) {
+          event.preventDefault();
+      } else {
+          updateFormWithImages();
+      }
   });
+
+  function updateFormWithImages() {
+      const croppedImagesInput = document.getElementById('croppedImages');
+      const images = [];
+
+      previewContainer.querySelectorAll('img').forEach(img => {
+          const url = img.src;
+          if (url.startsWith('blob:')) {
+              images.push(url);
+          }
+      });
+
+      croppedImagesInput.value = JSON.stringify(images);
+  }
 });
-    </script>
+</script>

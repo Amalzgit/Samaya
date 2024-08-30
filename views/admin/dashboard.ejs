@@ -60,7 +60,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Revenue Over Time</h5>
-                        <canvas id="revenueChart" width="400" height="400"></canvas>
+                        <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -126,36 +126,27 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Assuming you have the revenue data and labels as variables
-        const revenueData = '<%= JSON.stringify(totalRevenue) %>';
-
+    document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: "labels",
-                datasets: [{
-                    label: 'Revenue',
-                    data: revenueData,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
+        const revenueChart = new Chart(ctx, {
+          type: 'line', // You can change to 'bar', 'pie', etc.
+          data: <%- chartData %>,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                  }
                 }
+              }
             }
+          }
         });
+      });
     </script>
-

@@ -11,6 +11,7 @@ const otp_route = require('./otpRoute');
 const register_route = require('./registerRoute');
 const nocache = require('../../middleware/nocache');
 const passport = require('../../GoogleAuth');
+const forgotPassRouter = require('./forgotPasswordRoutes');
 // require('../../GoogleAuth')
 // console.log(passport);
 
@@ -55,6 +56,7 @@ auth_route.post('/login', nocache, isLoggedIn, loginValidater,  auth.isLogout, l
 auth_route.get('/logout', nocache, auth.isLogedin, loginController.Logout);
 auth_route.use(otp_route);
 auth_route.use(register_route);
+auth_route.use(forgotPassRouter);
 
 // google auth
 

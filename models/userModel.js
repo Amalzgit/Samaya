@@ -37,7 +37,10 @@ const userSchema =  new mongoose.Schema({
     usedCoupons: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Coupon'
-    }]
+    }],
+    resetPasswordToken: {
+        type: String
+    }
 }, { timestamps: true }
 );
 
