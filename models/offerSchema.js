@@ -28,6 +28,34 @@ const ProductOfferSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// ProductOfferSchema.pre('find', function () {
+//   const currentDate = new Date();
+
+//   this.where({
+//     $expr: {
+//       $cond: [
+//         { $and: [{ $gte: ['$startDate', currentDate] }, { $lte: ['$endDate', currentDate] }] },
+//         true,
+//         false
+//       ]
+//     }
+//   });
+// });
+
+// ProductOfferSchema.pre('findOne', function () {
+//   const currentDate = new Date();
+
+//   this.where({
+//     $expr: {
+//       $cond: [
+//         { $and: [{ $gte: ['$startDate', currentDate] }, { $lte: ['$endDate', currentDate] }] },
+//         true,
+//         false
+//       ]
+//     }
+//   });
+// });
+
 
 const ProductOffer = mongoose.model("ProductOffer", ProductOfferSchema);
 

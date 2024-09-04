@@ -154,7 +154,7 @@ const editAddress = async (req, res) => {
   } = req.body;
 
   try {
-    cconst [addressToUpdate, currentDefaultAddress] = await Promise.all([
+    const [addressToUpdate, currentDefaultAddress] = await Promise.all([
       Address.findById(addressId),
       Address.findOne({ isDefault: true })
     ]);
@@ -224,16 +224,21 @@ const getWalletDetails = async (req, res) => {
 
     const totalBalance = wallet.calculateTotalBalance();
 
+    const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    console.log(sortedTransactions);
+    
+
     res.json({
       formattedBalance: totalBalance,
       totalBalance: wallet.balance,
-      transactions: wallet.transactions
+      transactions: sortedTransactions
     });
   } catch (error) {
     console.error('Error fetching wallet details:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 module.exports = {

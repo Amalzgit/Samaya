@@ -1,47 +1,88 @@
-const Product = require('../models/productModel');
-const Category = require('../models/catogaryModel');
-const Brand = require('../models/BrandModel');
-const { calculateOfferDiscount, calculatefinalPrice } = require('../utils/offerCalculator');
+const Product = require("../models/productModel");
+const Category = require("../models/catogaryModel");
+const Brand = require("../models/BrandModel");
+const {
+    calculateOfferDiscount,
+    calculatefinalPrice,
+} = require("../utils/offerCalculator");
 
 const loadShop = async (req, res) => {
-
     try {
-    const { category, brand, sort, search } = req.query;
-       
-        const [categories , brands ,categoryDoc ,brandDoc] = await Promise.all([
+        const {
+            category,
+            brand,
+            sort = "featured",
+            search,
+            page = 1,
+        } = req.query;
+        const limit = 6;
+        const skip = (page - 1) * limit;
+
+        const [categories, brands, categoryDoc, brandDoc] = await Promise.all([
             Category.find({ deleted: false }),
             Brand.find({ isActive: true }),
-            category ? Category.findOne({ name: category, deleted: false }) : null,
-            brand ? Brand.findOne({ name: brand, isActive: true }) : null
+            category
+                ? Category.findOne({ name: category, deleted: false })
+                : null,
+            brand ? Brand.findOne({ name: brand, isActive: true }) : null,
         ]);
 
         if (category && !categoryDoc) {
-            return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Category not found or deleted' });
+            return res.render("shop", {
+                products: [],
+                categories,
+                brands,
+                successMessage: "",
+                errorMessage: "Category not found or deleted",
+                pagination: {},
+                currentSort: sort,
+            });
         }
         if (brand && !brandDoc) {
-            return res.render('shop', { products: [], categories, brands, successMessage: '', errorMessage: 'Brand not found or inactive' });
+            return res.render("shop", {
+                products: [],
+                categories,
+                brands,
+                successMessage: "",
+                errorMessage: "Brand not found or inactive",
+                pagination: {},
+                currentSort: sort,
+            });
         }
 
-        // Match stage
         const matchStage = { deleted: false };
         if (categoryDoc) matchStage.category = categoryDoc._id;
         if (brandDoc) matchStage.brand = brandDoc._id;
         if (search) {
             matchStage.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } }
+                { name: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } },
             ];
         }
+
         const aggregationPipeline = [
             { $match: matchStage },
-            { $lookup: { from: 'categories', localField: 'category', foreignField: '_id', as: 'category' } },
-            { $unwind: '$category' },
-            { $lookup: { from: 'brands', localField: 'brand', foreignField: '_id', as: 'brand' } },
-            { $unwind: '$brand' },
-            { $match: { 'category.deleted': false, 'brand.isActive': true } }
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "category",
+                },
+            },
+            { $unwind: "$category" },
+            {
+                $lookup: {
+                    from: "brands",
+                    localField: "brand",
+                    foreignField: "_id",
+                    as: "brand",
+                },
+            },
+            { $unwind: "$brand" },
+            { $match: { "category.deleted": false, "brand.isActive": true } },
         ];
 
-        // Sorting stage
         const sortStages = {
             popularity: { totalSales: -1 },
             price_asc: { price: 1 },
@@ -50,48 +91,95 @@ const loadShop = async (req, res) => {
             newest: { createdAt: -1 },
             name_asc: { name: 1 },
             name_desc: { name: -1 },
-            default: { featured: -1 }
+            featured: { featured: -1 },
         };
-        aggregationPipeline.push({ $sort: sortStages[sort] || sortStages.default });
+        aggregationPipeline.push({
+            $sort: sortStages[sort] || sortStages.featured,
+        });
 
-        // Execute aggregation pipeline
+        const countPipeline = [...aggregationPipeline, { $count: "total" }];
+        const totalResult = await Product.aggregate(countPipeline);
+        const total = totalResult.length > 0 ? totalResult[0].total : 0;
+
+        aggregationPipeline.push({ $skip: skip }, { $limit: limit });
+
         let products = await Product.aggregate(aggregationPipeline);
 
-
-        products = await Promise.all(products.map(async (product) => {
-            const discount = await calculateOfferDiscount(product._id);
-            if (discount) {
-                const offerPrice = calculatefinalPrice(product.price, discount);
+        products = await Promise.all(
+            products.map(async (product) => {
+                const discount = await calculateOfferDiscount(product._id);
+                if (discount) {
+                    const offerPrice = calculatefinalPrice(
+                        product.price,
+                        discount
+                    );
+                    return {
+                        ...product,
+                        originalPrice: product.price,
+                        price: offerPrice,
+                        hasOffer: true,
+                        discountPercentage: discount,
+                    };
+                }
                 return {
                     ...product,
-                    originalPrice: product.price,
-                    price: offerPrice,
-                    hasOffer: true,
-                    discountPercentage: discount
+                    hasOffer: false,
                 };
-            }
-            
-            return {
-                ...product,
-                hasOffer: false
-            };
-        }));
-        
+            })
+        );
+        const totalPages = Math.ceil(total / limit);
+        const currentPage = parseInt(page);
 
-        res.render('shop', { 
-            products, 
-            categories, 
-            brands, 
-            successMessage: '', 
-            errorMessage: '',
+        // Generate page URLs
+        const baseUrl = `${req.protocol}://${req.get("host")}${req.path}`;
+        const pageUrls = {};
+        for (let i = 1; i <= totalPages; i++) {
+            const urlParams = new URLSearchParams(req.query);
+            urlParams.set("page", i);
+            pageUrls[i] = `${baseUrl}?${urlParams.toString()}`;
+        }
+        const pagination = {
+            currentPage: currentPage,
+            totalPages: totalPages,
+            hasNextPage: currentPage < totalPages,
+            hasPrevPage: currentPage > 1,
+            nextPageUrl:
+                currentPage < totalPages ? pageUrls[currentPage + 1] : null,
+            prevPageUrl: currentPage > 1 ? pageUrls[currentPage - 1] : null,
+            pageUrls: pageUrls,
+        };
+
+        res.render("shop", {
+            products,
+            categories,
+            brands,
+            successMessage: "",
+            errorMessage: "",
             currentCategory: category,
             currentBrand: brand,
             currentSort: sort,
-            currentSearch: search
+            currentSearch: search,
+            pagination,
         });
     } catch (error) {
-        console.error('Error loading shop page:', error);
-        res.render('shop', { products: [], categories: [], brands: [], successMessage: '', errorMessage: 'An error occurred' });
+        console.error("Error loading shop page:", error);
+        res.render("shop", {
+            products: [],
+            categories: [],
+            brands: [],
+            successMessage: "",
+            errorMessage: "An error occurred",
+            pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                hasNextPage: false,
+                hasPrevPage: false,
+                nextPageUrl: null,
+                prevPageUrl: null,
+                pageUrls: {},
+            },
+            currentSort: "featured",
+        });
     }
 };
 

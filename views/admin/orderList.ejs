@@ -1,5 +1,6 @@
 <div class="container mt-4 pb-200">
     <h1 class="mb-4">Orders</h1>
+    <a>Total Orders : <%=totalOrders%></a>
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -66,6 +67,14 @@
                 <% }) %>
             </tbody>
         </table>
+        <div class="pagination-area mt-4">
+            <nav aria-label="Page navigation">
+                <ul id="pagination-controls" class="pagination justify-content-start">
+                </ul>
+            </nav>
+        </div>
+        
+        
     </div>
 </div>
 
@@ -244,4 +253,82 @@
             row.classList.add(`status-${status.toLowerCase()}`);
         });
     });
+</script>
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 5;
+    let totalRows;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('tbody tr');
+        totalRows = rows.length;
+        updatePagination(rows);
+    });
+
+    function updatePagination(rows) {
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = ''; // Clear existing pagination controls
+
+        // Previous page button
+        if (currentPage > 1) {
+            paginationControls.innerHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(-1)">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </li>
+            `;
+        }
+
+        // Page number buttons
+        for (let i = 1; i <= totalPages; i++) {
+            paginationControls.innerHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
+                </li>
+            `;
+        }
+
+        // Next page button
+        if (currentPage < totalPages) {
+            paginationControls.innerHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(1)">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+            `;
+        }
+
+        // Update visible rows
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            if (index >= start && index < end) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        currentPage += direction;
+        if (currentPage < 1) {
+            currentPage = 1;
+        } else if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+
+        updatePagination(document.querySelectorAll('tbody tr'));
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        updatePagination(document.querySelectorAll('tbody tr'));
+    }
 </script>

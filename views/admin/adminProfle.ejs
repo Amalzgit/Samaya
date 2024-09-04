@@ -1,16 +1,48 @@
+<style>
+  .admin-details {
+      background-color: #f8f9fa; /* Light background for contrast */
+      padding: 20px; /* Add padding around the content */
+      border-radius: 10px; /* Rounded corners for a softer look */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+      max-width: 600px; /* Limit the width for better readability */
+      margin: 20px auto; /* Center the section horizontally */
+  }
 
+  .admin-title {
+      font-size: 2em; /* Larger font size for the title */
+      color: #343a40; /* Darker color for better contrast */
+      margin-bottom: 15px; /* Spacing below the title */
+  }
+
+  .admin-info {
+      font-size: 1.2em; /* Larger font size for the info */
+      color: #495057; /* Slightly lighter color for the text */
+  }
+
+  .admin-info h5 {
+      font-size: 1.5em; /* Increase size of the name */
+      margin-bottom: 10px; /* Spacing below the name */
+  }
+
+  .admin-info p {
+      margin: 5px 0; /* Remove extra spacing around paragraphs */
+  }
+
+  .admin-info p strong {
+      color: #212529; /* Darker color for labels */
+  }
+</style>
 
 <section class="content-main">
     <div class="content-header">
-        <div class="admin-details">
-            <h2 class="admin-title ">Admin Profile</h2>
-            <hr>
-            <div class="admin-info">
-                <h5> <%= admin.firstName %> <%= admin.lastName %></h5>
-                <p><strong>E-mail:</strong> <b><%= admin.email %></b></p> 
-               
-            </div>
+      <div class="admin-details">
+        <h2 class="admin-title">Admin Profile</h2>
+        <hr>
+        <div class="admin-info">
+            <h5><%= admin.firstName %> <%= admin.lastName %></h5>
+            <p><strong>E-mail:</strong> <b><%= admin.email %></b></p> 
         </div>
+    </div>
     </div>
     <div class="user-actions">
         <button id="toggleEditSection" class="btn bg-dark text-white" >Edit Information</button>

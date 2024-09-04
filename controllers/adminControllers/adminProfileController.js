@@ -12,15 +12,48 @@ const loadAdminProfile =async (req,res)=>{
     }
 }
 
-const showUser= async (req,res)=>{
-try {
-    const users = await User.find({isAdmin:false})
-     return res.render('userlist', { users,successMessage:'',errorMessage:''});
-} catch (error) {
-    console.log("user showing error",error);
-    return res.render('adminDash',{admin,successMessage:'', errorMessage: "An error occurred while rendering user detials" })
-}
-}
+
+const showUser = async (req, res) => {
+    try {
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = 5;
+        const skip = (page - 1) * limit;
+
+        const [totalUsers, users] = await Promise.all([
+            User.countDocuments({ isAdmin: false }),
+            User.find({ isAdmin: false })
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean()
+        ]);
+
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        const pagination = {
+            currentPage: page,
+            totalPages: totalPages,
+            hasPrevPage: page > 1,
+            hasNextPage: page < totalPages,
+            prevPageUrl: page > 1 ? `/admin/show-users?page=${page - 1}` : null,
+            nextPageUrl: page < totalPages ? `/admin/show-users?page=${page + 1}` : null,
+            pageUrls: Array.from({ length: totalPages }, (_, i) => `/admin/show-users?page=${i + 1}`)
+        };
+
+        return res.render('userlist', { 
+            users, 
+            pagination, 
+            successMessage: req.flash('success'),
+            errorMessage: req.flash('error')
+        });
+    } catch (error) {
+        console.error("Error in showUser function:", error);
+        req.flash('error', "An error occurred while fetching user details");
+        return res.redirect('/admin/dashboard');
+    }
+};
+
+
 
 const updateAdmin = async (req, res) => {
     const { firstName, lastName,/* email, phone,*/ newPassword, confirmPassword } = req.body;

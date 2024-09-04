@@ -36,30 +36,93 @@
                                 <%= offer.isActive ? 'Active' : 'Inactive' %>
                             </td>
                             <td class="text-end">
-                                <div class="dropdown">
-                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
-                                        <i class="material-icons md-more_horiz"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="/admin/edit-offer/<%= offer._id %>">Edit</a>
-                                        <% if (offer.isActive) { %>
-                                        <a class="dropdown-item text-danger" href="#" onclick="deactivateOffer('<%= offer._id %>')">Deactivate</a>
-                                        <% } else { %>
-                                        <a class="dropdown-item text-success" href="#" onclick="activateOffer('<%= offer._id %>')">Activate</a>
-                                        <% } %>
-                                        <a class="dropdown-item text-danger" href="#" onclick="deleteOffer('<%= offer._id %>')">Delete</a>
-                                    </div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-light rounded btn-sm font-sm" onclick="window.location.href='/admin/edit-offer/<%= offer._id %>'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <% if (offer.isActive) { %>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="deactivateOffer('<%= offer._id %>')">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                    <% } else { %>
+                                    <button type="button" class="btn btn-success btn-sm" onclick="activateOffer('<%= offer._id %>')">
+                                        <i class="fas fa-toggle-off"></i>
+                                    </button>
+                                    <% } %>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteOffer('<%= offer._id %>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                         <% } %>
                     </tbody>
+                    
                 </table>
             </div>
         </div> 
     </div>
-</section> 
+    <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <% if (pagination.hasPrevPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.prevPageUrl %>">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </li>
+                <% } %>
+
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                    <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="<%= pagination.pageUrls[i - 1] %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <% if (pagination.hasNextPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.nextPageUrl %>">
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+
+
+</section>
 <hr>
+<style>
+.pagination-area {
+    display: flex;
+    justify-content: center; 
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.page-item {
+    margin: 0 5px;
+}
+.page-link {
+    text-decoration: none;
+    color: black;
+    padding: 6px 10px;
+    display: block;
+}
+.page-item.active .page-link {
+    font-weight: bold;
+    color: #007bff; /* Example active color */
+}
+.page-link i {
+    font-size: 16px;
+}
+</style>
 
 
 <script src="path/to/sweetalert2.all.min.js"></script>

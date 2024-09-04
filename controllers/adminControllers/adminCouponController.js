@@ -14,20 +14,18 @@ const createCoupon = async (req,res) =>{
     try {
         const { code, discount, expiryDate, minAmount, maxAmount, isActive } = req.body;
 
-        // Validate inputs (additional validation logic can be added as needed)
         if (!code || discount <= 0 || new Date(expiryDate) < new Date() || minAmount < 0 || maxAmount <= minAmount) {
             req.flash('errorMessage', 'Invalid input values');
             return res.redirect('/admin/create-coupon');
         }
 
-        // Create a new coupon
         const newCoupon = new Coupon({
             code,
             discount,
             expiryDate,
             minAmount,
             maxAmount,
-            isActive: isActive === 'true' // Convert string 'true'/'false' to boolean
+            isActive: isActive === 'true'
         });
 
         await newCoupon.save();
@@ -40,15 +38,40 @@ const createCoupon = async (req,res) =>{
     }
 };
 
-const getCoupons = async(req,res)=>{
+const getCoupons = async (req, res) => {
     try {
-        const coupons = await Coupon.find({});
-        res.render('Coupons', { coupons });
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const search = req.query.search || '';
+
+        const query = search ? { code: new RegExp(search, 'i') } : {};
+
+        const totalCoupons = await Coupon.countDocuments(query);
+
+        const totalPages = Math.ceil(totalCoupons / limit);
+        const offset = (page - 1) * limit;
+
+        const coupons = await Coupon.find(query)
+            .skip(offset)
+            .limit(limit)
+            .sort({ createdAt: -1 }); 
+        const pagination = {
+            totalPages,
+            currentPage: page,
+            hasPrevPage: page > 1,
+            hasNextPage: page < totalPages,
+            prevPageUrl: page > 1 ? `/admin/show-coupon?page=${page - 1}&limit=${limit}` : null,
+            nextPageUrl: page < totalPages ? `/admin/show-coupon?page=${page + 1}&limit=${limit}` : null,
+            pageUrls: Array.from({ length: totalPages }, (_, i) => `/admin/show-coupon?page=${i + 1}&limit=${limit}`)
+        };
+
+        res.render('Coupons', { coupons, pagination, search });
     } catch (error) {
         console.log('Error fetching coupons:', error);
         res.status(500).send('Server Error');
     }
-}
+};
+
 
 const getCouponById = async (req,res)=>{
     try {

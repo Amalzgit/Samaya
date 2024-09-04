@@ -134,12 +134,75 @@
       </div>
     </div>
   </section>
-  
+  <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start">
+            <% if (pagination.hasPrevPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="<%= pagination.prevPageUrl %>">
+                        <i class="fi-rs-arrow-small-left"></i>
+                    </a>
+                </li>
+            <% } %>
+            
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="<%= pagination.pageUrls[i] %>"><%= i %></a>
+                </li>
+            <% } %>
+            
+            <% if (pagination.hasNextPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="<%= pagination.nextPageUrl %>">
+                        <i class="fi-rs-arrow-small-right"></i>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+  </div>
   
   
 </main>
 
-</div>
+<style>
+
+  
+  .pagination-area {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #007bff; 
+}
+
+.page-item.active .page-link {
+    background-color: #007bff; 
+    color: #fff; 
+    border-radius: 0.25rem; 
+}
+</style>
+
+<script>
+  function getPageUrl(page) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', page);
+      return url.toString();
+  }
+</script>
     <script>
       async function addToWishlist(productId, element) {
         try {
@@ -175,7 +238,8 @@
         const brandLinks = document.querySelectorAll('.brand-link');
         const sortOption = document.getElementById('sortOption');
         const searchForm = document.getElementById('searchForm');
-    
+        const errorMessage = document.createElement('div');
+        const searchButton = searchForm.querySelector('button[type="submit"]');    
         function updateShop(params) {
             const currentUrl = new URL(window.location.href);
             Object.entries(params).forEach(([key, value]) => {
@@ -209,9 +273,24 @@
         });
     
         searchForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const searchValue = document.getElementById('searchInput').value;
-            updateShop({ search: searchValue, page: 1 });
-        });
+  event.preventDefault();
+  const searchValue = searchInput.value.trim();
+
+  // Validate search input
+  const regex = /^[a-zA-Z0-9\s]+$/;
+  if (!regex.test(searchValue)) {
+    searchInput.classList.add('is-invalid');
+    searchButton.insertAdjacentHTML('afterend',);
+    return;
+  }
+  const errorMessage = searchButton.nextElementSibling;
+  if (errorMessage && errorMessage.classList.contains('invalid-feedback')) {
+    errorMessage.remove();
+    searchInput.classList.remove('is-invalid');
+  }
+
+  // Update the shop with the validated search value
+  updateShop({ search: searchValue, page: 1 });
+});
     });
     </script>

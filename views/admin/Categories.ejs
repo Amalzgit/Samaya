@@ -30,31 +30,90 @@
                             <td><%= category.description %></td>
                             <td><%= category.deleted ? 'Yes' : 'No' %></td>
                             <td class="text-end">
-                                <div class="dropdown">
-                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
-                                        <i class="material-icons md-more_horiz"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="/admin/edit-category/<%= category._id %>">Edit</a>
-                                        <% if(category.deleted) { %>
-                                        <a class="dropdown-item text-danger" href="#" onclick="restoreCategory('<%= category._id %>')">Restore</a>
-                                        <% } else { %>
-                                        <a class="dropdown-item text-danger" href="#" onclick="deleteCategory('<%= category._id %>')">Delete</a>
-                                        <% } %>
-                                        <a class="dropdown-item" href="#" onclick="removeCategory('<%= category._id %>')">Remove</a>
-                                    </div>
-                                </div>
+                                <span class="badge bg-primary">
+                                    <a href="/admin/edit-category/<%= category._id %>" class="text-white text-decoration-none">Edit</a>
+                                </span>
+                                <% if (category.deleted) { %>
+                                    <span class="badge bg-warning">
+                                        <a href="#" class="text-dark text-decoration-none" onclick="restoreCategory('<%= category._id %>')">Restore</a>
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-danger">
+                                        <a href="#" class="text-white text-decoration-none" onclick="deleteCategory('<%= category._id %>')">Delete</a>
+                                    </span>
+                                <% } %>
+                                <span class="badge bg-dark">
+                                    <a href="#" class="text-white text-decoration-none" onclick="removeCategory('<%= category._id %>')">Remove</a>
+                                </span>
                             </td>
                         </tr>
                         <% } %>
                     </tbody>
                 </table>
             </div>
-        </div> <!-- card-body -->
-    </div> <!-- card -->
-</section> <!-- content-main end// -->
+        </div>
+    </div> 
+    <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <% if (pagination.hasPrevPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.prevPageUrl %>">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </li>
+                <% } %>
 
-<!-- SweetAlert Scripts -->
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                    <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="<%= pagination.pageUrls[i - 1] %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <% if (pagination.hasNextPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.nextPageUrl %>">
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<style>
+    .pagination-area {
+        display: flex;
+        justify-content: center; 
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .page-item {
+        margin: 0 5px;
+    }
+    .page-link {
+        text-decoration: none;
+        color: black;
+        padding: 6px 10px;
+        display: block;
+    }
+    .page-item.active .page-link {
+        font-weight: bold;
+        color: #007bff; /* Example active color */
+    }
+    .page-link i {
+        font-size: 16px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
     function deleteCategory(categoryId) {
         Swal.fire({

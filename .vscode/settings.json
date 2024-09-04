@@ -2,5 +2,7 @@
     "liveServer.settings.port": 5501,
     "highlight-matching-tag.highlightFromContent": true,
     "highlight-matching-tag.highlightSelfClosing": true,
-    "highlight-matching-tag.noDefaultEmptyElements": true
+    "highlight-matching-tag.noDefaultEmptyElements": true,
+    "prettier.endOfLine": "auto",
+    "prettier.useTabs": true
 }

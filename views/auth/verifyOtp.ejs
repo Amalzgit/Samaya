@@ -15,11 +15,7 @@
 
         <form action="/verify-otp" method="post">
             <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" id="email" name="email" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="otp" class="form-label">OTP:</label>
+                <label for="otp" class="form-label">Enter OTP:</label>
                 <input type="text" id="otp" name="otp" class="form-control" required>
             </div>
             <div class="mb-4">
@@ -29,7 +25,6 @@
     </div>
 </section>
 <style>
-    /* Basic styling for the container and form */
 .verify-otp-container {
     display: flex;
     justify-content: center;
@@ -37,7 +32,7 @@
     height: 100vh;
     background: url('userassets/Page-hero/time.jpg') no-repeat center center;
     background-size: cover;
-    padding: 0 1rem; /* Added padding to avoid content being too close to the edges */
+    padding: 0 1rem; 
 }
 
 .form-content {

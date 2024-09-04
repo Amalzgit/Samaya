@@ -3,12 +3,65 @@ const Category = require('../../models/catogaryModel');
 
 const categoryView = async (req, res) => {
     try {
-        const categories = await Category.find(); 
-        return res.render('Categories', { categories });
+        const page = parseInt(req.query.page, 10) || 1;
+        const itemsPerPage = 5;
+        const skip = (page - 1) * itemsPerPage;
+        const searchQuery = req.query.search || ''; 
+
+        const filter = searchQuery ? {
+            $or: [
+                { name: new RegExp(searchQuery, 'i') },
+                { description: new RegExp(searchQuery, 'i') }
+            ]
+        } : {};
+
+        const totalCategories = await Category.countDocuments(filter);
+        
+        const categories = await Category.find(filter).skip(skip).limit(itemsPerPage);
+
+        const totalPages = Math.ceil(totalCategories / itemsPerPage);
+
+        const pagination = {
+            currentPage: page,
+            totalPages,
+            hasPrevPage: page > 1,
+            hasNextPage: page < totalPages,
+            prevPageUrl: page > 1 ? `?page=${page - 1}&search=${searchQuery}` : null,
+            nextPageUrl: page < totalPages ? `?page=${page + 1}&search=${searchQuery}` : null,
+            pageUrls: Array.from({ length: totalPages }, (_, i) => `?page=${i + 1}&search=${searchQuery}`)
+        };
+
+
+
+        return res.render('Categories', {
+            categories,
+            currentPage: page,
+            totalPages,
+            totalCategories,
+            itemsPerPage,
+            searchQuery, 
+            pagination 
+        });
     } catch (error) {
-        const categories = await Category.find(); 
-        console.error('Error lcached  category view:', error);
-        return res.render('Categories', {categories, successMessage: '', errorMessage: "An error occurred while rendering Categories" });
+        console.error('Error fetching category view:', error);
+        return res.render('Categories', {
+            categories: [],
+            currentPage: 1,
+            totalPages: 1,
+            totalCategories: 0,
+            itemsPerPage: 10,
+            searchQuery: '',
+            pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                hasPrevPage: false,
+                hasNextPage: false,
+                prevPageUrl: null,
+                nextPageUrl: null,
+                pageUrls: []
+            },
+            errorMessage: "An error occurred while rendering Categories"
+        });
     }
 };
 

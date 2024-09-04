@@ -35,7 +35,6 @@
     "path": "^0.12.7",
     "razorpay": "^2.9.4",
     "sweetalert2": "^11.12.4"
-    
   },
   "description": ""
 }

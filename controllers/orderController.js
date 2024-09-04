@@ -222,7 +222,6 @@ const verifyRazorpayPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     
-    // Verify the payment signature
     const isVerified = verifyPaymentSignature(
       razorpay_order_id,
       razorpay_payment_id,
@@ -230,23 +229,20 @@ const verifyRazorpayPayment = async (req, res) => {
     );
 
     if (isVerified) {
-      // Find the order using the Razorpay order ID
       const order = await Order.findOne({
         "payment.razorpayID": razorpay_order_id,
       });
 
       if (order) {
-        // Update the payment status to "Completed"
         order.payment.status = "Completed";
         order.payment.razorpayPaymentId = razorpay_payment_id;
 
-        // Save the order and handle post-payment actions
         await Promise.all([
           order.save(),
           storeTransaction({
             userId: req.currentUser._id,
             type: "CREDIT",
-            amount: order.totalPrice, // Use the totalPrice from the order
+            amount: order.totalPrice, 
             description: `Payment for order ${order._id}`,
             orderId: order._id,
             paymentMethod: order.payment.method,
@@ -407,7 +403,7 @@ const cancelOrderItem = async (req, res) => {
       storeTransaction({
         userId: req.currentUser._id,
         type: "DEBIT",
-        amount:refundAmount,
+        amount:item.price * item.quantity,
         description: `Payment for order ${order._id}`,
         orderId: order._id,
         paymentMethod: order.payment.method,

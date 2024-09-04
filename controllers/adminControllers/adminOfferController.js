@@ -3,16 +3,42 @@ const Product = require("../../models/productModel");
 
 const viewOffers = async (req, res) => {
   try {
-    const offers = await ProductOffer.find().populate("productId");
-    return res.render("Offers", { offers });
+      const page = parseInt(req.query.page) || 1;
+      const limit =  5;
+
+      const query = {};
+
+      const totalOffers = await ProductOffer.countDocuments(query);
+
+      const totalPages = Math.ceil(totalOffers / limit);
+      const offset = (page - 1) * limit;
+
+      const offers = await ProductOffer.find(query)
+          .populate("productId")
+          .skip(offset)
+          .limit(limit)
+          .sort({ createdAt: -1 }); 
+
+      const pagination = {
+          totalPages,
+          currentPage: page,
+          hasPrevPage: page > 1,
+          hasNextPage: page < totalPages,
+          prevPageUrl: page > 1 ? `/admin/show-offers?page=${page - 1}&limit=${limit}` : null,
+          nextPageUrl: page < totalPages ? `/admin/show-offers?page=${page + 1}&limit=${limit}` : null,
+          pageUrls: Array.from({ length: totalPages }, (_, i) => `/admin/show-offers?page=${i + 1}&limit=${limit}`)
+      };
+
+      res.render("Offers", { offers, pagination });
   } catch (error) {
-    console.error("Error fetching offers:", error);
-    return res.render("Offers", {
-      offers: [],
-      errorMessage: "An error occurred while fetching offers.",
-    });
+      console.error("Error fetching offers:", error);
+      res.render("Offers", {
+          offers: [],
+          errorMessage: "An error occurred while fetching offers.",
+      });
   }
 };
+
 const loadCreateOffer = async (req, res) => {
   try {
     const products = await Product.find();

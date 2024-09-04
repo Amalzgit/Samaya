@@ -227,17 +227,19 @@ const getSalesReport = async (req, res) => {
   try {
     const { startDate, endDate, timeFrame } = req.query;
 
-const endDateObj = endDate ? new Date(endDate) : new Date();
-let startDateObj = startDate ? new Date(startDate) : new Date();
+    let endDateObj = endDate ? new Date(endDate) : new Date();
+    let startDateObj = startDate ? new Date(startDate) : new Date();
 
-endDateObj.setHours(23, 59, 59, 999);
-startDateObj.setHours(0, 0, 0, 0);
+    endDateObj.setHours(23, 59, 59, 999);
+    startDateObj.setHours(0, 0, 0, 0);
 
-console.log("Original start date:",startDate);
-console.log("Original end date:", endDate)
-switch (timeFrame) {
-  case "daily":
-      break;
+    switch (timeFrame) {
+      case "today":
+        startDateObj = new Date();
+        startDateObj.setHours(0, 0, 0, 0);
+        endDateObj = new Date();
+        endDateObj.setHours(23, 59, 59, 999);
+        break;
       case "weekly":
         startDateObj = new Date(endDateObj);
         startDateObj.setDate(endDateObj.getDate() - endDateObj.getDay());
@@ -250,13 +252,15 @@ switch (timeFrame) {
         startDateObj = new Date(endDateObj.getFullYear(), 0, 1);
         break;
       default:
-        startDateObj = new Date(endDateObj);
-        startDateObj.setDate(endDateObj.getDate() - 30);
+        if (!startDate) {
+          startDateObj = new Date(endDateObj);
+          startDateObj.setDate(endDateObj.getDate() - 30);
+        }
         break;
     }
     
-    console.log("Adjusted start date:", startDateObj.toISOString());
-    console.log("Adjusted end date:", endDateObj.toISOString());
+    console.log("Adjusted start date:", startDateObj);
+    console.log("Adjusted end date:", endDateObj);
 
     const query = {
       createdAt: { $gte: startDateObj, $lte: endDateObj },

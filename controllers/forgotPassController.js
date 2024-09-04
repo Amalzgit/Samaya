@@ -15,9 +15,12 @@ const sendOtp = async (req, res) => {
         }
 
         const otp = generateOtp();
-        user.resetPasswordToken = otp; 
-        console.log(otp)
+        console.log(otp);
+        
+        user.resetPasswordToken = otp;
         await user.save();
+
+        req.session.email = email;
 
         await sendOtpEmail(email, otp);
 
@@ -29,7 +32,8 @@ const sendOtp = async (req, res) => {
 };
 
 const verifyOtp = async (req, res) => {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
+    const email = req.session.email;
 
     try {
         const user = await User.findOne({ email });
@@ -50,17 +54,17 @@ const updatePassword = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render('updatePassword', { email, errorMessage: 'User not found', successMessage: null });
+            req.flash('error', 'User not found');
+            return res.redirect('/updatePassword');
         }
 
         user.password = newPassword;
         user.resetPasswordToken = undefined; 
         await user.save();
-
-        res.render('userLogin', { errorMessage: null, successMessage: 'Password updated successfully. You can now log in.' });
-    } catch (error) {
-        console.error(error);
-        res.render('updatePassword', { email, errorMessage: 'An error occurred', successMessage: null });
+        return res.redirect('/login?success=Password updated successfully');
+    } catch (err) {
+        console.error(err);
+        return res.redirect('/login?error=An error occurred');
     }
 };
 

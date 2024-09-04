@@ -55,73 +55,92 @@
     </section>
 
 
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    document.addEventListener("DOMContentLoaded", () => {
-
-        //email validaton
-
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const emailError = document.getElementById('emailError');
-        const passwordError = document.getElementById('passwordError');
-
-        const validateEmail = () => {
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            if (emailInput.value.trim() === '') {
-                emailError.textContent = '* Email is required';
-                return false
-            } else if (!emailRegex.test(emailInput.value.trim())) {
-
-                emailError.textContent = '* Enter a valid email';
-                return false
-
-            } else {
-                emailError.textContent = '';
-
-                return true
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            Swal.fire({
+                title: 'Welcome',
+                text: 'login first..!',
+                icon: 'info',
+                position: 'top-end',
+                toast: true,
+                timer: 5000,
+                showConfirmButton: false
+            });
+    
+            const urlParams = new URLSearchParams(window.location.search);
+            const successMessage = urlParams.get('success');
+            const errorMessage = urlParams.get('error');
+    
+            if (successMessage) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: successMessage,
+                    icon: 'success',
+                    position: 'top-end',
+                    toast: true,
+                    timer: 5000,
+                    showConfirmButton: false
+                });
             }
-        }
-
-        emailInput.addEventListener('input', validateEmail);
-
-
-        //password validaton
-
-
-        const validatePassword = () => {
-
-            if (passwordInput.value.trim() === '') {
-                passwordError.textContent = '* Password is required';
-                return false
-            } else if (passwordInput.value.trim().length < 4) {
-
-                passwordError.textContent = '* Password should be atleast 4 charactors';
-                return false
-
-            } else {
-                passwordError.textContent = '';
-                return true
+    
+            if (errorMessage) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMessage,
+                    icon: 'error',
+                    position: 'top-end',
+                    toast: true,
+                    timer: 5000,
+                    showConfirmButton: false
+                });
             }
-        }
-
-        passwordInput.addEventListener('input', validatePassword);
-
-        const form = document.getElementById('formData');
-
-        form.addEventListener('submit', (event) => {
-
-            if (!validateEmail() || !validatePassword()) {
-
-                event.preventDefault();
-
-            }
+    
+            // Email validation
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+    
+            const validateEmail = () => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (emailInput.value.trim() === '') {
+                    emailError.textContent = '* Email is required';
+                    return false;
+                } else if (!emailRegex.test(emailInput.value.trim())) {
+                    emailError.textContent = '* Enter a valid email';
+                    return false;
+                } else {
+                    emailError.textContent = '';
+                    return true;
+                }
+            };
+    
+            emailInput.addEventListener('input', validateEmail);
+    
+            // Password validation
+            const validatePassword = () => {
+                if (passwordInput.value.trim() === '') {
+                    passwordError.textContent = '* Password is required';
+                    return false;
+                } else if (passwordInput.value.trim().length < 4) {
+                    passwordError.textContent = '* Password should be at least 4 characters';
+                    return false;
+                } else {
+                    passwordError.textContent = '';
+                    return true;
+                }
+            };
+    
+            passwordInput.addEventListener('input', validatePassword);
+    
+            const form = document.getElementById('formData');
+    
+            form.addEventListener('submit', (event) => {
+                if (!validateEmail() || !validatePassword()) {
+                    event.preventDefault();
+                }
+            });
         });
-
-
-    })
-
-
-</script>
+    </script>

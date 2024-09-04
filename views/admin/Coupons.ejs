@@ -19,51 +19,112 @@
             </div>
         </header>
         
-        <div class="card-body">
-            <div class="row gx-3 gy-4">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Coupon Code</th>
+                  <th>Discount</th>
+                  <th>Expiry Date</th>
+                  <th>Min Amount</th>
+                  <th>Max Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 <% coupons.forEach(coupon => { %>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <figure class="card border-1 shadow-sm d-flex flex-column">
-                        <div class="card-header bg-white text-center flex-grow-1">
-                            <h6 class="card-title m-0"><%= coupon.code %></h6>
-                        </div>
-                        <figcaption class="card-body text-center d-flex flex-column justify-content-between">
-                            <p class="card-text mt-2">Discount: <%= coupon.discount %>%</p>
-                            <p class="card-text">Expiry Date: <%= new Date(coupon.expiryDate).toLocaleDateString() %></p>
-                            <p class="card-text">Min Amount: <%= coupon.minAmount %></p>
-                            <p class="card-text">Max Amount: <%= coupon.maxAmount %></p>
-                            <div class="d-flex justify-content-center mt-3">
-                                <a href="/admin/edit-coupon/<%= coupon._id %>" class="text-warning me-2" title="Edit">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
-                                <% if (coupon.isActive === false) { %>
-                                <a href="/admin/restore/<%= coupon._id %>" class="text-success me-2" title="Restore">
-                                    <i class="fa-solid fa-undo"></i>
-                                </a>
-                                <% } else { %>
-                                <a href="#" 
-                                   class="text-secondary me-2 delete-btn" 
-                                   data-url="/admin/delete/<%= coupon._id %>" 
-                                   title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                                <% } %>
-                                <a href="#" 
-                                   class="text-danger me-2 remove-btn" 
-                                   data-url="/admin/remove-coupon/<%= coupon._id %>" 
-                                   title="Permanently Remove">
-                                    <i class="fa-solid fa-trash-alt"></i>
-                                 </a>
-                            </div>
-                        </figcaption>
-                    </figure>
-                </div> 
+                <tr>
+                  <td><%= coupon.code %></td>
+                  <td><%= coupon.discount %>%</td>
+                  <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
+                  <td><%= coupon.minAmount %></td>
+                  <td><%= coupon.maxAmount %></td>
+                  <td>
+                    <div class="d-flex justify-content-end">
+                      <a href="/admin/edit-coupon/<%= coupon._id %>" class="text-warning me-2" title="Edit">
+                        <i class="fa-solid fa-pencil"></i>
+                      </a>
+                      <% if (coupon.isActive === false) { %>
+                      <a href="/admin/restore/<%= coupon._id %>" class="text-success me-2" title="Restore">
+                        <i class="fa-solid fa-undo"></i>
+                      </a>
+                      <% } else { %>
+                      <a href="#" class="text-secondary me-2 delete-btn" data-url="/admin/delete/<%= coupon._id %>" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                      </a>
+                      <% } %>
+                      <a href="#" class="text-danger me-2 remove-btn" data-url="/admin/remove-coupon/<%= coupon._id %>" title="Permanently Remove">
+                        <i class="fa-solid fa-trash-alt"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
                 <% }); %>
-            </div>
-        </div> 
+              </tbody>
+            </table>
+          </div> 
     </div> 
-</section> 
+    <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <% if (pagination.hasPrevPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.prevPageUrl %>">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </li>
+                <% } %>
 
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                    <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="<%= pagination.pageUrls[i - 1] %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <% if (pagination.hasNextPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="<%= pagination.nextPageUrl %>">
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+
+
+</section>
+
+<style>
+.pagination-area {
+    display: flex;
+    justify-content: center; 
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.page-item {
+    margin: 0 5px;
+}
+.page-link {
+    text-decoration: none;
+    color: black;
+    padding: 6px 10px;
+    display: block;
+}
+.page-item.active .page-link {
+    font-weight: bold;
+    color: #007bff; /* Example active color */
+}
+.page-link i {
+    font-size: 16px;
+}
+</style>
 <style>
     .card {
         display: flex;

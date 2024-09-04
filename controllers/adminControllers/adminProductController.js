@@ -5,8 +5,9 @@ const Brand =require('../../models/BrandModel')
 
 
 const loadproductList = async (req, res) => {
-    const { category, brand } = req.query;
-
+    const { category, brand, page = 1 } = req.query;
+    const limit = 5;
+    const skip = (page - 1) * limit;
     try {
         let filter = {};
         
@@ -20,14 +21,52 @@ const loadproductList = async (req, res) => {
         if (categoryDoc) filter.category = categoryDoc._id;
         if (brandDoc) filter.brand = brandDoc._id;
 
-        const products = await Product.find(filter).populate('category').populate('brand');
-       
-         return res.render('product-list', { products, categories, brands, successMessage: '', errorMessage: '' });
+        const total = await Product.countDocuments(filter);
+
+        const products = await Product.find(filter)
+            .skip(skip)
+            .limit(limit)
+            .populate('category')
+            .populate('brand');
+
+        const totalPages = Math.ceil(total / limit);
+        const currentPage = parseInt(page);
+
+        const baseUrl = `${req.protocol}://${req.get("host")}${req.path}`;
+        const pageUrls = {};
+        for (let i = 1; i <= totalPages; i++) {
+            const urlParams = new URLSearchParams(req.query);
+            urlParams.set("page", i);
+            pageUrls[i] = `${baseUrl}?${urlParams.toString()}`;
+        }
+        const pagination = {
+            currentPage: currentPage,
+            totalPages: totalPages,
+            hasNextPage: currentPage < totalPages,
+            hasPrevPage: currentPage > 1,
+            nextPageUrl: currentPage < totalPages ? pageUrls[currentPage + 1] : null,
+            prevPageUrl: currentPage > 1 ? pageUrls[currentPage - 1] : null,
+            pageUrls: pageUrls,
+        };
+
+        return res.render('product-list', { products, categories, pagination, brands, successMessage: '', errorMessage: '' });
     } catch (error) {
         console.error('Error loading product list:', error);
-        return res.render('product-list', { successMessage: '', errorMessage: 'An error occurred' });
+
+        const pagination = {
+            currentPage: 1,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPrevPage: false,
+            nextPageUrl: null,
+            prevPageUrl: null,
+            pageUrls: {},
+        };
+
+        return res.render('product-list', { successMessage: '', products: {}, categories: {}, pagination, brands: {}, errorMessage: 'An error occurred' });
     }
 };
+
 
 const loadAddproduct = async (req, res) => {
     try {
