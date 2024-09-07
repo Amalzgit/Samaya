@@ -194,7 +194,6 @@
                     name="paymentMethod"
                     id="cod"
                     value="Cash on Delivery"
-                    checked
                   />
                   <label class="form-check-label" for="cod">
                     Cash on Delivery
@@ -219,6 +218,7 @@
                     name="paymentMethod"
                     id="Wallet"
                     value="Wallet"
+                    checked
                   />
                   <label class="form-check-label" for="Wallet">
                     Pay with Wallet
@@ -233,65 +233,64 @@
               </div>
             </div>
           </div>
-       
         
-              <!-- Place Order Form -->
-
-              <form id="orderForm" method="POST" action="/place-order">
-                <input
-                  type="hidden"
-                  id="selectedAddressId"
-                  name="addressId"
-                  value="<%= selectedAddress ? selectedAddress._id : '' %>"
-                />
-                <input
-                  type="hidden"
-                  name="paymentMethod"
-                  value="Cash on Delivery"
-                />
-                <input
-                  type="hidden"
-                  name="discount"
-                  value="<%= cart.discountAmount %>"
-                />
-                <input
-                  type="hidden"
-                  name="totalPrice"
-                  value="<%= cart.formattedDiscountedTotal %>"
-                />
-
-                <% cart.items.forEach(item => { %>
-                <input
-                  type="hidden"
-                  name="items[<%= item.product._id %>][name]"
-                  value="<%= item.product.name %>"
-                />
-                <input
-                  type="hidden"
-                  name="items[<%= item.product._id %>][price]"
-                  value="<%= item.product.price %>"
-                />
-                <input
-                  type="hidden"
-                  name="items[<%= item.product._id %>][quantity]"
-                  value="<%= item.quantity %>"
-                />
-                <input
-                  type="hidden"
-                  name="items[<%= item.product._id %>][totalPrice]"
-                  value="<%= (item.quantity * item.product.price)-cart.discountAmount.toFixed(2) %>"
-                />
-                <% }); %>
-
-                <button
-                  type="submit"
-                  id="placeOrderButton"
-                  class="btn btn-dark btn-block"
-                >
-                  Place Order
-                </button>
-              </form>
-            </div>
+          <!-- Place Order Form -->
+          <form id="orderForm" method="POST" action="/place-order">
+            <input
+              type="hidden"
+              id="selectedAddressId"
+              name="addressId"
+              value="<%= selectedAddress ? selectedAddress._id : '' %>"
+            />
+            <input
+              type="hidden"
+              name="paymentMethod"
+              value="Wallet"
+            />
+            <input
+              type="hidden"
+              name="discount"
+              value="<%= cart.discountAmount %>"
+            />
+            <input
+              type="hidden"
+              name="totalPrice"
+              value="<%= cart.formattedDiscountedTotal %>"
+            />
+        
+            <% cart.items.forEach(item => { %>
+            <input
+              type="hidden"
+              name="items[<%= item.product._id %>][name]"
+              value="<%= item.product.name %>"
+            />
+            <input
+              type="hidden"
+              name="items[<%= item.product._id %>][price]"
+              value="<%= item.product.price %>"
+            />
+            <input
+              type="hidden"
+              name="items[<%= item.product._id %>][quantity]"
+              value="<%= item.quantity %>"
+            />
+            <input
+              type="hidden"
+              name="items[<%= item.product._id %>][totalPrice]"
+              value="<%= (item.quantity * item.product.price)-cart.discountAmount.toFixed(2) %>"
+            />
+            <% }); %>
+        
+            <button
+              type="submit"
+              id="placeOrderButton"
+              class="btn btn-dark btn-block"
+            >
+              Place Order
+            </button>
+          </form>
+        </div>
+        
           </div>
         </div>
       </div>

@@ -1,372 +1,550 @@
 <section class="mt-5 mb-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <!-- Shopping Cart Table -->
-                <div class="table-responsive">
-                    <table class="table shopping-summery text-center clean">
-                        <thead>
-                            <tr class="main-heading">
-                                <th scope="col">Image</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Subtotal</th>
-                                <th scope="col">Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% if (cart && cart.items && cart.items.length > 0) { %>
-                                <% cart.items.forEach(item => { %>
-                                    <tr>
-                                        <td class="image product-thumbnail">
-                                            <img src="/products/<%= item.product?.images?.[0] %>" alt="<%= item.product?.name %>" class="img-fluid" />
-                                        </td>
-                                        <td class="product-des product-name">
-                                            <a href="/product/<%= item.product?._id %>"><%= item.product?.name %></a>
-                                        </td>
-                                        <td class="price">
-                                            <div class="price-container">
-                                                <span class="original-price">₹<%= item.product?.originalPrice %></span>
-                                                <span class="current-price">₹<%= item.product?.price %></span>
-                                            </div>
-                                        </td>
-                                        <td class="text-center" data-title="Quantity">
-                                            <div class="quantity-adjustment d-flex align-items-center justify-content-center">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease" data-product-id="<%= item.product?._id %>">
-                                                    <i class="fa fa-minus"></i>
-                                                </button>
-                                                <input type="text" name="quantity" id="quantity_<%= item.product?._id %>" class="form-control form-control-sm text-center mx-1" style="width: 50px" value="<%= item.quantity %>" min="1" max="<%= item.product?.stock %>" readonly />
-                                                <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="increase" data-product-id="<%= item.product?._id %>">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td class="text-right">
-                                            <% 
-                                                const pricePerUnit = parseFloat(item.product?.price) || 0;
-                                                const subtotal = pricePerUnit * (item.quantity || 0);
-                                                const formattedSubtotal = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(subtotal);
-                                            %>
-                                            <span><%= formattedSubtotal %></span>
-                                        </td>
-                                        <td class="action">
-                                            <form action="/cart/remove" method="POST" class="d-inline">
-                                                <input type="hidden" name="productId" value="<%= item.product?._id %>" />
-                                                <button type="submit" class="btn btn-light btn-sm text-muted">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                                <!-- Coupon and Discount Details -->
-                                <tr>
-                                    <td colspan="6" class="text-end">
-                                        <% if (cart.appliedCoupon) { %>
-                                            <div class="alert alert-info">
-                                                <strong>Coupon Applied</strong> <br>
-                                                <strong>Discount:</strong> <%= cart.discount %>% <br>
-                                                <strong>Discount Amount:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountAmount) %> <br>
-                                                <strong>Final Total:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountedTotal) %> <br>
-                                            </div>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        <h4>Your Cart is Empty</h4>
-                                        <a href="/shop" class="btn btn-dark">
-                                            <i class="fas fa-shopping-cart"></i> Shop Now
-                                        </a>
-                                    </td>
-                                </tr>
-                            <% } %>
-                            <% if (cart && cart.items && cart.items.length > 0) { %>
-                                <tr>
-                                    <td colspan="6" class="text-end">
-                                        <form action="/cart/clear" method="POST">
-                                            <button type="submit" class="btn btn-light btn-sm text-muted">
-                                                <i class="fa fa-times"></i> Clear Cart
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<!-- Shopping Cart Table -->
+				<div class="table-responsive">
+					<table class="table shopping-summery text-center clean">
+						<thead>
+							<tr class="main-heading">
+								<th scope="col">Image</th>
+								<th scope="col">Name</th>
+								<th scope="col">Price</th>
+								<th scope="col">Quantity</th>
+								<th scope="col">Subtotal</th>
+								<th scope="col">Remove</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (cart && cart.items && cart.items.length > 0)
+							{ %> <% cart.items.forEach(item => { %>
+							<tr>
+								<td class="image product-thumbnail">
+									<img
+										src="/products/<%= item.product?.images?.[0] %>"
+										alt="<%= item.product?.name %>"
+										class="img-fluid"
+									/>
+								</td>
+								<td class="product-des product-name">
+									<a href="/product/<%= item.product?._id %>"
+										><%= item.product?.name %></a
+									>
+								</td>
+								<td class="price">
+									<div class="price-container">
+										<span class="original-price"
+											>₹<%= item.product?.originalPrice
+											%></span
+										>
+										<span class="current-price"
+											>₹<%= item.product?.price %></span
+										>
+									</div>
+								</td>
+								<td class="text-center" data-title="Quantity">
+									<div
+										class="quantity-adjustment d-flex align-items-center justify-content-center"
+									>
+										<button
+											type="button"
+											class="btn btn-sm btn-outline-secondary quantity-btn"
+											data-action="decrease"
+											data-product-id="<%= item.product?._id %>"
+										>
+											<i class="fa fa-minus"></i>
+										</button>
+										<input
+											type="text"
+											name="quantity"
+											id="quantity_<%= item.product?._id %>"
+											class="form-control form-control-sm text-center mx-1"
+											style="width: 50px"
+											value="<%= item.quantity %>"
+											min="1"
+											max="<%= item.product?.stock %>"
+											readonly
+										/>
+										<button
+											type="button"
+											class="btn btn-sm btn-outline-secondary quantity-btn"
+											data-action="increase"
+											data-product-id="<%= item.product?._id %>"
+										>
+											<i class="fa fa-plus"></i>
+										</button>
+									</div>
+								</td>
+								<td class="text-right">
+									<% const pricePerUnit =
+									parseFloat(item.product?.price) || 0; const
+									subtotal = pricePerUnit * (item.quantity ||
+									0); const formattedSubtotal = new
+									Intl.NumberFormat('en-IN', { style:
+									'currency', currency: 'INR'
+									}).format(subtotal); %>
+									<span><%= formattedSubtotal %></span>
+								</td>
+								<td class="action">
+									<form
+										action="/cart/remove"
+										method="POST"
+										class="d-inline"
+									>
+										<input
+											type="hidden"
+											name="productId"
+											value="<%= item.product?._id %>"
+										/>
+										<button
+											type="submit"
+											class="btn btn-light btn-sm text-muted"
+										>
+											<i class="fa fa-trash"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+							<% }); %>
+							<!-- Coupon and Discount Details -->
+							<tr>
+								<td colspan="6" class="text-end">
+									<% if (cart.appliedCoupon) { %>
+									<div class="alert alert-info">
+										<strong>Coupon Applied</strong> <br />
+										<strong>Discount:</strong> <%=
+										cart.discount %>% <br />
+										<!-- <strong>Discount Amount:</strong> <%=
+										new Intl.NumberFormat('en-IN', { style:
+										'currency', currency: 'INR'
+										}).format(cart.discountAmount) %> <br />
+										<strong>Final Total:</strong> <%= new
+										Intl.NumberFormat('en-IN', { style:
+										'currency', currency: 'INR'
+										}).format(cart.discountedTotal) %>
+										<br /> -->
+									</div>
+									<% } %>
+								</td>
+							</tr>
+							<% } else { %>
+							<tr>
+								<td colspan="6" class="text-center">
+									<h4>Your Cart is Empty</h4>
+									<a href="/shop" class="btn btn-dark">
+										<i class="fas fa-shopping-cart"></i>
+										Shop Now
+									</a>
+								</td>
+							</tr>
+							<% } %> <% if (cart && cart.items &&
+							cart.items.length > 0) { %>
+							<tr>
+								<td colspan="6" class="text-end">
+									<form action="/cart/clear" method="POST">
+										<button
+											type="submit"
+											class="btn btn-light btn-sm text-muted"
+										>
+											<i class="fa fa-times"></i> Clear
+											Cart
+										</button>
+									</form>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+				</div>
 
-                <div class="cart-action text-end">
-                    <!-- Cart action buttons or links can go here -->
-                </div>
+				<div class="cart-action text-end">
+					<!-- Cart action buttons or links can go here -->
+				</div>
 
-                <div class="divider center_icon mt-5 mb-5">
-                    <i class="fa fa-fingerprint"></i>
-                </div>
+				<div class="divider center_icon mt-5 mb-5">
+					<i class="fa fa-fingerprint"></i>
+				</div>
 
-                <!-- Coupon and Cart Totals -->
-                <div class="row mb-5">
-                    <!-- Coupon Section -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="mb-4 mt-4">
-                            <div class="heading_s1 mb-2">
-                                <h4>Apply Coupon</h4>
-                            </div>
-                            <div class="total-amount">
-                                <div class="left">
-                                    <div class="coupon">
-                                        <a href="#" data-toggle="modal" data-target="#couponsModal" class="btn btn-outline-dark btn-sm mb-3">
-                                            Available Coupons
-                                        </a>
-                                        <form id="couponForm">
-                                            <div class="form-row row justify-content-center">
-                                                <div class="form-group col-lg-6">
-                                                    <input id="couponInput" class="form-control form-control-sm" name="coupon" placeholder="Enter Your Coupon" type="text" required />
-                                                </div>
-                                                <div class="form-group col-lg-6">
-                                                    <button id="applyCouponButton" class="btn btn-dark btn-sm" type="button">
-                                                        <i class="fa fa-tag mr-1"></i> Apply
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <a class="bg-danger" id="removeCouponButton">Remove Coupon</a>
-                                            <div id="couponMessage" class="mt-2"></div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+				<!-- Coupon and Cart Totals -->
+				<div class="row mb-5">
+					<!-- Coupon Section -->
+					<div class="col-lg-6 col-md-12">
+						<div class="mb-4 mt-4">
+							<div class="heading_s1 mb-2">
+								<h4>Apply Coupon</h4>
+							</div>
+							<div class="total-amount">
+								<div class="left">
+									<div class="coupon">
+										<a
+											href="#"
+											data-toggle="modal"
+											data-target="#couponsModal"
+											class="btn btn-outline-dark btn-sm mb-3"
+										>
+											Available Coupons
+										</a>
+										<form id="couponForm">
+											<div
+												class="form-row row justify-content-center"
+											>
+												<div
+													class="form-group col-lg-6"
+												>
+													<input
+														id="couponInput"
+														class="form-control form-control-sm"
+														name="coupon"
+														placeholder="Enter Your Coupon"
+														type="text"
+														required
+													/>
+												</div>
+												<div
+													class="form-group col-lg-6"
+												>
+													<button
+														id="applyCouponButton"
+														class="btn btn-dark btn-sm"
+														type="button"
+													>
+														<i
+															class="fa fa-tag mr-1"
+														></i>
+														Apply
+													</button>
+												</div>
+											</div>
+											<a
+												class="bg-danger"
+												id="removeCouponButton"
+												>Remove Coupon</a
+											>
+											<div
+												id="couponMessage"
+												class="mt-2"
+											></div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                    <!-- Cart Totals Section -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="border p-4 border-radius cart-totals">
-                            <div class="heading_s1 mb-2">
-                                <h4>Cart Totals</h4>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <td class="cart_total_label">Cart Subtotal</td>
-                                            <td class="cart_total_amount">
-                                                <span class="font-lg fw-400 text-brand"><%= cart?.formattedTotalPrice || '0' %></span>
-                                            </td>
-                                        </tr>
-                                        <% if (cart?.appliedCoupon) { %>
-                                            <tr>
-                                                <td class="cart_total_label">Discount Amount</td>
-                                                <td class="cart_total_amount">
-                                                    <span class="font-lg fw-400 text-brand"><%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cart.discountAmount) %></span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="cart_total_label">Total After Discount</td>
-                                                <td class="cart_total_amount">
-                                                    <strong>
-                                                        <span class="font-xl fw-400 text-brand" id="totalPrice"><%=  cart?.formattedDiscountedTotal    %></span>
-                                                    </strong>
-                                                </td>
-                                            </tr>
-                                        <% } else { %>
-                                            <tr>
-                                                <td class="cart_total_label">Total</td>
-                                                <td class="cart_total_amount">
-                                                    <strong>
-                                                        <span class="font-xl fw-400 text-brand" id="totalPrice"><%= cart?.formattedTotalPrice   || '0' %></span>
-                                                    </strong>
-                                                </td>
-                                            </tr>
-                                        <% } %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <% if (cart && cart.items && cart.items.length > 0) { %>
-                                <form action="/checkout" method="POST">
-                                    <input type="hidden" name="cartData" value="<%= JSON.stringify(cart) %>" />
-                                    <button type="submit" class="btn btn-dark btn-sm">
-                                        <i class="fa fa-box mr-1"></i> Proceed To Checkout
-                                    </button>
-                                </form>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+					<!-- Cart Totals Section -->
+					<div class="col-lg-6 col-md-12">
+						<div class="border p-4 border-radius cart-totals">
+							<div class="heading_s1 mb-2">
+								<h4>Cart Totals</h4>
+							</div>
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+										<tr>
+											<td class="cart_total_label">
+												Cart Subtotal
+											</td>
+											<td
+												class="cart_total_amount cart_subtotal_amount"
+											>
+												<span
+													class="font-lg fw-400 text-brand"
+													><%=
+													cart?.formattedTotalPrice ||
+													'0' %></span
+												>
+											</td>
+										</tr>
+										<% if (cart?.appliedCoupon) { %>
+										<tr>
+											<td class="cart_total_label">
+												Discount Amount
+											</td>
+											<td class="cart_total_amount cart_discounted_amount">
+												<span
+													class="font-lg fw-400 text-brand"
+													><%= new
+													Intl.NumberFormat('en-IN', {
+													style: 'currency', currency:
+													'INR'
+													}).format(cart.discountAmount)
+													%></span
+												>
+											</td>
+										</tr>
+										<tr>
+											<td class="cart_total_label">
+												Total After Discount
+											</td>
+											<td class="cart_total_amount">
+												<strong>
+													<span
+														class="font-xl fw-400 text-brand"
+														id="totalPrice"
+														><%=
+														cart?.formattedDiscountedTotal
+														%></span
+													>
+												</strong>
+											</td>
+										</tr>
+										<% } else { %>
+										<tr>
+											<td class="cart_total_label">
+												Total
+											</td>
+											<td class="cart_total_amount">
+												<strong>
+													<span
+														class="font-xl fw-400 text-brand"
+														id="totalPrice"
+														><%=
+														cart?.formattedTotalPrice
+														|| '0' %></span
+													>
+												</strong>
+											</td>
+										</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+							<% if (cart && cart.items && cart.items.length > 0)
+							{ %>
+							<form action="/checkout" method="POST">
+								<input
+									type="hidden"
+									name="cartData"
+									value="<%= JSON.stringify(cart) %>"
+								/>
+								<button
+									type="submit"
+									class="btn btn-dark btn-sm"
+								>
+									<i class="fa fa-box mr-1"></i> Proceed To
+									Checkout
+								</button>
+							</form>
+							<% } %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>
 
-<div class="modal fade" id="couponsModal" tabindex="-1" role="dialog" aria-labelledby="couponsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="couponsModalLabel">Available Coupons</h5>
-                <a href="#" class="text-decoration-none" data-bs-dismiss="modal" aria-label="Close" style="color: white; font-size: 1.5rem">&times;</a>
-            </div>
-            <div class="modal-body">
-                <ul>
-                    <% if (coupons && coupons.length > 0) { %>
-                        <% coupons.forEach(coupon => { %>
-                            <li>
-                                <h3><%= coupon.code %></h3>
-                                - <%= coupon.discount %>% Discount - ₹<%= coupon.minAmount?.toLocaleString('en-IN') %> - ₹<%= coupon.maxAmount?.toLocaleString('en-IN') %> (Expires: <%= new Date(coupon.expiryDate)?.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>)
-                            </li>
-                            <hr />
-                        <% }); %>
-                    <% } else { %>
-                        <li>No coupons available.</li>
-                    <% } %>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+<div
+	class="modal fade"
+	id="couponsModal"
+	tabindex="-1"
+	role="dialog"
+	aria-labelledby="couponsModalLabel"
+	aria-hidden="true"
+>
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="couponsModalLabel">
+					Available Coupons
+				</h5>
+				<a
+					href="#"
+					class="text-decoration-none"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+					style="color: white; font-size: 1.5rem"
+					>&times;</a
+				>
+			</div>
+			<div class="modal-body">
+				<ul>
+					<% if (coupons && coupons.length > 0) { %> <%
+					coupons.forEach(coupon => { %>
+					<li>
+						<h3><%= coupon.code %></h3>
+						- <%= coupon.discount %>% Discount - ₹<%=
+						coupon.minAmount?.toLocaleString('en-IN') %> - ₹<%=
+						coupon.maxAmount?.toLocaleString('en-IN') %> (Expires:
+						<%= new
+						Date(coupon.expiryDate)?.toLocaleDateString('en-US', {
+						year: 'numeric', month: 'long', day: 'numeric' }) %>)
+					</li>
+					<hr />
+					<% }); %> <% } else { %>
+					<li>No coupons available.</li>
+					<% } %>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button
+					type="button"
+					class="btn btn-secondary"
+					data-dismiss="modal"
+				>
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".quantity-btn").forEach((button) => {
-        button.addEventListener("click", async (event) => {
-          const action = event.target.closest("button").dataset.action;
-          const productId = event.target.closest("button").dataset.productId;
-          const inputElement = document.querySelector(`#quantity_${productId}`);
-          let quantity = parseInt(inputElement.value, 10);
-          const maxQuantity = parseInt(inputElement.max, 10);
-  
-          if (action === "increase") {
-            if (quantity >= maxQuantity) {
-              Swal.fire({
-                icon: "warning",
-                title: "Quantity Limit Reached",
-                text: `You can only purchase up to ${maxQuantity} of this item.`,
-                confirmButtonText: "OK",
-              });
-              return;
-            }
-            quantity++;
-          } else if (action === "decrease") {
-            if (quantity <= 1) return;
-            quantity--;
-          }
-  
-          inputElement.value = quantity;
-  
-          try {
-            const response = await fetch("/cart/update", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ productId, quantity }),
-            });
-  
-            if (!response.ok) throw new Error("Network response was not ok.");
-  
-            const result = await response.json();
-            if (result.success) {
-              const subtotalElement = event.target.closest("tr").querySelector(".text-right span");
-              subtotalElement.textContent = result.formattedSubtotal;
-              document.querySelector(".cart_total_amount .font-xl").textContent = result.formattedTotal;
-              window.location.reload();
-            } else {
-              console.error("Error updating cart:", result.error);
-            }
-          } catch (error) {
-            console.error("Error:", error);
-          }
-        });
-      });
-  
-      const applyCouponButton = document.getElementById("applyCouponButton");
-  const removeCouponButton = document.getElementById("removeCouponButton");
-  const couponInput = document.getElementById("couponInput");
 
-  applyCouponButton.addEventListener("click", () => {
-    const couponCode = couponInput.value;
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		document.querySelectorAll(".quantity-btn").forEach((button) => {
+			button.addEventListener("click", async (event) => {
+				const action = event.target.closest("button").dataset.action;
+				const productId =
+					event.target.closest("button").dataset.productId;
+				const inputElement = document.querySelector(
+					`#quantity_${productId}`
+				);
+				let quantity = parseInt(inputElement.value, 10);
+				const maxQuantity = parseInt(inputElement.max, 10);
 
-    fetch("/cart/apply-coupon", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ couponCode }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Coupon Applied!',
-            confirmButtonText: 'OK'
-          }).then(() => {
-            // Reload the page to reflect changes
-            window.location.reload();
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message,
-            confirmButtonText: 'OK'
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Unexpected Error',
-          text: 'An unexpected error occurred. Please try again.',
-          confirmButtonText: 'OK'
-        });
-      });
-  });
+				if (action === "increase") {
+					if (quantity >= maxQuantity) {
+						Swal.fire({
+							icon: "warning",
+							title: "Quantity Limit Reached",
+							text: `You can only purchase up to ${maxQuantity} of this item.`,
+							confirmButtonText: "OK",
+						});
+						return;
+					}
+					quantity++;
+				} else if (action === "decrease") {
+					if (quantity <= 1) return;
+					quantity--;
+				}
 
-  removeCouponButton.addEventListener("click", () => {
-    fetch("/cart/remove-coupon", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Coupon Removed!',
-            confirmButtonText: 'OK'
-          }).then(() => {
-            // Reload the page to reflect changes
-            window.location.reload();
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message,
-            confirmButtonText: 'OK'
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Unexpected Error',
-          text: 'An unexpected error occurred. Please try again.',
-          confirmButtonText: 'OK'
-        });
-      });
-  });
-});
-   
-  </script>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+				inputElement.value = quantity;
+
+				try {
+					const response = await fetch("/cart/update", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ productId, quantity }),
+					});
+
+					if (!response.ok)
+						throw new Error("Network response was not ok.");
+
+					const result = await response.json();
+					if (result.success) {
+						console.log(result);
+
+						const subtotalElement = event.target
+							.closest("tr")
+							.querySelector(".text-right span");
+						subtotalElement.textContent = result.formattedSubtotal;
+						document.querySelector(
+							".cart_subtotal_amount"
+						).textContent = result.formattedTotalPrice;
+						document.querySelector(
+							".cart_total_amount .font-xl"
+						).textContent = result.formattedDiscountedTotal;
+
+                        if(result.isCouponApplied){
+                            document.querySelector(".cart_discounted_amount").textContent = result.discountAmount
+                        }
+					} else {
+						console.error("Error updating cart:", result.error);
+					}
+				} catch (error) {
+					console.error("Error:", error);
+				}
+			});
+		});
+
+		const applyCouponButton = document.getElementById("applyCouponButton");
+		const removeCouponButton =
+			document.getElementById("removeCouponButton");
+		const couponInput = document.getElementById("couponInput");
+
+		applyCouponButton.addEventListener("click", () => {
+			const couponCode = couponInput.value;
+
+			fetch("/cart/apply-coupon", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ couponCode }),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.success) {
+						Swal.fire({
+							icon: "success",
+							title: "Coupon Applied!",
+							confirmButtonText: "OK",
+						}).then(() => {
+							// Reload the page to reflect changes
+							window.location.reload();
+						});
+					} else {
+						Swal.fire({
+							icon: "error",
+							title: "Error",
+							text: data.message,
+							confirmButtonText: "OK",
+						});
+					}
+				})
+				.catch((error) => {
+					console.error("Error:", error);
+					Swal.fire({
+						icon: "error",
+						title: "Unexpected Error",
+						text: "An unexpected error occurred. Please try again.",
+						confirmButtonText: "OK",
+					});
+				});
+		});
+
+		removeCouponButton.addEventListener("click", () => {
+			fetch("/cart/remove-coupon", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.success) {
+						Swal.fire({
+							icon: "success",
+							title: "Coupon Removed!",
+							confirmButtonText: "OK",
+						}).then(() => {
+							// Reload the page to reflect changes
+							window.location.reload();
+						});
+					} else {
+						Swal.fire({
+							icon: "error",
+							title: "Error",
+							text: data.message,
+							confirmButtonText: "OK",
+						});
+					}
+				})
+				.catch((error) => {
+					console.error("Error:", error);
+					Swal.fire({
+						icon: "error",
+						title: "Unexpected Error",
+						text: "An unexpected error occurred. Please try again.",
+						confirmButtonText: "OK",
+					});
+				});
+		});
+	});
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>

@@ -80,7 +80,7 @@ const getCouponById = async (req,res)=>{
             req.flash('errorMessage', 'Coupon not found');
             return res.redirect('/admin/coupons');
         }
-        res.render('editCoupon', { coupon, successMessage: req.flash('successMessage'), errorMessage: req.flash('errorMessage') });
+        res.render('editCoupon', { coupon, successMessage:'', errorMessage: '' });
     } catch (err) {
         req.flash('errorMessage', 'An error occurred');
         res.redirect('/admin/coupons');

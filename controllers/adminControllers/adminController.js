@@ -226,6 +226,7 @@ const getDashboardData = async (req, res) => {
 const getSalesReport = async (req, res) => {
   try {
     const { startDate, endDate, timeFrame } = req.query;
+    console.log('Query Params:', { startDate, endDate, timeFrame });
 
     let endDateObj = endDate ? new Date(endDate) : new Date();
     let startDateObj = startDate ? new Date(startDate) : new Date();
@@ -233,22 +234,23 @@ const getSalesReport = async (req, res) => {
     endDateObj.setHours(23, 59, 59, 999);
     startDateObj.setHours(0, 0, 0, 0);
 
+    // Adjust dates based on the timeFrame
     switch (timeFrame) {
-      case "today":
+      case 'today':
         startDateObj = new Date();
         startDateObj.setHours(0, 0, 0, 0);
         endDateObj = new Date();
         endDateObj.setHours(23, 59, 59, 999);
         break;
-      case "weekly":
+      case 'weekly':
         startDateObj = new Date(endDateObj);
         startDateObj.setDate(endDateObj.getDate() - endDateObj.getDay());
         startDateObj.setHours(0, 0, 0, 0);
         break;
-      case "monthly":
+      case 'monthly':
         startDateObj = new Date(endDateObj.getFullYear(), endDateObj.getMonth(), 1);
         break;
-      case "yearly":
+      case 'yearly':
         startDateObj = new Date(endDateObj.getFullYear(), 0, 1);
         break;
       default:
@@ -258,25 +260,26 @@ const getSalesReport = async (req, res) => {
         }
         break;
     }
-    
+
     console.log("Adjusted start date:", startDateObj);
     console.log("Adjusted end date:", endDateObj);
 
     const query = {
       createdAt: { $gte: startDateObj, $lte: endDateObj },
-      status: { $ne: "Cancelled" } 
+      status: { $ne: "Cancelled" }
     };
 
     const orders = await Order.find(query).populate("items.product");
     const totalOrderCount = orders.length;
     const totalBillAmount = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+    
     res.render("sales-report", {
       totalOrderCount,
       totalBillAmount,
       orders,
       startDate: startDateObj.toISOString().split("T")[0],
       endDate: endDateObj.toISOString().split("T")[0],
-      timeFrame: timeFrame || '' 
+      timeFrame: timeFrame || ''
     });
   } catch (error) {
     console.error('Error fetching sales report:', error);

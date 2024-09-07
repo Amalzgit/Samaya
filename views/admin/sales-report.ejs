@@ -4,33 +4,33 @@
     <!-- Filter Form -->
     <form action="/admin/sales-report" method="get" class="mb-4">
         <div class="form-row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="startDate">Start Date</label>
-                    <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate %>">
-                </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="startDate">Start Date</label>
+              <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate %>">
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="endDate">End Date</label>
-                    <input type="date" class="form-control" id="endDate" name="endDate" value="<%= endDate %>">
-                </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="endDate">End Date</label>
+              <input type="date" class="form-control" id="endDate" name="endDate" value="<%= endDate %>">
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="timeFrame">Time Frame</label>
-                    <select class="form-control" id="timeFrame" name="timeFrame">
-                        <option value="">Select Time Frame</option>
-                        <option value="today" <%= timeFrame === 'today' ? 'selected' : '' %>>Today</option>
-                        <option value="weekly" <%= timeFrame === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                        <option value="monthly" <%= timeFrame === 'monthly' ? 'selected' : '' %>>Monthly</option>
-                        <option value="yearly" <%= timeFrame === 'yearly' ? 'selected' : '' %>>Yearly</option>
-                    </select>
-                </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="timeFrame">Time Frame</label>
+              <select class="form-control" id="timeFrame" name="timeFrame">
+                <option value="">Select Time Frame</option>
+                <option value="today" <%= timeFrame === 'today' ? 'selected' : '' %>>Today</option>
+                <option value="weekly" <%= timeFrame === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                <option value="monthly" <%= timeFrame === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                <option value="yearly" <%= timeFrame === 'yearly' ? 'selected' : '' %>>Yearly</option>
+              </select>
             </div>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary">Filter</button>
-    </form>
+      </form>
 
     <!-- Sales Report Table -->
     <table class="table table-striped">
@@ -88,63 +88,83 @@
     <h5>Total Orders: <%= totalOrderCount %></h5>
     <h5>Total Bill Amount: <%= formatINR.format(totalBillAmount) %> /-</h5>
 </div>
-
-    <form action="#" method="post" class="mb-4">
-        <input type="hidden" name="startDate" value="<%= startDate %>">
-        <input type="hidden" name="endDate" value="<%= endDate %>">
-        <div class="form-group">
-            <label>Select Format</label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" id="pdf" name="format" value="pdf">
-                <label class="form-check-label" for="pdf">PDF</label>
-            </div>
+<form action="#" method="post" class="mb-4">
+    <input type="hidden" name="startDate" value="<%= startDate %>">
+    <input type="hidden" name="endDate" value="<%= endDate %>">
+    <div class="form-group">
+        <label>Select Format</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" id="pdf" name="format" value="pdf">
+            <label class="form-check-label" for="pdf">PDF</label>
         </div>
-        <button type="button" id="downloadPDF" class="btn btn-success">Download Report</button>
-    </form>
-</div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" id="excel" name="format" value="excel">
+            <label class="form-check-label" for="excel">Excel</label>
+        </div>
+    </div>
+    <button type="button" id="downloadReport" class="btn btn-success">Download Report</button>
+</form>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 <script>
-     document.querySelector('form').addEventListener('submit', function(event) {
-        var startDate = document.getElementById('startDate').value;
-        var endDate = document.getElementById('endDate').value;
-        console.log('Start Date:', startDate);
-        console.log('End Date:', endDate);
-    });
   document.addEventListener('DOMContentLoaded', function() {
     const { jsPDF } = window.jspdf;
 
     function generatePDF() {
-        const doc = new jsPDF();
+      const doc = new jsPDF();
 
-        doc.setFontSize(10);
+      doc.setFontSize(10);
+      doc.text('Sales Report', 14, 10);
 
-        doc.text('Sales Report', 14, 10);
+      const pdfDataElement = document.getElementById('pdfData');
+      const totalOrders = pdfDataElement ? pdfDataElement.getAttribute('data-total-orders') : 'N/A';
+      const totalBillAmount = pdfDataElement ? pdfDataElement.getAttribute('data-total-bill-amount') : 'N/A';
 
-        // Get total orders and total bill amount from the data attributes
-        const pdfDataElement = document.getElementById('pdfData');
-        const totalOrders = pdfDataElement.getAttribute('data-total-orders');
-        const totalBillAmount = pdfDataElement.getAttribute('data-total-bill-amount');
+      doc.autoTable({
+        html: 'table',
+        startY: 20,
+        theme: 'grid',
+        headStyles: { fillColor: [74, 137, 220] },
+        margin: { top: 10 },
+        styles: { fontSize: 8, font: 'times' },
+        columnStyles: { text: { fontSize: 8 } }
+      });
 
-        // Add table to PDF
-        doc.autoTable({
-            html: 'table',
-            startY: 20,
-            theme: 'grid',
-            headStyles: { fillColor: [74, 137, 220] },
-            margin: { top: 10 }, 
-            styles: { fontSize: 8, font: 'times' }, 
-            columnStyles: { text: { fontSize: 8 } }
-        });
+      doc.text(`Total Orders: ${totalOrders}`, 14, doc.autoTable.previous.finalY + 10);
+      doc.text(`Total Bill Amount: ${totalBillAmount}/-`, 14, doc.autoTable.previous.finalY + 20);
 
-        // Add total orders and total bill amount
-        doc.text(`Total Orders: ${totalOrders}`, 14, doc.autoTable.previous.finalY + 10);
-        doc.text(`Total Bill Amount: ${totalBillAmount}/-`, 14, doc.autoTable.previous.finalY + 20);
-
-        doc.save('sales-report.pdf');
+      doc.save('sales-report.pdf');
     }
 
-    document.getElementById('downloadPDF').addEventListener('click', generatePDF);
-});
+    function generateExcel() {
+      const table = document.querySelector('table');
+      const wb = XLSX.utils.table_to_book(table, { sheet: 'Sheet1' });
+      
+      // Add totals to the worksheet
+      const ws = wb.Sheets['Sheet1'];
+      const totalOrders = document.getElementById('pdfData') ? document.getElementById('pdfData').getAttribute('data-total-orders') : 'N/A';
+      const totalBillAmount = document.getElementById('pdfData') ? document.getElementById('pdfData').getAttribute('data-total-bill-amount') : 'N/A';
 
+      XLSX.utils.sheet_add_aoa(ws, [
+        [`Total Orders: ${totalOrders}`],
+        [`Total Bill Amount: ${totalBillAmount}/-`]
+      ], { origin: -1 });
+
+      XLSX.writeFile(wb, 'sales-report.xlsx');
+    }
+
+    document.getElementById('downloadReport').addEventListener('click', function() {
+      const format = document.querySelector('input[name="format"]:checked').value;
+
+      if (format === 'pdf') {
+        generatePDF();
+      } else if (format === 'excel') {
+        generateExcel();
+      } else {
+        alert('Please select a format.');
+      }
+    });
+  });
 </script>

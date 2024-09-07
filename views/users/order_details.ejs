@@ -1,86 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Placed Successfully</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Custom CSS (if needed) -->
+    <style>
+        .form-group p {
+            margin-bottom: 0;
+        }
+        .jumbotron {
+            background-color: #f8f9fa;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="jumbotron text-center">
-            <p>Order ID: <%= order._id %></p>
-            <p><strong>Order Status:</strong> <%= order.status %></p>
-        </div>
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Order Details
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Items Ordered:</h5>
-                        <ul class="list-group list-group-flush">
-                            <% order.items.forEach(item => { %>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <img src="/products/<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
-                                    <div>
-                                        <h6 class="mb-1"><%= item.product.name %></h6>
-                                        <p class="mb-1">Brand: <%= item.product.brand.name %></p>
-                                        <p class="mb-1">Status: <%= item.status %></p>
-                                        <span class="badge badge-primary badge-pill">Qty: <%= item.quantity %></span>
-                                    </div>
-                                </li>
-                            <% }); %>
-                        </ul>
-                        <p class="mt-3">Total Amount: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></p>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Shipping Address
-                    </div>
-                    <div class="card-body">
-                        <p><strong><%= order.address.fullName %></strong></p>
-                        <p><%= order.address.addressLine1 %></p>
-                        <% if (order.address.addressLine2) { %>
-                            <p><%= order.address.addressLine2 %></p>
-                        <% } %>
-                        <p><%= order.address.townCity %>, <%= order.address.state %> <%= order.address.pincode %></p>
-                        <p><%= order.address.country %></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Payment Information
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Payment Method:</strong> <%= order.payment.method %></p>
-                        <p><strong>Payment Status:</strong> <%= order.payment.status %></p>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Order Summary
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Subtotal:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></p>
-                        <p><strong>Shipping:</strong> Free</p>
-                        <p><strong>Total:</strong> <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-4 mb-5">
-            <a href="/shop" class="btn btn-primary">Continue Shopping</a>
-        </div>
+    <div>
+        <a class="pl-1" href="/" class="badge badge-primary">
+            <i class="fa-solid fa-chevron-left"></i> Go Home
+        </a>
     </div>
+    <div class="container mt-5">
+        <form>
+            <div class="jumbotron text-center">
+                <p>Order ID: <%= order._id %></p>
+                <p><strong>Order Status:</strong> <%= order.status %></p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">Order Details</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="itemsOrdered">Items Ordered:</label>
+                                <ul class="list-group list-group-flush" id="itemsOrdered">
+                                    <% order.items.forEach(item => { %>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div><strong><%= item.product.name %></strong></div>
+                                            <div><small>Status: <%= item.status %></small></div>
+                                        </div>
+                                        <span class="badge badge-primary badge-pill">Qty: <%= item.quantity %></span>
+                                    </li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="totalAmount">Total Amount:</label>
+                                <p id="totalAmount">
+                                    <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">Shipping Address</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="fullName"><strong>Full Name:</strong></label>
+                                <p id="fullName"><%= order.address.fullName %></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="addressLine1">Address Line 1:</label>
+                                <p id="addressLine1"><%= order.address.addressLine1 %></p>
+                            </div>
+                            <% if (order.address.addressLine2) { %>
+                            <div class="form-group">
+                                <label for="addressLine2">Address Line 2:</label>
+                                <p id="addressLine2"><%= order.address.addressLine2 %></p>
+                            </div>
+                            <% } %>
+                            <div class="form-group">
+                                <label for="townCity">Town/City:</label>
+                                <p id="townCity"><%= order.address.townCity %>, <%= order.address.state %> <%= order.address.pincode %></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="country">Country:</label>
+                                <p id="country"><%= order.address.country %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">Payment Information</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="paymentMethod"><strong>Payment Method:</strong></label>
+                                <p id="paymentMethod"><%= order.payment.method %></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentStatus"><strong>Payment Status:</strong></label>
+                                <p id="paymentStatus"><%= order.payment.status %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">Order Summary</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="subtotal"><strong>Subtotal:</strong></label>
+                                <p id="subtotal">
+                                    <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping"><strong>Shipping:</strong></label>
+                                <p id="shipping">Free</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="total"><strong>Total:</strong></label>
+                                <p id="total">
+                                    <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation and Download Buttons -->
+            <div class="button-container text-center mt-4">
+                <button id="downloadInvoice" class="btn btn-success">
+                    Download Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+    <hr />
+
+    <!-- Load jsPDF and jsPDF AutoTable libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+      function generatePDF() {
+    if (typeof window.jspdf === "undefined" || typeof window.jspdf.jsPDF === "undefined" || typeof window.jspdf.jsPDF.API.autoTable === "undefined") {
+        console.log("Libraries not loaded yet, retrying in 100ms");
+        setTimeout(generatePDF, 100);
+        return;
+    }
+
+    console.log("Libraries loaded, creating document");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        format: "a4",
+        unit: "mm",
+    });
+
+    try {
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+
+        // Company Info
+        doc.setFontSize(14);
+        doc.setFont(undefined, "bold");
+        doc.text("Samaya Times", margin, margin);
+        
+        doc.setFontSize(10);
+        doc.setFont(undefined, "normal");
+        doc.text("Ernakulam", margin, margin + 7);
+        doc.text("Phone: +91 8259874565", margin, margin + 14);
+        doc.text("samaya@times.com", margin, margin + 21);
+
+        // Invoice Title
+        doc.setFontSize(24);
+        doc.setFont(undefined, "bold");
+        doc.text("INVOICE", pageWidth - margin, margin, { align: "right" });
+
+        // Invoice Details
+        doc.setFontSize(10);
+        doc.setFont(undefined, "normal");
+        doc.text("DATE:", pageWidth - margin - 50, margin + 15, { align: "right" });
+        doc.text("INVOICE #:", pageWidth - margin - 50, margin + 22, { align: "right" });
+        
+        doc.text(new Date().toLocaleDateString(), pageWidth - margin, margin + 15, { align: "right" });
+        doc.text(document.querySelector(".jumbotron p").textContent.split(": ")[1] || "N/A", pageWidth - margin, margin + 22, { align: "right" });
+
+        // Bill To
+        doc.setFontSize(12);
+        doc.setFont(undefined, "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(65, 105, 225);
+        doc.rect(margin, margin + 45, 80, 7, "F");
+        doc.text("BILL TO", margin + 2, margin + 50);
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(10);
+        doc.text(document.querySelector("#fullName").textContent || "N/A", margin, margin + 60);
+        doc.text(document.querySelector("#addressLine1").textContent || "N/A", margin, margin + 67);
+        doc.text(document.querySelector("#townCity").textContent + ", " + document.querySelector("#country").textContent || "N/A", margin, margin + 74);
+        doc.text(document.querySelector("#addressLine2").textContent || "N/A", margin, margin + 81);
+
+        // Extract values for subtotal, shipping, and total
+        const subtotal = document.querySelector("#subtotal").textContent.trim();
+        const shipping = document.querySelector("#shipping").textContent.trim();
+        const total = document.querySelector("#total").textContent.trim();
+
+        // Items Table
+        const items = Array.from(document.querySelectorAll("#itemsOrdered .list-group-item"));
+        const itemData = items.map((item) => {
+            const productName = item.querySelector("strong")?.textContent || "N/A";
+            const quantity = item.querySelector(".badge")?.textContent.replace("Qty: ", "") || "N/A";
+            const rate = subtotal; // Placeholder, replace with actual rate if available
+            const amount = total; // Placeholder, replace with actual amount if available
+            return [productName, "", quantity, rate, amount];
+        });
+
+        doc.autoTable({
+            startY: margin + 90,
+            head: [["DESCRIPTION", "HOURS", "QTY", "RATE", "AMOUNT"]],
+            body:itemData ,
+            theme: "striped",
+            headStyles: { fillColor: [65, 105, 225], textColor: 255, fontStyle: "bold" },
+            styles: { fontSize: 9, cellPadding: 2 },
+            margin: { left: margin, right: margin },
+            columnStyles: {
+                0: { cellWidth: 80 },
+                1: { cellWidth: 20 },
+                2: { cellWidth: 20 },
+                3: { cellWidth: 25 },
+                4: { cellWidth: 25 },
+            },
+        });
+
+        const finalY = doc.lastAutoTable.finalY || (margin + 90);
+
+        // Totals
+        doc.setFont(undefined, "bold");
+        doc.text("SUBTOTAL", pageWidth - margin - 60, finalY + 10);
+        doc.setFont(undefined, "normal");
+        doc.text(subtotal, pageWidth - margin, finalY + 10, { align: "right" });
+
+        doc.setFont(undefined, "bold");
+        doc.text("SHIPPING", pageWidth - margin - 60, finalY + 17);
+        doc.setFont(undefined, "normal");
+        doc.text(shipping, pageWidth - margin, finalY + 17, { align: "right" });
+
+        doc.setFont(undefined, "bold");
+        doc.text("TOTAL", pageWidth - margin - 60, finalY + 24);
+        doc.setFont(undefined, "normal");
+        doc.text(total, pageWidth - margin, finalY + 24, { align: "right" });
+
+        // Terms
+        doc.setFontSize(12);
+        doc.setFont(undefined, "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(65, 105, 225);
+        doc.rect(margin, finalY + 35, pageWidth - (2 * margin), 7, "F");
+        doc.text("TERMS", margin + 2, finalY + 40);
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(10);
+        doc.text("1. Total payment due in 30 days", margin, finalY + 50);
+        doc.text("2. Please include the invoice number on your check", margin, finalY + 57);
+        doc.text("Thank you for the business", margin, finalY + 65);
+
+        doc.save(`Invoice_${document.querySelector(".jumbotron p").textContent.split(": ")[1] || "N/A"}.pdf`);
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+    }
+}
+
+// Attach the function to the button
+document.getElementById("downloadInvoice").addEventListener("click", function (e) {
+    e.preventDefault();
+    generatePDF();
+});
+    </script>
 </body>
 </html>
