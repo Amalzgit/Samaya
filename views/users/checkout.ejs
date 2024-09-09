@@ -478,51 +478,51 @@
     
         // Function to handle Razorpay payment
         function handleRazorpayPayment(orderId, amount) {
-          const options = {
-            key: "rzp_test_8fMVTnRz3vyIWo", // Update with your key
-            amount: amount,
-            currency: "INR",
-            name: "Samaya Times",
-            description: "Purchase Description",
-            order_id: orderId,
-            handler: function (response) {
-              // Send the payment details to your server for verification
-              fetch("/verify-razorpay-payment", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.success) {
-                    // Payment verified successfully
-                    window.location.href = `/order-placed/${data.orderId}`;
-                  } else {
-                    // Handle payment failure
-                    alert("Payment verification failed. Please try again.");
-                  }
-                })
-                .catch((error) => console.error("Error verifying payment:", error));
-            },
-            prefill: {
-              name: "<%= user && user.name ? user.name : '' %>",
-              email: "<%= user && user.email ? user.email : '' %>",
-              contact: "<%= user && user.phone ? user.phone : '' %>",
-            },
-            theme: {
-              color: "#3399cc",
-            },
-          };
-          const rzp1 = new Razorpay(options);
-          rzp1.open();
-        }
-      });
+  const options = {
+    key: "rzp_test_8fMVTnRz3vyIWo", // Update with your key
+    amount: amount,
+    currency: "INR",
+    name: "Samaya Times",
+    description: "Purchase Description",
+    order_id: orderId,
+    handler: function (response) {
+      // Send the payment details to your server for verification
+      fetch("/verify-razorpay-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Payment verified successfully
+            window.location.href = `/order-placed/${data.orderId}`;
+          } else {
+            // Handle payment failure
+            window.location.href = `/payment-failure/${data.orderId}`;
+          }
+        })
+        .catch((error) => console.error("Error verifying payment:", error));
+    },
+    prefill: {
+      name: "<%= user && user.name ? user.name : '' %>",
+      email: "<%= user && user.email ? user.email : '' %>",
+      contact: "<%= user && user.phone ? user.phone : '' %>",
+    },
+    theme: {
+      color: "#3399cc",
+    },
+  };
+  const rzp1 = new Razorpay(options);
+  rzp1.open();
+}
+});
     </script>
     
   </body>

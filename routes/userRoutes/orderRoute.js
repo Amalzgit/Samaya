@@ -10,6 +10,8 @@ order_Route.get('/order-placed/:orderId',isAuth, isUser, orderController. showOr
 order_Route.get('/order-details/:orderId',isAuth, isUser, orderController. showOrderdetails);
 order_Route.post('/cancel-item/:orderId/:itemId', isAuth, isUser, orderController.cancelOrderItem);
 order_Route.post('/return-item/:orderId/:itemId', isAuth, isUser, orderController.returnOrderItem);
+order_Route.get('/payment-failure/:orderId', isAuth, isUser, orderController.failureManage);
+order_Route.post('/retry-payment/:orderId', isAuth, isUser, orderController.retryPayment);
 
 module.exports = order_Route
 

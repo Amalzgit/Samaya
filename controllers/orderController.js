@@ -459,6 +459,77 @@ const returnOrderItem = async (req, res) => {
       .json({ message: "An error occurred while requesting the return." });
   }
 };
+
+
+const failureManage =async(req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).send('Order not found');
+    }
+
+    order.payment.status  = 'Failed';
+    order.status = 'Pending';
+    await order.save();
+
+    // res.render('payment-failure', { order });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+const retryPayment = async (req, res) => {
+  const orderId = req.params.orderId;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order || order.payment.method !== 'razorpay') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order or payment method.',
+      });
+    }
+
+    // If the payment status is 'Completed', do not allow retry
+    if (order.payment.status === 'Completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment already completed. Retry is not allowed.',
+      });
+    }
+
+   
+
+    // Create a new Razorpay order
+    const razorpayOrder = await createOrder(order.totalPrice * 100, 'INR', `order_${Date.now()}`);
+
+    order.payment.razorpayID = razorpayOrder.id;
+    await order.save();
+
+    res.json({
+      success: true,
+      razorpayOrder: {
+        id: razorpayOrder.id,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+      },
+    });
+  } catch (error) {
+    console.error('Error retrying payment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred. Please try again.',
+    });
+  }
+};
+
+
+
+
 module.exports = {
   placeOrder,
   verifyRazorpayPayment,
@@ -466,4 +537,6 @@ module.exports = {
   showOrderdetails,
   cancelOrderItem,
   returnOrderItem,
+  failureManage,
+  retryPayment
 };

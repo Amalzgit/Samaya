@@ -89,9 +89,9 @@
                   </h4>
                 </div>
                 <div class="card-body">
-                  <% if (orders && orders.length> 0) { %>
+                  <% if (orders && orders.length > 0) { %>
                     <ul class="list-group">
-                      <% orders.forEach(order=> { %>
+                      <% orders.forEach(order => { %>
                         <li class="list-group-item mb-4 border rounded shadow-sm">
                           <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
@@ -102,32 +102,28 @@
                                 Date: <%= new Date(order.createdAt).toLocaleDateString() %>
                               </p>
                               <p class="mb-1 text-muted">
-                                Total: <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
-                                  }).format(order.totalPrice) %>
+                                Total: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.totalPrice) %>
                               </p>
                               <p class="mb-1">
-                                Status: <% if (order.status==='Cancelled' ) { %>
+                                Status: <% if (order.status === 'Cancelled') { %>
                                   <span class="badge bg-danger">Cancelled</span>
-                                  <% } else if (order.status==='Partially Cancelled' ) { %>
-                                    <span class="badge bg-warning">Partially
-                                      Cancelled</span>
-                                    <% } else if (order.status==='Shipped' ) { %>
-                                      <span class="badge bg-info">Shipped</span>
-                                      <% } else if (order.status==='Delivered' ) { %>
-                                        <span class="badge bg-success">Delivered</span>
-                                        <% } else if (order.status==='Processing' ) { %>
-                                          <span class="badge bg-warning">Processing</span>
-                                          <% } else { %>
-                                            <span class="badge bg-secondary">Pending</span>
-                                            <% } %>
+                                <% } else if (order.status === 'Partially Cancelled') { %>
+                                  <span class="badge bg-warning">Partially Cancelled</span>
+                                <% } else if (order.status === 'Shipped') { %>
+                                  <span class="badge bg-info">Shipped</span>
+                                <% } else if (order.status === 'Delivered') { %>
+                                  <span class="badge bg-success">Delivered</span>
+                                <% } else if (order.status === 'Processing') { %>
+                                  <span class="badge bg-warning">Processing</span>
+                                <% } else { %>
+                                  <span class="badge bg-secondary">Pending</span>
+                                <% } %>
                               </p>
                             </div>
-                            <a href="/order-details/<%= order._id %>" class="btn btn-sm btn-outline-primary">View
-                              Details</a>
+                            <a href="/order-details/<%= order._id %>" class="btn btn-sm btn-outline-primary">View Details</a>
                           </div>
                           <ul class="list-group mb-3">
-                            <% order.items.forEach(item=> {
-                              %>
+                            <% order.items.forEach(item => { %>
                               <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                   <h6 class="mb-1">
@@ -137,64 +133,57 @@
                                     Quantity: <%= item.quantity %>
                                   </p>
                                   <p class="mb-1">
-                                    Price: <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
-                                      }).format(item.price) %>
+                                    Price: <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.price) %>
                                   </p>
                                   <p class="mb-1">
-                                    Status: <% if (item.status==='Active' ) { %>
-                                      <% if (order.status==='Delivered' ) { %>
-                                        <button onclick="requestReturn('<%= order._id %>', '<%= item._id %>')"
-                                          class="btn btn-sm btn-warning">
+                                    Status: <% if (item.status === 'Active') { %>
+                                      <% if (order.status === 'Delivered') { %>
+                                        <button onclick="requestReturn('<%= order._id %>', '<%= item._id %>')" class="btn btn-sm btn-warning">
                                           Request Return
                                         </button>
-                                        <% } else { %>
-                                          <span class="badge bg-secondary">
-                                            <%=item.status%>
-                                          </span>
-                                          <% } %>
-                                            <% } else if (item.status==='Return Requested' ) { %>
-                                              <span class="badge bg-info">Return
-                                                Requested</span>
-                                              <% } else if (item.status==='Return Accepted' ) { %>
-                                                <span class="badge bg-success">Return
-                                                  Accepted</span>
-                                                <% } else if (item.status==='Return Rejected' ) { %>
-                                                  <span class="badge bg-danger">Return
-                                                    Rejected</span>
-                                                  <% } else if (item.status==='Active' ) { %>
-                                                    <% if (order.status !=='Cancelled' && order.status !=='Delivered' &&
-                                                      order.status !=='Shipped' ) { %>
-                                                      <span class="badge bg-secondary">Active</span>
-                                                      <% } %>
-                                                        <% } else { %>
-                                                          <span class="badge bg-secondary">
-                                                            <%= item.status %>
-                                                          </span>
-                                                          <% } %>
+                                      <% } else { %>
+                                        <span class="badge bg-secondary">
+                                          <%= item.status %>
+                                        </span>
+                                      <% } %>
+                                    <% } else if (item.status === 'Return Requested') { %>
+                                      <span class="badge bg-info">Return Requested</span>
+                                    <% } else if (item.status === 'Return Accepted') { %>
+                                      <span class="badge bg-success">Return Accepted</span>
+                                    <% } else if (item.status === 'Return Rejected') { %>
+                                      <span class="badge bg-danger">Return Rejected</span>
+                                    <% } else { %>
+                                      <span class="badge bg-secondary">
+                                        <%= item.status %>
+                                      </span>
+                                    <% } %>
                                   </p>
                                 </div>
                                 <div>
-                                  <% if (item.status==='Active' && order.status !=='Cancelled' && order.status
-                                    !=='Delivered' && order.status !=='Shipped' ) { %>
-                                    <button class="btn btn-sm btn-danger cancel-item" data-order-id="<%= order._id %>"
-                                      data-item-id="<%= item._id %>">
+                                  <% if (item.status === 'Active' && order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Shipped') { %>
+                                    <button class="btn btn-sm btn-danger cancel-item" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">
                                       Cancel
                                     </button>
-                                    <% } %>
+                                  <% } %>
+                                  <% if (order.payment.status === 'Pending' && order.payment.method === 'razorpay') { %>
+                                    <button class="btn btn-sm btn-warning retry-payment" data-order-id="<%= order._id %>">
+                                      Retry Payment
+                                    </button>
+                                  <% } %>
                                 </div>
                               </li>
-                              <% }) %>
+                            <% }) %>
                           </ul>
                         </li>
-                        <% }) %>
+                      <% }) %>
                     </ul>
-                    <% } else { %>
-                      <p>You haven't placed any orders yet.</p>
-                      <% } %>
+                  <% } else { %>
+                    <p>You haven't placed any orders yet.</p>
+                  <% } %>
                 </div>
               </div>
             </div>
-
+            
             <!-- Address Tab -->
             <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
               <div class="row" id="addresses-container">
@@ -841,3 +830,88 @@
     }
   });
 </script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.retry-payment').forEach(button => {
+    button.addEventListener('click', function() {
+      const orderId = this.getAttribute('data-order-id');
+      
+      // Initiate the payment process again
+      fetch(`/retry-payment/${orderId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: orderId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (data.razorpayOrder) {
+            // Use Razorpay to handle payment retry
+            handleRazorpayPayment(data.razorpayOrder);
+          } else {
+            alert('Payment retry is not allowed. The order already has a Razorpay ID.');
+          }
+        } else {
+          alert('Failed to initiate payment retry: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please check the console for details.');
+      });
+    });
+  });
+
+  function handleRazorpayPayment(razorpayOrder) {
+    const options = {
+      key: "rzp_test_8fMVTnRz3vyIWo", // Replace with your actual key
+      amount: razorpayOrder.amount, // Amount is already in the smallest currency unit (paise for INR)
+      currency: "INR",
+      name: "Samaya Times",
+      description: "Purchase Description",
+      order_id: razorpayOrder.id,
+      handler: function (response) {
+        fetch("/verify-razorpay-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            window.location.href = `/order-placed/${data.orderId}`;
+          } else {
+            window.location.href = `/payment-failure/${data.orderId}`;
+          }
+        })
+        .catch((error) => {
+          console.error("Error verifying payment:", error);
+          window.location.href = `/payment-failure/${razorpayOrder.id}`;
+        });
+      },
+      prefill: {
+        name: "<%= user && user.name ? user.name : '' %>",
+        email: "<%= user && user.email ? user.email : '' %>",
+        contact: "<%= user && user.phone ? user.phone : '' %>",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+  }
+});
+
+</script>
+
