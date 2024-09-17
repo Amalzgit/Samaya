@@ -18,7 +18,6 @@ const placeOrder = async (req, res) => {
     const { addressId, paymentMethod } = req.body;
     const userId = req.currentUser._id;
     const cartData = await Cart.findOne({ user: userId }).populate("items.product");
-    // console.log(cartData, "====>cart data ");
 
     const items = await Promise.all(
       cartData.items.map(async (item) => {
@@ -46,12 +45,10 @@ const placeOrder = async (req, res) => {
       })
     );
 
-    // Calculate the total price before discount
     let totalPrice = items.reduce((accumulator, item) => {
       return accumulator + item.product.price * item.quantity;
     }, 0);
 
-    // Calculate the discount amount and discounted total
     const discountAmount = (totalPrice * cartData.discount) / 100;
     const discountedTotal = totalPrice - discountAmount;
 
@@ -338,7 +335,6 @@ const cancelOrderItem = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
 
-    // console.log("orderid:",orderId ,"itemid",itemId);
 
     if (!isValidId(orderId) || !isValidId(itemId)) {
       return res
@@ -346,7 +342,6 @@ const cancelOrderItem = async (req, res) => {
         .json({ success: false, message: "Invalid order or item ID" });
     }
 
-    // Find and update the order
     const order = await Order.findOneAndUpdate(
       { _id: orderId, "items._id": itemId, "items.status": "Active" },
       {
@@ -371,10 +366,8 @@ const cancelOrderItem = async (req, res) => {
       order.payment.method === "Wallet" ||
       order.payment.method === "razorpay"
     ) {
-      // Calculate refund amount
       const refundAmount = item.price * item.quantity;
 
-      // Update the wallet balance and record the transaction
       await Wallet.findOneAndUpdate(
         { user: order.user },
         {
@@ -384,7 +377,7 @@ const cancelOrderItem = async (req, res) => {
               amount: refundAmount,
               type: "credit",
               status: "completed",
-              description: `Refund for cancelled item ${item.name}`, // Ensure item name is available
+              description: `Refund for cancelled item ${item.name}`, 
               orderId: order._id,
             },
           },
@@ -393,7 +386,6 @@ const cancelOrderItem = async (req, res) => {
       );
     }
 
-    // Update the product stock and order status
     const functions = [
       Product.findByIdAndUpdate(item.product, {
         $inc: { stock: item.quantity },
@@ -474,7 +466,6 @@ const failureManage =async(req, res) => {
     order.status = 'Pending';
     await order.save();
 
-    // res.render('payment-failure', { order });
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).send('Internal server error');
@@ -494,7 +485,6 @@ const retryPayment = async (req, res) => {
       });
     }
 
-    // If the payment status is 'Completed', do not allow retry
     if (order.payment.status === 'Completed') {
       return res.status(400).json({
         success: false,
@@ -504,7 +494,6 @@ const retryPayment = async (req, res) => {
 
    
 
-    // Create a new Razorpay order
     const razorpayOrder = await createOrder(order.totalPrice * 100, 'INR', `order_${Date.now()}`);
 
     order.payment.razorpayID = razorpayOrder.id;

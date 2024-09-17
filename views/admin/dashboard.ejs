@@ -216,7 +216,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctx, {
-          type: 'line', // You can change to 'bar', 'pie', etc.
+          type: 'line', 
           data: <%- chartData %>,
           options: {
             responsive: true,
