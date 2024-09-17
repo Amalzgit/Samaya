@@ -77,6 +77,6 @@ app.use("/admin", adminRoute);
 // Server setup
 const host = "localhost";
 const port = process.env.PORT || 3000;
-app.listen(port, host, () => {
+app.listen(port, () => {
   console.log(`Server is running at http://${host}:${port}`);
 });
