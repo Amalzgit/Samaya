@@ -21,9 +21,7 @@ const loadShop = async (req, res) => {
         const [categories, brands, categoryDoc, brandDoc] = await Promise.all([
             Category.find({ deleted: false }),
             Brand.find({ isActive: true }),
-            category
-                ? Category.findOne({ name: category, deleted: false })
-                : null,
+            category ? Category.findOne({ name: category, deleted: false }) : null,
             brand ? Brand.findOne({ name: brand, isActive: true }) : null,
         ]);
 
@@ -32,7 +30,6 @@ const loadShop = async (req, res) => {
                 products: [],
                 categories,
                 brands,
-                successMessage: "",
                 errorMessage: "Category not found or deleted",
                 pagination: {},
                 currentSort: sort,
@@ -43,7 +40,6 @@ const loadShop = async (req, res) => {
                 products: [],
                 categories,
                 brands,
-                successMessage: "",
                 errorMessage: "Brand not found or inactive",
                 pagination: {},
                 currentSort: sort,
@@ -93,14 +89,17 @@ const loadShop = async (req, res) => {
             name_desc: { name: -1 },
             featured: { featured: -1 },
         };
+        
         aggregationPipeline.push({
             $sort: sortStages[sort] || sortStages.featured,
         });
 
+        // Count total products for pagination
         const countPipeline = [...aggregationPipeline, { $count: "total" }];
         const totalResult = await Product.aggregate(countPipeline);
         const total = totalResult.length > 0 ? totalResult[0].total : 0;
 
+        // Apply pagination
         aggregationPipeline.push({ $skip: skip }, { $limit: limit });
 
         let products = await Product.aggregate(aggregationPipeline);
@@ -109,10 +108,7 @@ const loadShop = async (req, res) => {
             products.map(async (product) => {
                 const discount = await calculateOfferDiscount(product._id);
                 if (discount) {
-                    const offerPrice = calculatefinalPrice(
-                        product.price,
-                        discount
-                    );
+                    const offerPrice = calculatefinalPrice(product.price, discount);
                     return {
                         ...product,
                         originalPrice: product.price,
@@ -127,6 +123,7 @@ const loadShop = async (req, res) => {
                 };
             })
         );
+
         const totalPages = Math.ceil(total / limit);
         const currentPage = parseInt(page);
 
@@ -138,22 +135,21 @@ const loadShop = async (req, res) => {
             urlParams.set("page", i);
             pageUrls[i] = `${baseUrl}?${urlParams.toString()}`;
         }
+
         const pagination = {
-            currentPage: currentPage,
-            totalPages: totalPages,
+            currentPage,
+            totalPages,
             hasNextPage: currentPage < totalPages,
             hasPrevPage: currentPage > 1,
-            nextPageUrl:
-                currentPage < totalPages ? pageUrls[currentPage + 1] : null,
+            nextPageUrl: currentPage < totalPages ? pageUrls[currentPage + 1] : null,
             prevPageUrl: currentPage > 1 ? pageUrls[currentPage - 1] : null,
-            pageUrls: pageUrls,
+            pageUrls,
         };
 
         res.render("shop", {
             products,
             categories,
             brands,
-            successMessage: "",
             errorMessage: "",
             currentCategory: category,
             currentBrand: brand,
@@ -167,7 +163,6 @@ const loadShop = async (req, res) => {
             products: [],
             categories: [],
             brands: [],
-            successMessage: "",
             errorMessage: "An error occurred",
             pagination: {
                 currentPage: 1,

@@ -165,7 +165,8 @@ const handleReturnRequest = async (req, res) => {
 };
 
 const handleAcceptReturn = async (order, item) => {
-  const refundAmount = item.price * item.quantity;
+  const discountPerItem = (item.price * item.quantity / order.totalPrice) * order.discount || 0;
+      const refundAmount = (item.price * item.quantity)-discountPerItem;
   item.status = "Return Accepted";
 
   const [product, wallet] = await Promise.all([

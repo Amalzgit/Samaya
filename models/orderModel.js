@@ -43,6 +43,7 @@ const orderSchema = new Schema(
     items: [orderItemSchema],
     address: { type: addressSchema, required: true },
     totalPrice: { type: Number, required: true },
+    discount: { type: Number },
     status: {
       type: String,
       enum: [

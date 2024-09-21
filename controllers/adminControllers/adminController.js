@@ -152,61 +152,105 @@ const getDashboardData = async (req, res) => {
       .populate('user', 'name email')
       .populate('order', 'orderNumber totalPrice');
 
+    // // Daily Revenue Data
+    // const dailyRevenue = await Order.aggregate([
+    //   { $match: query },
+    //   { $unwind: "$items" },
+    //   {
+    //     $match: {
+    //       "items.status": { $ne: 'Cancelled' }
+    //     }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+    //       revenue: { $sum: "$items.totalPrice" },
+    //       orders: { $sum: 1 },
+    //       cancelled: { $sum: { $cond: [{ $eq: ["$items.status", "Cancelled"] }, 1, 0] } },
+    //       delivered: { $sum: { $cond: [{ $eq: ["$items.status", "Delivered"] }, 1, 0] } }
+    //     }
+    //   },
+    //   { $sort: { _id: 1 } }
+    // ]);
+
     // Daily Revenue Data
     const dailyRevenue = await Order.aggregate([
       { $match: query },
       { $unwind: "$items" },
-      {
-        $match: {
-          "items.status": { $ne: 'Cancelled' }
-        }
-      },
+      { $match: { "items.status": { $ne: 'Cancelled' } } },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           revenue: { $sum: "$items.totalPrice" },
-          orders: { $sum: 1 },
-          cancelled: { $sum: { $cond: [{ $eq: ["$items.status", "Cancelled"] }, 1, 0] } },
-          delivered: { $sum: { $cond: [{ $eq: ["$items.status", "Delivered"] }, 1, 0] } }
+          orders: { $sum: 1 }
         }
       },
       { $sort: { _id: 1 } }
     ]);
 
-    const dailyData = dailyRevenue.map(day => ({
-      date: day._id,
-      revenue: day.revenue,
-      orders: day.orders,
-      cancelledRate: (day.cancelled / day.orders) * 100 || 0,
-      deliveredRate: (day.delivered / day.orders) * 100 || 0
-    }));
-    const chartData = {
-      labels: dailyData.map(day => day.date),
-      datasets: [
-        {
-          label: 'Revenue',
-          data: dailyData.map(day => day.revenue),
-          borderColor: 'rgba(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192)',
-          borderWidth: 1
-        },
-        // {
-        //   label: 'Cancelled Orders Rate (%)',
-        //   data: dailyData.map(day => day.cancelledRate),
-        //   borderColor: 'rgba(255, 99, 132 )',
-        //   backgroundColor: 'rgba(255, 99, 132 )',
-        //   borderWidth: 1
-        // },
-        // {
-        //   label: 'Delivered Orders Rate (%)',
-        //   data: dailyData.map(day => day.deliveredRate),
-        //   borderColor: 'rgba(54, 162, 235)',
-        //   backgroundColor: 'rgba(54, 162, 235)',
-        //   borderWidth: 1
-        // }
-      ]
-    };
+    // Weekly Revenue
+    const weeklyRevenue = await Order.aggregate([
+      { $match: query },
+      { $unwind: "$items" },
+      { $match: { "items.status": { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%U", date: "$createdAt" } },
+          revenue: { $sum: "$items.totalPrice" },
+          orders: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
 
+    // Monthly Revenue
+    const monthlyRevenue = await Order.aggregate([
+      { $match: query },
+      { $unwind: "$items" },
+      { $match: { "items.status": { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          revenue: { $sum: "$items.totalPrice" },
+          orders: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Yearly Revenue
+    const yearlyRevenue = await Order.aggregate([
+      { $match: query },
+      { $unwind: "$items" },
+      { $match: { "items.status": { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y", date: "$createdAt" } },
+          revenue: { $sum: "$items.totalPrice" },
+          orders: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    const chartData = {
+      daily: {
+        labels: dailyRevenue.map(day => day._id),
+        data: dailyRevenue.map(day => day.revenue)
+      },
+      weekly: {
+        labels: weeklyRevenue.map(week => week._id),
+        data: weeklyRevenue.map(week => week.revenue)
+      },
+      monthly: {
+        labels: monthlyRevenue.map(month => month._id),
+        data: monthlyRevenue.map(month => month.revenue)
+      },
+      yearly: {
+        labels: yearlyRevenue.map(year => year._id),
+        data: yearlyRevenue.map(year => year.revenue)
+      }
+    };
     res.render('dashboard', {
       totalRevenue: totalData.totalRevenue,
       totalOrders: totalData.totalOrders,

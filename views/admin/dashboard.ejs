@@ -1,238 +1,485 @@
-
-    <div class="container my-5">
-        <h1 class="display-4 mb-5">Dashboard</h1>
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">
+<div class="dashboard-container">
+    <h1 class="display-4 mb-5 text-center">Dashboard</h1>
+    <div class="container mt-4">
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">
                             <i class="fas fa-dollar-sign me-2"></i>Total Revenue
                         </h5>
-                        <p class="card-value">
+                        <div class="progress-ring">
+                            <svg height="120" width="120">
+                                <circle class="progress-ring__circle" stroke="#007bff" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-ring__text"><i class="fa-solid fa-chart-line"></i></div>
+                        </div>
+                        <p class="card-value mt-3">
                             <%= new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalRevenue) %>
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">
                             <i class="fas fa-shopping-cart me-2"></i>Total Orders
                         </h5>
-                        <p class="card-value">
+                        <div class="progress-ring">
+                            <svg height="120" width="120">
+                                <circle class="progress-ring__circle" stroke="#28a745" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-ring__text"><i class="fa-solid fa-chart-simple"></i></div>
+                        </div>
+                        <p class="card-value mt-3">
                             <%= totalOrders %> Nos
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">
-                            <i class="fas fa-box me-2"></i>Best Selling Product
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-box me-2"></i>Best Selling 
                         </h5>
+                        <div class="progress-ring">
+                            <svg height="120" width="120">
+                                <circle class="progress-ring__circle" stroke="#ffc107" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-ring__text"><i class="fa-solid fa-scale-unbalanced-flip"></i></div>
+                        </div>
+                        <p class="text-muted small mt-3">
+                            Sold: <%= bestSellingProduct ? bestSellingProduct.totalSold : '0' %> Pcs
+                        </p>
                         <p class="card-value">
                             <%= bestSellingProduct ? bestSellingProduct.name : 'N/A' %>
-                        </p>
-                        <p class="text-muted small">
-                            Sold: <%= bestSellingProduct ? bestSellingProduct.totalSold : '0' %> Pcs
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">
                             <i class="fas fa-folder me-2"></i>Top Category
                         </h5>
-                        <p class="card-value">
+                        <div class="progress-ring">
+                            <svg height="120" width="120">
+                                <circle class="progress-ring__circle" stroke="#dc3545" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-ring__text"><i class="fa-solid fa-ranking-star"></i></div>
+                        </div>
+                        <p class="card-value mt-3">
                             <%= bestSellingCategory ? bestSellingCategory.name : 'N/A' %>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="row mb-4">
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Revenue Over Time</h5>
-                        <canvas id="revenueChart"></canvas>
-                    </div>
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Revenue Over Time</h5>
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Ten Best Selling Products</h5>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Total Sold</th>
-                                    <th class="text-end">Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% topProducts.forEach(product => { %>
-                                    <tr>
-                                        <td><%= product.name %></td>
-                                        <td><%= product.totalSold %></td>
-                                        <td class="text-end">₹<%= product.revenue.toFixed(2) %></td>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Top Ten Best Selling Products</h5>
+                    <div id="product-list" class="overflow-auto" style="max-height: 300px;">
+                        <% let maxQty = Math.max(...topProducts.map(p => p.totalSold)); 
+                           let maxRevenue = Math.max(...topProducts.map(p => p.revenue));
+                           topProducts.forEach((product, index) => { %>
+                            <div class="product-item" style="animation-delay: <%= index * 0.1 %>s;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="product-name flex-grow-1"><%= product.name %></div>
+                                    <div class="product-sold me-3">Qty: <%= product.totalSold %></div>
+                                    <div class="product-revenue">Amount: ₹<%= product.revenue.toFixed(2) %></div>
+                                </div>
+                                <div class="mt-1">
+                                    <strong>Qty:</strong>
+                                </div>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar progress-bar-qty" role="progressbar" 
+                                         style="--final-width: <%= (product.totalSold / maxQty) * 100 %>%"
+                                         aria-valuenow="<%= product.totalSold %>" aria-valuemin="0" aria-valuemax="<%= maxQty %>">
+                                    </div>
+                                </div>
+                                <div class="mt-1">
+                                    <strong>Amount:</strong>
+                                </div>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar progress-bar-revenue" role="progressbar"
+                                         style="--final-width: <%= (product.revenue / maxRevenue) * 100 %>%"
+                                         aria-valuenow="<%= product.revenue %>" aria-valuemin="0" aria-valuemax="<%= maxRevenue %>">
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Recent Transactions</h5>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Recent Transactions</h5>
+            <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th>Date & Time</th>
                             <th>User</th>
                             <th>Order ID</th>
-                            <th>Transaction id</th>
-                            <th>Payment method</th>
+                            <th>Transaction ID</th>
+                            <th>Payment Method</th>
                             <th>Credit / Debit</th>
-
                             <th class="text-end">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% latestTransactions.forEach(transaction => { %>
                             <tr>
-                                <td><%= new Date(transaction.createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <%= new Date(transaction.createdAt).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true
+                                    }) %>
+                                </td>
                                 <td><%= transaction.user ? transaction.user.email : 'N/A' %></td>
-                                <td><%= transaction.order ? transaction.order.id : 'N/A' %></td>
+                                <td>ORD-<%= transaction.order ? transaction.order.id.toString().slice(-6).toUpperCase() : 'N/A' %></td>
                                 <td><%= transaction.transactionNumber ? transaction.transactionNumber : 'N/A' %></td>
                                 <td><%= transaction.paymentMethod ? transaction.paymentMethod : 'N/A' %></td>
                                 <td><%= transaction.type ? transaction.type : 'N/A' %></td>
-
                                 <td class="text-end">₹<%= transaction.order ? transaction.order.totalPrice.toFixed(2) : '0.00' %></td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
-                <div class="pagination-area mt-4">
-                    <nav aria-label="Page navigation">
-                        <ul id="pagination-controls" class="pagination justify-content-start">
-                            
-                        </ul>
-                    </nav>
-                </div>
-                
+            </div>
+            <div class="pagination-area mt-4">
+                <nav aria-label="Page navigation">
+                    <ul id="pagination-controls" class="pagination justify-content-center">
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
-    <script>
-        let currentPage = 1;
-        const rowsPerPage = 10; // Number of rows per page
-        let totalRows;
-    
-        document.addEventListener('DOMContentLoaded', () => {
-            const rows = document.querySelectorAll('tbody tr');
-            totalRows = rows.length;
-            updatePagination(rows);
+</div>
+
+<style>
+    .progress-bar-qty, .progress-bar-revenue {
+            width: 0;
+            animation: progressAnimation 1s ease-out forwards;
+        }
+
+        @keyframes progressAnimation {
+            to {
+                width: var(--final-width);
+            }
+        }
+
+        .product-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+     .product-item {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 0.5rem; /* Smaller padding */
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition */
+    }
+    .product-item:hover {
+        transform: translateY(-3px); /* Slight upward movement on hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+    }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .card-title {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .card-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    .fas {
+        color: #007bff;
+    }
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+    }
+    .table thead th {
+        border-bottom: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .table tbody tr {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .table tbody td {
+        border: none;
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    .pagination .page-link {
+        border: none;
+        color: #007bff;
+        padding: 0.5rem 0.75rem;
+        margin: 0 0.2rem;
+        border-radius: 5px;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        color: #fff;
+    }
+    .product-item {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+    .product-item:hover {
+        background-color: #e9ecef;
+    }
+    .product-name {
+        font-weight: 600;
+    }
+    .product-sold, .product-revenue {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .progress {
+        height: 10px;
+        margin-top: 5px;
+    }
+    .progress-bar-qty {
+        background-color: #007bff;
+    }
+    .progress-bar-revenue {
+        background-color: #28a745;
+    }
+    .progress-ring {
+        position: relative;
+        width: 120px;
+        height: 120px;
+    }
+    .progress-ring__circle {
+        transition: 0.35s stroke-dashoffset;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+    .progress-ring__text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productItems = document.querySelectorAll('.product-item');
+        productItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`;
         });
-    
-        function updatePagination(rows) {
-            const totalPages = Math.ceil(totalRows / rowsPerPage);
-            const paginationControls = document.getElementById('pagination-controls');
-            paginationControls.innerHTML = ''; // Clear existing pagination controls
-    
-            // Previous page button
-            if (currentPage > 1) {
-                paginationControls.innerHTML += `
-                    <li class="page-item">
-                        <a class="page-link" href="#" onclick="changePage(-1)">
-                            <i class="fa fa-arrow-left"></i>
-                        </a>
-                    </li>
-                `;
-            }
-    
-            // Page number buttons
-            for (let i = 1; i <= totalPages; i++) {
-                paginationControls.innerHTML += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
-                    </li>
-                `;
-            }
-    
-            // Next page button
-            if (currentPage < totalPages) {
-                paginationControls.innerHTML += `
-                    <li class="page-item">
-                        <a class="page-link" href="#" onclick="changePage(1)">
-                            <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </li>
-                `;
-            }
-    
-            // Update visible rows
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-    
-            rows.forEach((row, index) => {
-                if (index >= start && index < end) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const circles = document.querySelectorAll('.progress-ring__circle');
+        circles.forEach((circle, index) => {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference;
+            
+            const progressValues = [85, 85, 85, 85]; // Corresponding to the text values in each card
+            const offset = circumference - (progressValues[index] / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+        });
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 5;
+    let totalRows;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('tbody tr');
+        totalRows = rows.length;
+        updatePagination(rows);
+    });
+
+    function updatePagination(rows) {
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = '';
+
+        if (currentPage > 1) {
+            paginationControls.innerHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(-1)">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </li>
+            `;
         }
-    
-        function changePage(direction) {
-            const totalPages = Math.ceil(totalRows / rowsPerPage);
-    
-            currentPage += direction;
-            if (currentPage < 1) {
-                currentPage = 1;
-            } else if (currentPage > totalPages) {
-                currentPage = totalPages;
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationControls.innerHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
+                </li>
+            `;
+        }
+
+        if (currentPage < totalPages) {
+            paginationControls.innerHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(1)">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+            `;
+        }
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            if (index >= start && index < end) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
             }
-    
-            updatePagination(document.querySelectorAll('tbody tr'));
+        });
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        currentPage += direction;
+        if (currentPage < 1) {
+            currentPage = 1;
+        } else if (currentPage > totalPages) {
+            currentPage = totalPages;
         }
-    
-        function goToPage(page) {
-            currentPage = page;
-            updatePagination(document.querySelectorAll('tbody tr'));
-        }
-    </script>
-    
-    <script>
+
+        updatePagination(document.querySelectorAll('tbody tr'));
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        updatePagination(document.querySelectorAll('tbody tr'));
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('revenueChart').getContext('2d');
+        const chartData = <%- chartData %>;
+
         const revenueChart = new Chart(ctx, {
-          type: 'line', 
-          data: <%- chartData %>,
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              tooltip: {
-                callbacks: {
-                  label: function (tooltipItem) {
-                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                  }
+            type: 'line',
+            data: {
+                labels: chartData.daily.labels,
+                datasets: [
+                    {
+                        label: 'Daily Revenue',
+                        data: chartData.daily.data,
+                        borderColor: 'rgba(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Weekly Revenue',
+                        data: chartData.weekly.data,
+                        borderColor: 'rgba(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Monthly Revenue',
+                        data: chartData.monthly.data,
+                        borderColor: 'rgba(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Yearly Revenue',
+                        data: chartData.yearly.data,
+                        borderColor: 'rgba(255, 206, 86)',
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderWidth: 2,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         });
-      });
-    </script>
+    });
+</script>

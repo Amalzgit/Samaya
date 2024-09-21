@@ -26,11 +26,20 @@
                 <option value="name_desc" <%= currentSort === 'name_desc' ? 'selected' : '' %>>Name: Z to A</option>
               </select>
             </div>
-            <form id="searchForm" action="/shop" method="GET" class="search-form d-flex">
-              <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search products..." value="<%= currentSearch %>">
-              <button type="submit" class="btn btn-outline-secondary ml-2">
-                <i class="fas fa-search"></i>
-              </button>
+            <form id="searchForm" action="/shop" method="GET" class="search-form d-flex align-items-center">
+              <div class="input-group">
+                <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search products..." value="<%= currentSearch %>">
+                <div class="input-group-append">
+                  <button type="button" id="clearSearch" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button type="submit" class="btn btn-outline-secondary">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+             
             </form>
           </div>
           <div class="row product-grid-3">
@@ -238,6 +247,7 @@
         const brandLinks = document.querySelectorAll('.brand-link');
         const sortOption = document.getElementById('sortOption');
         const searchForm = document.getElementById('searchForm');
+        const clearSearchButton = document.getElementById('clearSearch');
         const errorMessage = document.createElement('div');
         const searchButton = searchForm.querySelector('button[type="submit"]');    
         function updateShop(params) {
@@ -292,5 +302,11 @@
   // Update the shop with the validated search value
   updateShop({ search: searchValue, page: 1 });
 });
+clearSearchButton.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.classList.remove('is-invalid');
+      // Optionally update the shop or reset filters
+      updateShop({ search: '', page: 1 });
+    });
     });
     </script>

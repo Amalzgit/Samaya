@@ -225,7 +225,7 @@ const getWalletDetails = async (req, res) => {
     const totalBalance = wallet.calculateTotalBalance();
 
     const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    console.log(sortedTransactions);
+    // console.log(sortedTransactions);
     
 
     res.json({

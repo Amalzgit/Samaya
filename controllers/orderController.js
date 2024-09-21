@@ -364,9 +364,14 @@ const cancelOrderItem = async (req, res) => {
 
     if (
       order.payment.method === "Wallet" ||
-      order.payment.method === "razorpay"
+      order.payment.method === "razorpay" &&
+      order.payment.status === 'Completed ' ||
+      order.payment.status === 'Partially Cancelled'
     ) {
-      const refundAmount = item.price * item.quantity;
+
+      console.log(order,'================>ORder');
+      const discountPerItem = (item.price * item.quantity / order.totalPrice) * order.discount || 0;
+      const refundAmount = (item.price * item.quantity)-discountPerItem;
 
       await Wallet.findOneAndUpdate(
         { user: order.user },
