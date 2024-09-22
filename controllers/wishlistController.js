@@ -52,7 +52,7 @@ const getWishlist = async (req, res) => {
 
         const { message, error } = req.query;
 
-        res.render('Wishlist', { wishlist, message, error });
+        res.render('WishList', { wishlist, message, error });
     } catch (error) {
         console.log("wishlist showing error:", error);
         res.status(500).json({ error: 'Server error: showing wishlist' });
