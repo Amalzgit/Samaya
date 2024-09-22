@@ -147,6 +147,38 @@
             font-size: 1.5rem; /* Custom size for the icon */
             color: red; /* Change icon color to red */
         }
+
+        .image-upload {
+            position: relative;
+        }
+
+        #drop-area {
+            border: 2px dashed #007bff;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
+            cursor: pointer;
+        }
+
+        #drop-area:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        .productImageInput {
+            display: none; /* Hide the file input */
+        }
+
+        /* Optional: Style for hover effect when dragging files over */
+        #drop-area.dragover {
+            background-color: rgba(0, 123, 255, 0.2);
+            border-color: #0056b3;
+        }
+
+        .image-uploads h4 {
+            margin: 0;
+            color: #007bff;
+        }
      </style>
   </head>
 

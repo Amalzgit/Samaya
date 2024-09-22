@@ -53,11 +53,48 @@
               <span id="categoryError" class="error text-danger"></span>
             </div>
 
-            <div class="col-md-12 mb-3">
+            <div class="col-lg-12">
+              <div class="form-group">
+                  <label>
+                      Product Image <br /><span>(3 images required)</span>
+                  </label>
+                  <div class="image-upload">
+                      <input
+                          id="images"
+                          type="file"
+                          name="images"
+                          data-error-el="imagesError"
+                          data-min-files="3"
+                          data-max-files="5"
+                          multiple
+                          class="productImageInput"
+                          accept="image/*"
+                      />
+                      <div class="image-uploads" id="drop-area">
+                          <h4>Click to upload</h4>
+                      </div>
+                  </div>
+                  <p class="text-danger" id="imagesError"></p>
+              </div>
+          </div>
+
+          <!-- Cropping Area -->
+          <div class="col-12">
+            <div class="row" id="cropContainer"></div>
+          </div>
+          
+          <div class="col-12">
+              <div class="product-list">
+                  <ul class="row" id="input-image-previewer"></ul>
+              </div>
+          </div>
+
+          
+          <div class="col-md-12 mb-3">
               <label for="productImage" class="form-label">Product Images <i class="fa fa-image"></i></label>
               <div id="imagePreviewContainer" class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2 mb-2">
                   <% if (product.images && product.images.length > 0) { %>
-                      <% product.images.forEach((image, index) => { %>
+                      <% product.images.forEach((image) => { %>
                           <div class="col">
                               <div class="position-relative">
                                   <img src="/products/<%= image %>" class="img-thumbnail" alt="Product Image">
@@ -67,12 +104,17 @@
                       <% }); %>
                   <% } %>
               </div>
-              <input type="file" id="productImage" name="newImages" class="form-control" accept="image/*" multiple="true">
-              <input type="hidden" id="removedImages" name="removedImages">
-              <input type="hidden" id="croppedImages" name="croppedImages">
-              <span id="imagesError" class="error text-danger"></span>
           </div>
+          
+          
 
+          <!-- Cropping Area -->
+          <!-- <div class="col-12" id="cropArea" style="display: none;">
+              <h5>Crop Image</h5>
+              <img id="imageCropper" src="" alt="Crop Image" style="width: 100%;">
+              <button id="cropButton" class="btn btn-primary">Crop</button>
+          </div> -->
+          
 
           <!-- New fields added here -->
           <div class="row mb-3">
@@ -171,7 +213,14 @@
         </div>
     </div>
 </div>
-  <script>
+<!-- Cropper.js CSS -->
+<link
+	rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script>
       document.addEventListener("DOMContentLoaded", () => {
         // Get references to form elements
         const categoryInput = document.getElementById('productCategory');
@@ -303,14 +352,141 @@
     
         // Form submit event
         const form = document.getElementById('editProductForm');
-        form.addEventListener('submit', (event) => {
-          if (!validateCategory() || !validateName() || !validatePrice() || !validateDescription() || !validateStock() || !validateImages()) {
+    form.addEventListener('submit', (event) => {
+        // Validate all fields
+        if (!validateCategory() || !validateName() || !validatePrice() || !validateDescription() || !validateStock() || !validateImages()) {
             event.preventDefault();
-          }
+            return;
+        }
+
+        // Collect existing images
+        const existingImages = [];
+        const existingImageElements = document.querySelectorAll('#imagePreviewContainer img');
+
+        existingImageElements.forEach(img => {
+            existingImages.push(img.src.split('/').pop()); // Assuming the URL structure
         });
+
+        // Collect cropped images
+        const newImages = croppedFileArray.map(file => file.name);
+
+        // Combine all images for submission
+        const allImages = existingImages.concat(newImages);
+
+        // Prepare a hidden input to hold all image names
+        let allImagesInput = document.createElement('input');
+        allImagesInput.type = 'hidden';
+        allImagesInput.name = 'allImages';
+        allImagesInput.value = JSON.stringify(allImages); // Use JSON for array
+
+        // Append to the form
+        form.appendChild(allImagesInput);
+    });
+
       });
-    </script>
-    <script>
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dropArea = document.getElementById('drop-area');
+    const inputImagePreviewer = document.getElementById("input-image-previewer");
+    const productImageInput = document.querySelector(".productImageInput");
+    const croppedFileArray = [];
+    const errorEl = document.getElementById(productImageInput.getAttribute("data-error-el"));
+    const MAX_IMAGE_LIMIT = parseInt(productImageInput.getAttribute("data-max-files")) || 5;
+
+    dropArea.addEventListener('click', () => {
+        productImageInput.click();
+    });
+
+    productImageInput.addEventListener("change", function (event) {
+        const files = Array.from(event.target.files);
+        if (errorEl) errorEl.textContent = "";
+
+        const totalFiles = croppedFileArray.length + files.length;
+        if (totalFiles > MAX_IMAGE_LIMIT) {
+            errorEl.textContent = `You can upload a maximum of ${MAX_IMAGE_LIMIT} images.`;
+            return;
+        }
+
+        files.forEach(file => {
+            if (croppedFileArray.some(existingFile => existingFile.name === `cropped-${file.name}`)) {
+                errorEl.textContent = `File ${file.name} has already been added.`;
+                return;
+            }
+            showCropper(file);
+        });
+    });
+
+    function showCropper(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const cropContainer = document.createElement('div');
+            cropContainer.classList = 'crop-area col col-md-4';
+            cropContainer.innerHTML = `
+                <h5>Crop Image</h5>
+                <img class="image-cropper" src="${e.target.result}" alt="Crop Image" style="width: 100%;">
+                <button class="crop-button btn btn-primary">Crop</button>
+                <button class="cancel-button btn btn-secondary">Cancel</button>
+            `;
+            document.getElementById('cropContainer').appendChild(cropContainer);
+
+            const cropperImage = cropContainer.querySelector('.image-cropper');
+            const cropButton = cropContainer.querySelector('.crop-button');
+            const cancelButton = cropContainer.querySelector('.cancel-button');
+            let cropper;
+
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1,
+            });
+
+            cropButton.onclick = (event) => {
+                event.preventDefault(); // Prevent form submission
+                const canvas = cropper.getCroppedCanvas({ width: 500, height: 500 });
+                canvas.toBlob(blob => {
+                    const croppedFile = new File([blob], `cropped-${file.name}`, { type: "image/jpeg" });
+                    croppedFileArray.push(croppedFile);
+                    addImagePreview(URL.createObjectURL(blob), croppedFile);
+                    cropContainer.remove(); // Remove cropping UI after cropping
+                });
+            };
+
+            cancelButton.onclick = () => {
+                cropContainer.remove(); // Remove cropping UI without saving
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function addImagePreview(src, blob) {
+        const preview = document.createElement('div');
+        preview.className = 'col-12 col-md-6 col-lg-4';
+        preview.innerHTML = `
+            <div class="position-relative">
+                <img src="${src}" class="img-thumbnail" style="width: 100%; height: auto;">
+                <button class="btn btn-danger btn-sm position-absolute top-0 end-0">X</button>
+            </div>`;
+        inputImagePreviewer.appendChild(preview);
+
+        preview.querySelector('button').onclick = () => {
+            preview.remove();
+            const index = croppedFileArray.findIndex(croppedFile => croppedFile.name === blob.name);
+            if (index > -1) croppedFileArray.splice(index, 1);
+        };
+    }
+
+    window.removeExistingImage = function (imageUrl, button) {
+        const imageElement = button.closest('.col');
+        imageElement.remove();
+        // Additional backend logic to handle the removal should be implemented here
+    };
+});
+
+</script>
+<!-- <script>
  document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.getElementById('productImage');
   const previewContainer = document.getElementById('imagePreviewContainer');
@@ -474,4 +650,4 @@
       croppedImagesInput.value = JSON.stringify(images);
   }
 });
-</script>
+</script> -->
