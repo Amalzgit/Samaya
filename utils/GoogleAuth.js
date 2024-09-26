@@ -13,7 +13,7 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 },
 async (request, accessToken, refreshToken, profile, cb) => {
-  console.log('Google OAuth function is working');
+  // console.log('Google OAuth function is working');
   try {
     // Check if the user already exists by email or Google ID
     let user = await User.findOne({ googleId: profile.id });
@@ -41,7 +41,7 @@ async (request, accessToken, refreshToken, profile, cb) => {
       }
     }
 
-    console.log('Authenticated user:', user);
+    // console.log('Authenticated user:', user);
     return cb(null, user);
   } catch (error) {
     console.error('Error during authentication:', error);
