@@ -1,0 +1,17 @@
+NODE_ENV = "development"
+
+SESSION_SECRET = "Your secret"
+PORT = "port"
+HOST = " host"
+
+APP_EMAIL ='google app email'
+APP_EMAIL_PASSWORD = 'google app password'
+
+MONGO_URI ="your mongo db uri"
+
+GOOGLE_CLIENT_ID = 'your google client id'
+GOOGLE_CLIENT_SECRET ='your google client secret'
+GOOGLE_CALLBACK_URL = 'your callback url'
+
+RAZORPAY_ID_KEY = 'razorpay id'
+RAZORPAY_SECRET_KEY = 'razorpay secret'

@@ -10,10 +10,9 @@ const { loginValidater } = require('../../middleware/validator');
 const otp_route = require('./otpRoute');
 const register_route = require('./registerRoute');
 const nocache = require('../../middleware/nocache');
-const passport = require('../../GoogleAuth');
+const passport = require('../../utils/GoogleAuth');
 const forgotPassRouter = require('./forgotPasswordRoutes');
-// require('../../GoogleAuth')
-// console.log(passport);
+
 
 const auth_route = express();
 

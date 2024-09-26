@@ -4,28 +4,29 @@
       <div class="single-hero-slider single-animation-wrap">
         <div class="container">
           <div class="row align-items-center">
-            <div class="col-lg-6">
+            <div class="col-lg-6 col-12">
               <div class="slider-1-height-2 slider-animated-1">
                 <div class="single-slider-img single-slider-img-1">
                   <img
-                    class="animated img-fluid pr-100"
+                    class="animated img-fluid"
                     src="userassets/Page-hero/sm-hero.gif"
                     alt="Animated GIF"
                   />
                 </div>
               </div>
             </div>
-            <div class="col-lg-6">
-              <div class="hero-slider-content-2">
+            <div class="col-lg-6 col-12">
+              <div class="hero-slider-content-2 text-center text-lg-start">
                 <h3 class="animated fw-400 pl-50 custom-link-hero">
                   Time is Luxury
                 </h3>
-                <p class="animated pl-55">It's the moment for indulgence.</p>
+                <p class="animated">It's the moment for indulgence.</p>
                 <a
                   class="animated d-block mx-auto pl-110 custom-link-style"
                   href="/shop"
-                  >Discover Now ↠</a
                 >
+                  Discover Now ↠
+                </a>
               </div>
             </div>
           </div>
@@ -44,83 +45,77 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="tab-content wow fadeIn animated" id="myTabContent">
-            <div
-              class="tab-pane fade show active"
-              id="tab-one"
-              role="tabpanel"
-              aria-labelledby="tab-one">
-            
+            <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
               <div class="row">
                 <% for(let product of products) { %>
                   <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
                     <div class="product-cart-wrap">
-                        <!-- Offer Sale Banner -->
+                      <% if (product.hasOffer) { %>
+                          <div class="offer-banner"><%= product.discountPercentage %>% OFF</div>
+                      <% } %>
+
+                      <div class="product-img-action-wrap">
+                        <div class="product-img product-img-zoom">
+                          <a href="/product/<%= product._id %>">
+                            <img
+                              class="default-img img-fluid"
+                              src="/products/<%= product.images[0] %>"
+                              alt=""
+                            />
+                            <img
+                              class="hover-img img-fluid"
+                              src="/products/<%= product.images[1] %>"
+                              alt=""
+                            />
+                          </a>
+                        </div>
+                      </div>
+                      <div class="product-content-wrap text-center">
+                        <div class="product-category">
+                          <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
+                        </div>
+                        <h2>
+                          <a href="/product/<%= product._id %>"><%= product.name %></a>
+                        </h2>
+                        <div class="rating-result" title="90%">
+                          <span>
+                            <span>90%</span>
+                          </span>
+                        </div>
+                        <%
+                          const currencyFormatter = new Intl.NumberFormat('en-IN', {
+                            style: 'currency',
+                            currency: 'INR',
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          });
+                        %>
+
                         <% if (product.hasOffer) { %>
-                            <div class="offer-banner"><%= product.discountPercentage %>% OFF</div>
+                          <div class="price-info">
+                            <span class="original-price"><%= currencyFormatter.format(product.originalPrice) %></span>
+                            <span class="offer-price"><%= currencyFormatter.format(product.price) %></span>
+                            <span class="discount-percentage"><%= product.discountPercentage %>% OFF</span>
+                          </div>
+                        <% } else { %>
+                          <div class="price-info">
+                            <span class="current-price"><%= currencyFormatter.format(product.price) %></span>
+                          </div>
                         <% } %>
-                
-                        <div class="product-img-action-wrap">
-                            <div class="product-img product-img-zoom">
-                                <a href="/product/<%= product._id %>">
-                                    <img
-                                        class="default-img img-fluid"
-                                        src="/products/<%= product.images[0] %>"
-                                        alt=""
-                                    />
-                                    <img
-                                        class="hover-img img-fluid"
-                                        src="/products/<%= product.images[1] %>"
-                                        alt=""
-                                    />
-                                </a>
-                            </div>
+
+                        <div class="product-action-1 show">
+                          <a
+                            aria-label="Add To Wishlist"
+                            class="action-btn hover-up wishlist-icon"
+                            href="#"
+                            onclick="addToWishlist('<%= product._id %>', this)"
+                          >
+                            <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
+                          </a>
                         </div>
-                        <div class="product-content-wrap">
-                            <div class="product-category">
-                                <a href="/product/<%= product._id %>"><%= product.brand.name %></a>
-                            </div>
-                            <h2>
-                                <a href="/product/<%= product._id %>"><%= product.name %></a>
-                            </h2>
-                            <div class="rating-result" title="90%">
-                                <span>
-                                    <span>90%</span>
-                                </span>
-                            </div>
-                            <%
-                                const currencyFormatter = new Intl.NumberFormat('en-IN', {
-                                    style: 'currency',
-                                    currency: 'INR',
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                            %>
-                
-                            <% if (product.hasOffer) { %>
-                                <div class="price-info">
-                                    <span class="original-price"><%= currencyFormatter.format(product.originalPrice) %></span>
-                                    <span class="offer-price"><%= currencyFormatter.format(product.price) %></span>
-                                    <span class="discount-percentage"><%= product.discountPercentage %>% OFF</span>
-                                </div>
-                            <% } else { %>
-                                <div class="price-info">
-                                    <span class="current-price"><%= currencyFormatter.format(product.price) %></span>
-                                </div>
-                            <% } %>
-                
-                            <div class="product-action-1 show">
-                                <a
-                                    aria-label="Add To Wishlist"
-                                    class="action-btn hover-up wishlist-icon"
-                                    href="#"
-                                    onclick="addToWishlist('<%= product._id %>', this)"
-                                >
-                                    <i class="fa-heart fa-solid" id="heart-icon-<%= product._id %>"></i>
-                                </a>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                </div>
+                  </div>
                 <% } %>
               </div>
             </div>
@@ -131,43 +126,42 @@
   </section>
 
   <section>
-    <div class="brand-belt">
+    <div class="brand-belt text-center">
         <% for(let brand of brands) { %>
         <div class="brand-item">
-            <a href="#"><img src="brands/<%= brand.logo %>" alt="<%= brand.name %>" /></a>
+            <a href="#"><img src="brands/<%= brand.logo %>" alt="<%= brand.name %>" class="img-fluid" /></a>
         </div>
         <% } %>
     </div>
 </section>
 
   <section class="full-width-section">
-    <video src="userassets/Page-hero/edtChoice.mp4" autoplay muted loop playsinline></video>
+    <video src="userassets/Page-hero/edtChoice.mp4" autoplay muted loop playsinline class="w-100"></video>
     <div class="overlay-text">ᵉᵈⁱᵗᵒʳ'ˢ ᵖⁱᶜᵏˢ</div>
-</section>
+  </section>
 
-<section class="reviews-section">
-  <h2>What Our Customers Say</h2>
-  <br>
-  <div class="reviews-container">
+  <section class="reviews-section">
+    <h2>What Our Customers Say</h2>
+    <br>
+    <div class="reviews-container">
       <div class="review-card">
-          <h3>Great Product!</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dolor nec libero feugiat luctus.</p>
-          <div class="author">John Doe</div>
+        <h3>Great Product!</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dolor nec libero feugiat luctus.</p>
+        <div class="author">John Doe</div>
       </div>
       <div class="review-card">
-          <h3>Highly Recommend</h3>
-          <p>Integer euismod orci ac sem lacinia, sit amet fermentum justo aliquet. Suspendisse potenti.</p>
-          <div class="author">Jane Smith</div>
+        <h3>Highly Recommend</h3>
+        <p>Integer euismod orci ac sem lacinia, sit amet fermentum justo aliquet. Suspendisse potenti.</p>
+        <div class="author">Jane Smith</div>
       </div>
       <div class="review-card">
-          <h3>Excellent Service</h3>
-          <p>Quisque non venenatis augue. Nulla facilisi. Sed vehicula est vel purus consequat, vitae vestibulum nunc bibendum.</p>
-          <div class="author">Alice Johnson</div>
+        <h3>Excellent Service</h3>
+        <p>Quisque non venenatis augue. Nulla facilisi. Sed vehicula est vel purus consequat, vitae vestibulum nunc bibendum.</p>
+        <div class="author">Alice Johnson</div>
       </div>
-  </div>
-</section>
+    </div>
+  </section>
 </main>
-
 
 <script>
 async function addToWishlist(productId, element) {
@@ -185,16 +179,38 @@ async function addToWishlist(productId, element) {
     const result = await response.json();
 
     if (result.success) {
-      // Update the icon to indicate the product is in the wishlist
       const icon = element.querySelector('i');
       icon.classList.remove('fa-heart');
       icon.classList.add('fa-heart-solid');
-      // alert('Product added to wishlist.');
     } else {
       alert(result.message || 'Something went wrong!');
     }
   } catch (error) {
-    // alert('Server error: Unable to add to wishlist.');
+    alert('Server error: Unable to add to wishlist.');
   }
 }
-</script> 
+</script>
+
+<style>
+@media (max-width: 768px) {
+  .hero-slider-content-2 {
+    text-align: center;
+    padding-left: 0;
+  }
+
+  .product-content-wrap {
+    text-align: center;
+  }
+
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review-card {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}
+</style>

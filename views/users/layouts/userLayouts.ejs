@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <title>Samaya</title>
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="">
-    <meta property="og:type" content="">
-    <meta property="og:url" content="">
-    <meta property="og:image" content="">
-    <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="/userassets/imgs/theme/spp.png">
-    <!-- Template CSS -->
-    <link rel="stylesheet" href="/userassets/css/main.css?v=3.4">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.1/sweetalert2.all.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        @media (max-width: 991px) {
-          .filter-sort-wrapper,
-          .primary-sidebar {
+<meta charset="utf-8">
+<title>Samaya</title>
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" type="image/x-icon" href="/userassets/imgs/theme/spp.png">
+<link rel="stylesheet" href="/userassets/css/main.css?v=3.4">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.1/sweetalert2.all.min.js"></script>
+<style>
+    /* Basic reset */
+    body, html {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    .icon-size { font-size: 1.5rem; }
+    .icon-spacing { margin-right: 1rem; }
+    .header-top, .header-middle, .header-bottom {
+        padding: 0 15px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 991px) {
+        .filter-sort-wrapper,
+        .primary-sidebar {
             display: none;
             position: fixed;
             top: 0;
@@ -34,446 +40,160 @@
             z-index: 1000;
             overflow-y: auto;
             padding: 20px;
-          }
-      
-          .filter-sort-wrapper.active,
-          .primary-sidebar.active {
-            display: block;
-          }
-      
-          .mobile-filter-toggle {
-            display: block;
-            margin-bottom: 15px;
-          }
-      
-          .close-filter-sort {
-            display: block;
-            margin-bottom: 15px;
-          }
-      
-          .product-grid-3 {
-            width: 100%;
-          }
         }
-      
-        @media (min-width: 992px) {
-          .mobile-filter-toggle,
-          .close-filter-sort {
-            display: none;
-          }
-        }
-     
-      </style>
-    <style>
-        .icon-size {
-            font-size: 1.5rem; 
-        }
-        .icon-spacing {
-            margin-right: 1rem;
-        }
-        .header-top, .header-middle, .header-bottom {
-            padding: 0 15px;
-        }
-        @media (max-width: 768px) {
-            .header-info {
-                text-align: center;
-            }
-            .header-info ul {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0;
-            }
-            .header-info li {
-                margin-bottom: 10px;
-            }
-            .header-right {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            .search-style-1 {
-                margin: 10px 0;
-            }
-            .header-action-right {
-                flex-direction: column;
-            }
-            .header-action-icon-2 img {
-                width: 24px;
-                height: 24px;
-            }
-            .mobile-header-content-area {
-                padding: 15px;
-            }
-        }
-       
-    .datetime {
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 1rem; /* Smaller font size */
-        color: #555; /* Slightly lighter color for elegance */
-        text-align: center;
-        margin-top: 10px; /* Adjust margin to center it */
-        padding: 5px 10px; /* Add padding for a refined look */
-        padding-left: 80px;
+        .filter-sort-wrapper.active,
+        .primary-sidebar.active { display: block; }
+        .mobile-filter-toggle, .close-filter-sort { display: block; margin-bottom: 15px; }
+        .product-grid-3 { width: 100%; }
+    }
+    
+    @media (min-width: 992px) {
+        .mobile-filter-toggle, .close-filter-sort { display: none; }
     }
 
-    </style>
+    @media (max-width: 768px) {
+        .header-info {
+            text-align: center;
+        }
+        .header-info ul {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+        .header-info li { margin-bottom: 10px; }
+        .header-right { display: flex; flex-direction: column; align-items: center; }
+        .search-style-1 { margin: 10px 0; }
+        .header-action-right { flex-direction: column; }
+        .header-action-icon-2 img { width: 24px; height: 24px; }
+        .mobile-header-content-area { padding: 15px; }
+    }
 
-<style>
-    .product-action-1 {
-    margin-top: 10px;
-    text-align: center;
-  }
-  
-  .btn-wishlist {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    font-size: 18px;
-    color: #ff0000;
-    transition: color 0.3s, background-color 0.3s;
-    text-decoration: none;
-  }
-  
-  .btn-wishlist:hover {
-    color: #fff;
-    background-color: #ff6f6f;
-  }
-  
-  .fa-heart {
-    line-height: 1;
-  }
-    /* Adjust the width of the sidebar */
-  .col-lg-3.primary-sidebar {
-    flex: 0 0 20%; /* Decrease the width of the sidebar */
-    max-width: 20%; /* Ensure the width does not exceed 20% */
-  }
-  
-  /* Adjust the width of the main content area */
-  .col-lg-9 {
-    flex: 0 0 80%; /* Increase the width of the main content area */
-    max-width: 80%; /* Ensure the width does not exceed 80% */
-  }
-  
-  /* Adjust the product grid columns */
-  .product-grid-3 .col-lg-3 {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
-  }
-  
-  /* Increase the width of the product cards */
-  .product-cart-wrap {
-    width: 100%; /* Full width of the column */
-    max-width: 300px; /* Increase width of the card */
-    margin: 0 auto 20px; /* Center the card horizontally and add bottom margin */
-  }
-  
-  /* Existing styles */
-  .product-cart-wrap {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .product-cart-wrap:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .product-img {
-    position: relative;
-  }
-  
-  .product-img img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-  
-  .product-content-wrap {
-    padding: 15px;
-  }
-  
-  .product-price {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .product-action-1 {
-    margin-top: 10px;
-    text-align: center;
-  }
-  
-  .btn-wishlist {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    font-size: 18px;
-    color: #ff0000;
-    transition: color 0.3s;
-    text-decoration: none;
-  }
-  
-  .btn-wishlist:hover {
-    color: #ff6f6f;
-  }
-  
-  /* Ensure Font Awesome icons are visible */
-  .fa-heart {
-    line-height: 1;
-  }
-  
-  /* Adjust sidebar links for better readability */
-  .widget-category .categories li {
-    margin-bottom: 8px;
-  }
-  
-  .widget-category .categories a {
-    display: block;
-    padding: 5px 0;
-    font-size: 14px;
-  }
-  </style>
-
-  <!-- HOME PAGE STYLE -->
-  <style>
+    /* Product styles */
     .product-cart-wrap {
-    position: relative; /* Ensure that the wishlist icon can be positioned absolutely within this container */
-    border: 1px solid #ddd; /* Add a border to see the boundaries of the card */
-    border-radius: 8px; /* Optional: for rounded corners */
-    overflow: hidden; /* Ensure that content doesn't overflow */
-  }
-  
-  .product-img-action-wrap {
-    position: relative; /* To contain the absolutely positioned wishlist icon */
-  }
-  
-  .wishlist-icon {
-    position: absolute;
-    bottom: 10px; /* Distance from the bottom */
-    right: 10px; /* Distance from the right */
-    z-index: 10; /* Ensure it is above other content */
-    color: #333; /* Icon color */
-    transition: color 0.3s;
-  }
-  
-  .wishlist-icon:hover {
-    color: #e74c3c; /* Change color on hover */
-  }
-  
-  .fa-heart {
-    font-size: 24px; /* Size of the heart icon */
-  }
-  
-  /* Optional: If you need specific styling for the product-content-wrap */
-  .product-content-wrap {
-    padding: 15px; /* Add padding for spacing */
-  }
-  
-      /* Basic reset */
-      body, html {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-              font-family: Arial, sans-serif;
-          }
-          /* Reviews section styling */
-          .reviews-section {
-              padding: 40px;
-              background-color: #f8f9fa;
-              text-align: center;
-          }
-          .reviews-section h2 {
-              font-size: 2em;
-              margin-bottom: 20px;
-              color: #333;
-          }
-          .reviews-container {
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: center;
-              gap: 20px;
-          }
-          .review-card {
-              background-color: #fff;
-              border-radius: 8px;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-              width: 300px;
-              padding: 20px;
-              text-align: left;
-              position: relative;
-          }
-          .review-card::before {
-              content: '◡̈';
-              font-size: 3em;
-              color: #060606;
-              position: absolute;
-              top: -20px;
-              left: 10px;
-          }
-          .review-card h3 {
-              font-size: 1.2em;
-              margin: 0;
-              color: #0b0b0b;
-          }
-          .review-card p {
-              font-size: 1em;
-              color: #666;
-              margin: 10px 0;
-          }
-          .review-card .author {
-              font-size: 0.9em;
-              color: #999;
-          }
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 0 auto 20px;
+        max-width: 300px;
+    }
+    .product-cart-wrap:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .product-content-wrap { padding: 15px; }
+    .product-price {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Wishlist Button */
+    .btn-wishlist {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        font-size: 18px;
+        color: #ff0000;
+        transition: color 0.3s, background-color 0.3s;
+        text-decoration: none;
+    }
+    .btn-wishlist:hover { color: #fff; background-color: #ff6f6f; }
     
-          /* Basic reset */
-          body, html {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-          }
-          /* Full-width section */
-          .full-width-section {
-              position: relative;
-              width: 100%;
-              height: 100vh; 
-          }
-          /* Video styling */
-          .full-width-section video {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%; /* Ensure the video height is the same as the section height */
-              object-fit: cover; /* Ensures the video covers the section */
-          }
-          /* Optional overlay text */
-          .overlay-text {
-              position: absolute;
-              top: 10px; /* Adjust as needed */
-              left: 10px; /* Adjust as needed */
-              color: rgb(137, 136, 136);
-              font-size: 20px;
-              background-color: rgba(0, 0, 0, 0.5); /* Optional background for better text readability */
-              padding: 10px;
-              border-radius: 5px;
-          }
-          .product-cart-wrap {
-    position: relative; /* Ensure positioning context for the offer banner */
-}
+    /* Heart Icon */
+    .fa-heart { line-height: 1; font-size: 24px; transition: color 0.3s; }
 
-.offer-banner {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #e74c3c; /* Red background for visibility */
-    color: #fff; /* White text color */
-    padding: 5px 10px;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 5px;
-    z-index: 10; /* Ensure it stays on top of other content */
-}
+    /* Reviews section styling */
+    .reviews-section {
+        padding: 40px;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+    .reviews-section h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .reviews-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+    .review-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        padding: 20px;
+        text-align: left;
+        position: relative;
+    }
+    .review-card::before {
+        content: '◡̈';
+        font-size: 3em;
+        color: #060606;
+        position: absolute;
+        top: -20px;
+        left: 10px;
+    }
+    .review-card h3 { font-size: 1.2em; margin: 0; color: #0b0b0b; }
+    .review-card p { font-size: 1em; color: #666; margin: 10px 0; }
+    .review-card .author { font-size: 0.9em; color: #999; }
 
-.price-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px; /* Space between price elements */
-}
+    /* Full-width section */
+    .full-width-section {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+    }
+    .full-width-section video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.original-price {
-    font-size: 14px;
-    color: #888; /* Light gray color for the original price */
-    text-decoration: line-through; /* Strike-through effect */
-}
-
-.offer-price {
-    font-size: 18px;
-    color: #e74c3c; /* Red color to highlight the offer price */
-    font-weight: bold;
-}
-
-.discount-percentage {
-    font-size: 14px;
-    color: #27ae60; /* Green color for the discount percentage */
-    font-weight: bold;
-}
-
-.current-price {
-    font-size: 18px;
-    color: #333; /* Dark color for the regular price */
-    font-weight: bold;
-}
-
-    
-          .brand-belt {
-      display: flex;
-      overflow-x: auto; /* Enable horizontal scrolling */
-      overflow-y: hidden; /* Hide vertical scrollbar if not needed */
-      white-space: nowrap; /* Prevent content from wrapping */
-      padding: 10px;
-      background-color: white; /* Background color for the brand belt */
-      border-radius: 10px;
-      justify-content: flex-start; /* Align items to the start */
-      gap: 20px; /* Consistent gap between items */
-      position: relative; /* Ensure proper positioning of scrollbar */
-  }
-  
-  /* Custom scrollbar styles for WebKit browsers (Chrome, Safari) */
-  .brand-belt::-webkit-scrollbar {
-      height: 8px; /* Height of the scrollbar */
-  }
-  
-  .brand-belt::-webkit-scrollbar-track {
-      background: #f1f1f1; /* Background color of the track */
-      border-radius: 10px; /* Rounded corners for the track */
-  }
-  
-  .brand-belt::-webkit-scrollbar-thumb {
-      background: #888; /* Color of the scrollbar handle */
-      border-radius: 10px; /* Rounded corners for the handle */
-  }
-  
-  .brand-belt::-webkit-scrollbar-thumb:hover {
-      background: #555; /* Darker color for the handle on hover */
-  }
-  
-  .brand-item {
-      flex: 0 0 auto; /* Prevent items from growing or shrinking */
-      text-align: center;
-      color: #000; /* Ensure text is visible */
-  }
-  
-  .brand-item img {
-      width: 200px; /* Fixed width for all images */
-      height: 100px; /* Fixed height for all images */
-      object-fit: cover; /* Ensure images are uniformly sized */
-      display: block;
-      margin: 0 auto 10px;
-      border-radius: 5px; /* Rounded corners for a modern look */
-  }
-  
-  .brand-item p {
-      margin: 0 0 5px;
-      font-size: 14px; /* Slightly smaller text for elegance */
-  }
-  
-  .brand-item a:hover {
-      text-decoration: underline;
-  }
+    /* Brand Belt */
+    .brand-belt {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+        background-color: white;
+        border-radius: 10px;
+        gap: 20px;
+    }
+    .brand-item {
+        flex: 0 0 auto;
+        text-align: center;
+        color: #000;
+    }
+    .brand-item img {
+        width: 200px;
+        height: 100px;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto 10px;
+        border-radius: 5px;
+    }
+    .brand-item p { margin: 0 0 5px; font-size: 14px; }
+    .brand-item a:hover { text-decoration: underline; }
   .action-btn {
               cursor: pointer;
               color: #333;
@@ -806,22 +526,21 @@
     </footer>
     <!-- Preloader Start -->
     <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-10">
-                        "Welcome to <span style="color: rgb(252, 195, 9); font-size: 1.2em;">S A M A Y A</span> Where Elegance Meets Timeless Luxury. Please Log In to Begin Your Journey."
-                    </h5>
-                    
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
+        <div class="preloader d-flex align-items-center justify-content-center" style="height: 100vh;">
+            <div class="preloader-inner text-center">
+                <h5 class="mb-4" style="font-size: 1.2em;">
+                    "Welcome to <span style="color: rgb(252, 195, 9);">S A M A Y A</span> Where Elegance Meets Timeless Luxury. Please Log In to Begin Your Journey."
+                </h5>
+                
+                <div class="loader">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2"></div>
+                    <div class="bar bar3"></div>
                 </div>
             </div>
         </div>
     </div>
+    
     <script>
         function updateDateTime() {
           const now = new Date();
