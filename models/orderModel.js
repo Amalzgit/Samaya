@@ -22,8 +22,8 @@ const orderItemSchema = new Schema({
   totalPrice: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['Active', 'Cancelled', 'Return Requested', 'Return Accepted', 'Return Rejected', 'Returned'],
-    default: 'Active'
+    enum: ['Pending', 'Cancelled', 'Return Requested', 'Return Accepted', 'Return Rejected', 'Returned'],
+    default: 'Pending'
   },
   cancelledAt: { type: Date },
   returnRequestedAt: { type: Date },

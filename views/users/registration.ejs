@@ -1,0 +1,31 @@
+<% include('../layouts/Header.ejs')%>
+
+<h1>Registration Form</h1>
+  <form action="/register" method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter Name" required>
+    </div>
+    <div>
+      <label for="mobno">Mobile Number:</label>
+      <input type="number" id="mobno" name="mobno" placeholder="Number" required pattern="[0-9]{10}">
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Enter Email" required>
+    </div>
+    <div>
+      <label for="image">Upload Image:</label>
+      <input type="file" id="image" name="image" accept="image/*" required>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+      </div>
+    
+    <div>
+      <button type="submit">Register</button>
+    </div>
+  </form>
+
+<% include('../layouts/footer.ejs')%>
